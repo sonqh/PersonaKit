@@ -1,0 +1,62 @@
+# Bug reporting and learning loop
+
+A useful bug report tells a maintainer what failed and gives enough detail to reproduce it. PersonaKit handles personal information, so every report must also limit what it reveals.
+
+## Where bugs go
+
+Use GitHub Issues for triage. Start with the [bug report form](../.github/ISSUE_TEMPLATE/bug_report.yml). Security reports need a private route. Do not post credentials, real CVs, private records, or sensitive screenshots in public issues.
+
+## Bug classes
+
+| Type | Example |
+| --- | --- |
+| `privacy` | A private record appears in an AI export |
+| `grounding` | A CV draft claims that a contributor led a project |
+| `import` | A date changes when a CV is parsed |
+| `data-integrity` | An accepted record disappears after restore |
+| `compatibility` | A browser cannot open an exported archive |
+| `ux` | The review screen hides a required decision |
+| `regression` | A previously fixed scenario fails again |
+
+Privacy leaks and data loss need immediate maintainer attention. Do not ask a reporter to share private input in an issue.
+
+## Minimum report
+
+- What the user tried to do.
+- What the user expected.
+- What happened instead.
+- Steps using synthetic or redacted data.
+- App version or commit, browser, operating system.
+- Whether the failure repeats.
+- A sanitized diagnostic ID, if one exists.
+
+No telemetry service is planned for the MVP. A later opt-in diagnostic export may include a generated report ID, app version, error category, and a record of failed steps. It must exclude record content, prompts, evidence files, API keys, and CV text by default.
+
+## Severity and triage
+
+- P0: confirmed private-data disclosure or destructive data loss. Stop unsafe exports and issue a security response.
+- P1: common workflow blocked or CV fabrication with material impact.
+- P2: recoverable defect with a workaround.
+- P3: cosmetic or low-impact issue.
+
+Severity is an initial triage estimate. Maintainers may change it after reproduction.
+
+## Fix loop
+
+1. Reproduce the issue with synthetic fixtures.
+2. Link the issue to the affected requirement ID when one exists.
+3. Decide if the issue is a code defect or a missing requirement.
+4. For changed behavior, open an OpenSpec delta and allocate IDs with spec-ctx.
+5. Add a regression scenario and an executable Verify command.
+6. Fix the code. Run `specctx task done` after verification passes.
+7. Run the repository quality gate.
+8. Link the pull request and test evidence back to the issue.
+9. Close the issue after verification. Record any remaining limitation.
+
+The issue remains the record of the failure. The spec defines expected behavior. Verification evidence shows which command passed. Keep these roles separate.
+
+## Learning from bugs
+
+Review issues by failure type, root cause, affected release, and whether a regression test exists. Track repeat defects and time to reproduce. Do not count a closed issue as proof that the bug is fixed without a passed regression test.
+
+For privacy failures, publish a safe summary after the exposure is contained. Do not publish the affected data or a reproduction that exposes another person.
