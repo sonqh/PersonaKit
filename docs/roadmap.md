@@ -11,7 +11,13 @@ Status: Proposed. Validate demand before building the full application.
 - Add requirements with stable IDs and executable task verification.
 - Add synthetic examples from several professions.
 
-Exit: The product team has a small tested workflow and a valid specification change. Document any failed assumption.
+Set these decision rules before the test runs:
+
+- At least 60% of participants prefer answers with the AI brief in a blind comparison.
+- At least 30% of participants still use the brief after 7 days.
+- At least 40% of participants would use the CV draft for their next application.
+
+Exit: All decision rules pass, and the repository has a valid specification change. If a rule fails, record the failed assumption as an issue. Revise the positioning before M1 starts.
 
 ## M1. Domain core
 
@@ -26,6 +32,7 @@ Exit: Synthetic records produce both outputs, with tests for disclosure and clai
 ## M2. First web workflow
 
 - Add guided interview and manual record editing.
+- Paste CV text to propose records. No file parsing yet.
 - Let users accept or reject proposed facts.
 - Show both outputs on one result screen.
 - Support portable archive export and restore.
@@ -36,7 +43,7 @@ Exit: Nontechnical users can finish the complete flow without a terminal.
 
 ## M3. Optional integrations
 
-- Add CV import automation and JSON Resume interoperability.
+- Add CV file import (local PDF and DOCX parsing) and JSON Resume interoperability.
 - Add role packs supported by user research.
 - Add optional LLM extraction and writing.
 - Add CLI and read-only MCP after the file export is useful.

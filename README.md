@@ -6,7 +6,7 @@ The project is at the design stage. There is no released application or CLI yet.
 
 ## First experience
 
-1. Start with an existing CV or answer a short interview.
+1. Paste an existing CV or answer a short interview.
 2. Review the extracted facts, skills, preferences, and goals.
 3. Export an AI context pack and a CV draft from the accepted records.
 

@@ -1,13 +1,13 @@
 name: Bug report
 description: Report a reproducible PersonaKit defect without sharing personal data
 title: "[Bug] "
-labels: []
+labels: [bug, needs-triage]
 body:
   - type: markdown
     attributes:
       value: |
         Use synthetic or redacted examples. Do not submit private CVs, credentials, personal records, or customer data.
-        For a security issue, contact maintainers privately instead of creating a public issue.
+        For a security issue or a private-data exposure, do not create a public issue. Follow SECURITY.md and use "Report a vulnerability" on the Security tab.
   - type: dropdown
     id: type
     attributes:
@@ -19,8 +19,17 @@ body:
         - Data integrity
         - Compatibility
         - UX
-        - Regression
         - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: earlier-version
+    attributes:
+      label: Did this work in an earlier version?
+      options:
+        - "Yes"
+        - "No"
+        - Not sure
     validations:
       required: true
   - type: textarea

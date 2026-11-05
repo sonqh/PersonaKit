@@ -4,7 +4,7 @@ Status: Proposed. This design has not been implemented.
 
 ## User experience
 
-The first flow accepts an existing CV or a short interview. The user reviews the records that result. The result screen offers an AI brief and a tailored CV draft.
+The first flow accepts pasted CV text or a short interview. The user reviews the records that result. The result screen offers an AI brief and a tailored CV draft.
 
 A user can edit records later. A CV draft needs a job description. The AI brief does not.
 
@@ -36,11 +36,23 @@ interface PersonaRecord {
   state: RecordState;
   visibility: Visibility;
   sourceIds: string[];
+  evidenceIds?: string[];
+  contribution?: "contributed" | "supported" | "co-led" | "led" | "owned";
   asOf?: string;
   scope?: string[];
   supersedes?: string[];
 }
 ```
+
+- `sourceIds` show where the record came from, such as a CV or an interview.
+- `evidenceIds` point to the material that supports the claim.
+- `contribution` applies to experience records. It records the level of the person's role.
+
+Visibility has an order: `private` < `ai` < `public`.
+
+- The AI pack receives `ai` and `public` records.
+- A CV receives `public` records only.
+- A `private` record never leaves the device.
 
 This example is a design sketch. It is not a published schema. Sensitive identity fields may need separate records so the user can disclose them independently.
 
@@ -67,6 +79,7 @@ The AI brief includes relevant preferences and goals. The CV uses professional f
 - Each CV claim must cite one or more accepted record IDs.
 - Check dates, organization names, titles, and numeric values against the cited records.
 - Record contribution scope. Distinguish owning a component from leading a whole project.
+- The CV check compares the output verbs against the `contribution` level of each cited record.
 - Flag wording that might overstate ownership, scale, or causality.
 - Require user review of the final draft.
 
@@ -91,9 +104,12 @@ Role packs supply interview questions, examples, terminology, and CV section sug
 
 Keep personal record IDs separate from spec-ctx requirement IDs. The first identifies user-owned data. The second identifies product requirements and tests.
 
+## Decisions
+
+- The first importer accepts pasted CV text. Local PDF and DOCX parsing comes later.
+
 ## Open decisions
 
-- Whether the initial importer parses CV text locally or asks the user to paste text.
 - The archive format and migration policy.
 - How to handle conflicts between accepted records.
 - How to measure better AI responses in a blind comparison.

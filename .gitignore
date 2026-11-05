@@ -1,0 +1,5 @@
+# spec-ctx local state
+.ctx/index.json
+.ctx/current.json
+.ctx/gate-log.jsonl
+.ctx/evidence/**/*.fail-*.json

@@ -13,11 +13,23 @@ npx -y spec-ctx@0.4.1 status
 npx -y spec-ctx@0.4.1 gate --strict
 ```
 
+After `init`, register the capability codes. `specctx id new REQ PER` exits with code 2 unless the code is in `[ids] caps`. Add this line under `[ids]` in `spec-ctx.toml`:
+
+```toml
+caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC"]
+```
+
+Then rebuild the index:
+
+```bash
+npx -y spec-ctx@0.4.1 build
+```
+
 Review the generated configuration. Commit the OpenSpec files, templates, and agent skill. The bootstrap commands are instructions. We have not executed them in this design change.
 
 ## Requirement IDs
 
-Use spec-ctx to allocate IDs after initialization. Suggested capability codes are:
+Use spec-ctx to allocate IDs after initialization. Register these capability codes during bootstrap:
 
 | Code | Capability |
 | --- | --- |
@@ -45,6 +57,8 @@ For example, request a new requirement ID with `specctx id new REQ PER`. Do not 
 10. Write the handoff and archive when the change is complete.
 
 A failing Verify command must leave the task open. Do not mark tasks complete by editing their checkboxes.
+
+Commit the task evidence in `.ctx/evidence/` because `specctx check --strict` needs it. The `.gitignore` file excludes the `*.fail-*.json` files because they are logs for each attempt.
 
 ## Agent guidance
 

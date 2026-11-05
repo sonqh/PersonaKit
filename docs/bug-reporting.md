@@ -4,7 +4,9 @@ A useful bug report tells a maintainer what failed and gives enough detail to re
 
 ## Where bugs go
 
-Use GitHub Issues for triage. Start with the [bug report form](../.github/ISSUE_TEMPLATE/bug_report.yml). Security reports need a private route. Do not post credentials, real CVs, private records, or sensitive screenshots in public issues.
+Use GitHub Issues for triage. Start with the [bug report form](../.github/ISSUE_TEMPLATE/bug_report.yml). Do not post credentials, real CVs, private records, or sensitive screenshots in public issues.
+
+Report a security problem or a private-data exposure privately. Follow [SECURITY.md](../SECURITY.md).
 
 ## Bug classes
 
@@ -16,7 +18,8 @@ Use GitHub Issues for triage. Start with the [bug report form](../.github/ISSUE_
 | `data-integrity` | An accepted record disappears after restore |
 | `compatibility` | A browser cannot open an exported archive |
 | `ux` | The review screen hides a required decision |
-| `regression` | A previously fixed scenario fails again |
+
+The form asks if the feature worked in an earlier version. Regression is not a bug type. A maintainer adds the `regression` label after triage when a previously working scenario fails again.
 
 Privacy leaks and data loss need immediate maintainer attention. Do not ask a reporter to share private input in an issue.
 
@@ -28,7 +31,6 @@ Privacy leaks and data loss need immediate maintainer attention. Do not ask a re
 - Steps using synthetic or redacted data.
 - App version or commit, browser, operating system.
 - Whether the failure repeats.
-- A sanitized diagnostic ID, if one exists.
 
 No telemetry service is planned for the MVP. A later opt-in diagnostic export may include a generated report ID, app version, error category, and a record of failed steps. It must exclude record content, prompts, evidence files, API keys, and CV text by default.
 
@@ -54,6 +56,19 @@ Severity is an initial triage estimate. Maintainers may change it after reproduc
 9. Close the issue after verification. Record any remaining limitation.
 
 The issue remains the record of the failure. The spec defines expected behavior. Verification evidence shows which command passed. Keep these roles separate.
+
+## Bugs in spec-ctx
+
+File a defect in spec-ctx in the [spec-ctx issue tracker](https://github.com/sonqh/spec-ctx/issues), not here. This applies when you find the defect during PersonaKit work. Do not add a workaround in PersonaKit.
+
+Include:
+
+- The spec-ctx version.
+- The command you ran.
+- The exit code.
+- The output, with machine paths removed.
+
+An upstream proposal adds a `specctx report` command. That command is not available yet.
 
 ## Learning from bugs
 
