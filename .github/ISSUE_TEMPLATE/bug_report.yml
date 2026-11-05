@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible PersonaKit defect without sharing personal data
+title: "[Bug] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic or redacted examples. Do not submit private CVs, credentials, personal records, or customer data.
+        For a security issue, contact maintainers privately instead of creating a public issue.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Bug type
+      options:
+        - Privacy
+        - Grounding
+        - Import
+        - Data integrity
+        - Compatibility
+        - UX
+        - Regression
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Use synthetic or redacted data.
+      placeholder: "1. Create a fictional profile\n2. Export an AI pack\n3. Observe the result"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: "Commit SHA or release"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      placeholder: "Firefox / macOS, for example"
+    validations:
+      required: false
+  - type: input
+    id: requirement
+    attributes:
+      label: Related spec-ctx requirement ID (if known)
+      placeholder: "REQ-VIS-001"
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Data safety
+      options:
+        - label: I removed personal data, secrets, and private documents from this report.
+          required: true
