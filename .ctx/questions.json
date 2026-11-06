@@ -20,5 +20,27 @@
     "verdict": "approved",
     "answer": "The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: \"Đồng ý với đề xuất của bạn, hãy tiếp tục\"",
     "resolved_at": "2026-11-06T17:29:09.034Z"
+  },
+  {
+    "n": 3,
+    "asked_at": "2026-11-06T15:52:42.876Z",
+    "task": "m1-store-and-cli",
+    "text": "plan ready for m1-store-and-cli. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "The owner approved all three M1 plans in chat on 2026-11-06 22:49: \"Duyệt\"",
+    "resolved_at": "2026-11-06T15:52:43.729Z"
+  },
+  {
+    "n": 4,
+    "asked_at": "2026-11-06T15:56:19.868Z",
+    "task": "m1-store-and-cli",
+    "text": "archive m1-store-and-cli?",
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: \"Đồng ý với đề xuất của bạn, hãy tiếp tục\"",
+    "resolved_at": "2026-11-06T17:30:15.030Z"
   }
 ]
