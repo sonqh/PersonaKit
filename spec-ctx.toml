@@ -17,7 +17,7 @@ ignore = []
 [ids]
 # Capability codes. check reports a REQ whose code is not in this list. id new accepts only these codes.
 # An empty list turns the rule off, and id new accepts any code of 2 to 6 upper case letters.
-caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC"]
+caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC", "STO", "CLI", "AGT"]
 # Pattern of the task number in a tasks.md checkbox.
 task_pattern = '\d+\.\d+'
 # true makes adopt and id new write the ID in square brackets, [REQ-UA-001], as OpenSpec PR #1979 reads it.
@@ -37,7 +37,7 @@ timeout_s = 600
 [gate]
 # Markdown globs that gate lints with the tells and STE linters. Empty means no lint.
 # To turn it on, set markdown = ["openspec/**/*.md", "decisions/*.md", "docs/**/*.md", "*.md"]. The spec-ctx repository opts in.
-markdown = ["*.md", "docs/**/*.md", "openspec/**/*.md"]
+markdown = ["*.md", "docs/**/*.md", "openspec/**/*.md", "decisions/*.md", ".claude/agents/*.md", ".agents/skills/personakit/*.md"]
 # The command that gate runs for openspec validate. Set it to "openspec" for a global install or a fork,
 # or pin a version. The env var SPECCTX_OPENSPEC overrides it for one run.
 openspec = "npx -y @fission-ai/openspec@1.16.0"
