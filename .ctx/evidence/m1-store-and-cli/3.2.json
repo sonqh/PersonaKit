@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-06T15:54:47.944Z",
+  "bundle_chars": 7098,
+  "files": {
+    "src/core/brief.ts": "976e7ace0727aa5fed1853cdcad7c3896243d3d637cb4304648024e0a39b0617",
+    "tests/brief.test.ts": "7ae6a3ba216ff3d13777ebebdeb52d7385e72a78a3c48c531a9a31bc78906120"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-AIP-002"
+  ],
+  "started_at": "2026-11-06T15:54:42.040Z",
+  "task": "m1-store-and-cli/3.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/brief.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "314404c5b2753d95e117ef82445916f6b16bcc27ea6ee56a2b7800a433ede9ba"
+  }
+}

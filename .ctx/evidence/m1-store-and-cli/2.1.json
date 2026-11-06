@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-06T17:14:52.693Z",
+  "files": {
+    "src/cli/main.ts": "0a1b1eac22e6619305e04408f730bba4c40eaacf597a86dd274c2b7c9db6bf7f",
+    "tests/cli.test.ts": "59ffbc3f6e2f6de1efbe02eddf73f7a10c6313052a4291ea4c19d9f219ef2bb8",
+    "tests/location-cli.test.ts": "93a6ecf2494cb6828bb87a75784cd1e2f112398a1a25001f0641a5cf70c2a5c2"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CLI-001"
+  ],
+  "task": "m1-store-and-cli/2.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cli.test.ts tests/location-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "63432f1e43507f1f685152f0accf127d3767fc5e99cf18510d645b21da54ad58"
+  }
+}
