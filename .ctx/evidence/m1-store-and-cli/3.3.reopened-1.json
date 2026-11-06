@@ -8,7 +8,7 @@
     "tests/privacy.test.ts": "bfe396e4ebc6e5dfc515a78b8971c2dd3dcbc5dc0fe9e48fb5c1ebb0188091bd"
   },
   "kind": "command",
-  "reason": "archive-stop fixes: stale lock race, redacted owner prompts, fork classification",
+  "reason": "src/cli/main.ts changed in m1-agent-integration (skill install command)",
   "reqs": [
     "REQ-VIS-001"
   ],

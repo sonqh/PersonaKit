@@ -1,7 +1,7 @@
 {
-  "at": "2026-11-06T17:14:59.063Z",
+  "at": "2026-11-06T17:18:05.795Z",
   "files": {
-    "src/cli/main.ts": "0a1b1eac22e6619305e04408f730bba4c40eaacf597a86dd274c2b7c9db6bf7f",
+    "src/cli/main.ts": "8d587aaf4e2c61c455315cfd00f4eb03465715c59a25c2f524c8665c42d07cae",
     "tests/cli.test.ts": "59ffbc3f6e2f6de1efbe02eddf73f7a10c6313052a4291ea4c19d9f219ef2bb8"
   },
   "kind": "command",
@@ -14,6 +14,6 @@
     "command": "npm run typecheck && node --test tests/cli.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "b0aad28e6b5cfd94c77dfdbbd64e893a6248f3af7926e0b005e8ea311418beb1"
+    "stdout_sha256": "185cf377484773c88a126a882a7d4b48fb62fad50ecd6830f1ddb3983eff8f40"
   }
 }

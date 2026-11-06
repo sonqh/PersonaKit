@@ -6,7 +6,7 @@
     "tests/cli.test.ts": "59ffbc3f6e2f6de1efbe02eddf73f7a10c6313052a4291ea4c19d9f219ef2bb8"
   },
   "kind": "command",
-  "reason": "archive-stop fixes: stale lock race, redacted owner prompts, fork classification",
+  "reason": "src/cli/main.ts changed in m1-agent-integration (skill install command)",
   "reqs": [
     "REQ-CLI-002"
   ],

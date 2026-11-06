@@ -7,7 +7,7 @@
     "tests/location-cli.test.ts": "93a6ecf2494cb6828bb87a75784cd1e2f112398a1a25001f0641a5cf70c2a5c2"
   },
   "kind": "command",
-  "reason": "archive-stop fixes: stale lock race, redacted owner prompts, fork classification",
+  "reason": "src/cli/main.ts changed in m1-agent-integration (skill install command)",
   "reqs": [
     "REQ-CLI-001"
   ],
