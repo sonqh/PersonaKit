@@ -94,7 +94,7 @@ A proposal whose normalized statement matches a record of the same kind SHALL ge
 - **THEN** the output says that the owner rejected it
 
 ### Requirement: REQ-STO-007 Store diagnosis
-`doctor` SHALL report bad record files, git conflict markers, and two applied changes from one revision of a record. It SHALL report an event whose record change was not written. Such an event is an orphan only when it starts from the current record file. Otherwise `doctor` SHALL report a fork. It SHALL report a record superseded by more than one accepted record. It SHALL also report temporary files, stale locks, and missing git settings. `doctor --fix` SHALL remove stale locks and old temporary files, and move orphan events to `events/orphaned/`.
+`doctor` SHALL report bad files, forks, orphan events, supersede errors, leftovers from crashes, and missing git settings. An unapplied event SHALL count as an orphan only when it starts from the current record file, and as a fork otherwise. `doctor --fix` SHALL remove stale locks and old temporary files, and move orphan events to `events/orphaned/`.
 
 #### Scenario: SCN-STO-007-1 A forked history is reported
 - **WHEN** two applied events change one record from the same revision
