@@ -219,6 +219,8 @@ export interface DuplicateReport {
   visible: string[];
   /** Matches with records the owner already rejected. */
   rejected: string[];
+  /** Rejected matches an agent may see: visibility ai or public. */
+  rejected_visible: string[];
 }
 
 export function findDuplicates(records: PersonaRecord[], kind: RecordKind, statement: string, excludeId?: string): DuplicateReport {
@@ -226,14 +228,19 @@ export function findDuplicates(records: PersonaRecord[], kind: RecordKind, state
   const all: string[] = [];
   const visible: string[] = [];
   const rejected: string[] = [];
+  const rejectedVisible: string[] = [];
   for (const r of records) {
     if (r.id === excludeId || r.kind !== kind || normalizeStatement(r.statement) !== key) continue;
-    if (r.state === "rejected") { rejected.push(r.id); continue; }
+    if (r.state === "rejected") {
+      rejected.push(r.id);
+      if (VISIBILITY_RANK[r.visibility] >= VISIBILITY_RANK.ai) rejectedVisible.push(r.id);
+      continue;
+    }
     if (r.state === "retired") continue;
     all.push(r.id);
     if (VISIBILITY_RANK[r.visibility] >= VISIBILITY_RANK.ai) visible.push(r.id);
   }
-  return { all: all.sort(), visible: visible.sort(), rejected: rejected.sort() };
+  return { all: all.sort(), visible: visible.sort(), rejected: rejected.sort(), rejected_visible: rejectedVisible.sort() };
 }
 
 // ---------- propose ----------
@@ -515,10 +522,19 @@ export function doctor(store: Store, opts: { fix?: boolean } = {}): DoctorReport
     const file = join(d.records, `${recordId}.json`);
     const applied = new Set<string>(list.map((e) => e.prior_sha256).filter((h): h is string => Boolean(h)));
     if (existsSync(file)) applied.add(sha256(readFileSync(file, "utf8")));
+    const currentSha = existsSync(file) ? sha256(readFileSync(file, "utf8")) : undefined;
     const done = list.filter((e) => !e.next_sha256 || applied.has(e.next_sha256));
-    for (const e of list) if (e.next_sha256 && !applied.has(e.next_sha256)) orphans.push(e);
+    const lost: PersonaEvent[] = [];
+    for (const e of list) {
+      if (!e.next_sha256 || applied.has(e.next_sha256)) continue;
+      // An interrupted write starts from the current file (or from nothing, for a new record).
+      // An unapplied event that starts from an older state can be the other side of a git merge:
+      // treat it as a fork so that no change is dropped without the owner's review.
+      if (e.prior_sha256 === currentSha) orphans.push(e);
+      else lost.push(e);
+    }
     const seen = new Map<number, number>();
-    for (const e of done) seen.set(e.from_revision, (seen.get(e.from_revision) ?? 0) + 1);
+    for (const e of [...done, ...lost]) seen.set(e.from_revision, (seen.get(e.from_revision) ?? 0) + 1);
     for (const [rev, count] of seen) {
       if (count > 1) findings.push({ level: "error", code: "forked-history", record_id: recordId, message: `Record ${recordId} has ${count} changes from revision ${rev}. Two machines changed it. Review the record and retire or re-propose it.` });
     }

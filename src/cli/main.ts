@@ -147,7 +147,7 @@ function proposeInputFromObject(o: Record<string, unknown>, line: number | undef
 function proposeInputFromFlags(v: Values): ProposeInput {
   const kind = pickEnum("kind", RECORD_KINDS, v.kind);
   if (!kind) throw usage(`--kind is required: ${RECORD_KINDS.join(", ")}.`);
-  if (!v.statement) throw usage("--statement is required.");
+  if (v.statement === undefined) throw usage("--statement is required.");
   const source: Source = { kind: pickEnum("source-kind", SOURCE_KINDS, v["source-kind"]) ?? "chat" };
   if (v["source-label"]) source.label = v["source-label"];
   if (v["source-ref"]) source.ref = v["source-ref"];
@@ -222,7 +222,7 @@ async function cmdPropose(v: Values, io: Io): Promise<Result> {
     const { record, duplicates } = propose(store, input, label);
     // Echo no statement in any mode: no CLI output path prints the text of a private record.
     // Report only duplicates the caller may see.
-    return { id: record.id, state: record.state, revision: record.revision, visibility: record.visibility, possible_duplicates: duplicates.visible, previously_rejected: duplicates.rejected.length > 0 };
+    return { id: record.id, state: record.state, revision: record.revision, visibility: record.visibility, possible_duplicates: duplicates.visible, previously_rejected: duplicates.rejected_visible.length > 0 };
   });
   const text = results.map((r, i) => `Proposed ${r.id} (${inputs[i]!.kind}, rev ${r.revision}, ${r.visibility}).${r.possible_duplicates.length ? `\n  Possible duplicate of ${r.possible_duplicates.join(", ")}` : ""}${r.previously_rejected ? "\n  The owner rejected the same statement before." : ""}`).join("\n");
   return { data: results.length === 1 ? results[0] : { proposed: results }, text: `${text}\nThe owner reviews proposals with "personakit review".` };
@@ -233,7 +233,7 @@ async function cmdUpdate(v: Values, io: Io, args: string[]): Promise<Result> {
   if (!id) throw usage("update needs a record ID.");
   const store = storeFor(v, io);
   const patch: UpdatePatch = {};
-  if (v.statement) patch.statement = v.statement;
+  if (v.statement !== undefined) patch.statement = v.statement;
   const visibility = pickEnum("visibility", VISIBILITIES, v.visibility);
   if (visibility) patch.visibility = visibility;
   if (v.facets) patch.facets = parseJson("facets", v.facets) as Facets;
@@ -286,7 +286,8 @@ async function cmdOwner(action: OwnerAction, v: Values, io: Io, args: string[]):
   const expectedRevision = parseRevision(v, false);
   if (expectedRevision !== undefined && args.length > 1) throw usage("--revision works with one record ID only.");
   const records = args.map((id) => getRecord(store, id));
-  if (!v.yes && io.isInteractive) io.stderr(records.map(describe).join("\n") + "\n");
+  // Redacted view: a private statement never leaves through these commands. review shows full text.
+  if (!v.yes && io.isInteractive) io.stderr(records.map((r) => describeView(agentView(r))).join("\n") + "\n");
   await confirm(io, v, `${action} ${args.length} record${args.length === 1 ? "" : "s"}${visibility ? ` with visibility ${visibility}` : ""}?`);
   const label = actorLabel(v, io.env);
   const results = args.map((id) => {

@@ -87,3 +87,15 @@ test("SCN-VIS-001-2 the rule holds in a pseudo-terminal", { skip: !linuxScript &
     assert.ok(!r.stdout.includes(CANARY), `PTY output of "${args.join(" ")}" leaked the canary`);
   }
 });
+
+test("SCN-VIS-001-6 owner prompts in a terminal show no private text", { skip: !linuxScript && "needs Linux script(1)" }, () => {
+  const ids = setup();
+  const quote = (a: string) => `'${a.replace(/'/g, "'\\''")}'`;
+  for (const args of [["accept", ids.pending], ["reject", ids.pending], ["retire", ids.pid], ["visibility", ids.pid, "ai"]]) {
+    const r = spawnSync("script", ["-qec", [process.execPath, BIN, ...args].map(quote).join(" "), "/dev/null"], {
+      cwd: tempDir(), env: { ...process.env, PERSONAKIT_HOME: ids.root }, encoding: "utf8", input: "n\n", timeout: 15_000,
+    });
+    assert.ok(r.stdout.includes(args[1]!), `the prompt for "${args.join(" ")}" ran`);
+    assert.ok(!r.stdout.includes(CANARY), `PTY prompt of "${args.join(" ")}" leaked the canary`);
+  }
+});
