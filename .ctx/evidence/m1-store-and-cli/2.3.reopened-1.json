@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T15:54:28.753Z",
+  "bundle_chars": 7989,
+  "files": {
+    "src/cli/main.ts": "4899f99a61a22aae7a5dc6fec57ec17d5383297fcf51b251057860693396e8a2",
+    "tests/cli.test.ts": "59ffbc3f6e2f6de1efbe02eddf73f7a10c6313052a4291ea4c19d9f219ef2bb8"
+  },
+  "kind": "command",
+  "reason": "src/cli/main.ts changed in m1-agent-integration (skill install command)",
+  "reqs": [
+    "REQ-CLI-003"
+  ],
+  "started_at": "2026-11-06T15:54:20.445Z",
+  "task": "m1-store-and-cli/2.3",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "4815d69b4c58f5d363d4b88557131bdf97881b6361c1efab3c158f23134a0673"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-06T17:22:11.544Z",
+  "files": {
+    "src/core/fsutil.ts": "1d57e23bbda4fc3abb372eb4910036c98d78eb60c8cd33daaf81e9fabc98df15",
+    "src/core/store.ts": "d1fc7c7d2bfe2a32db22ab9c95c361ffb132b3ac37940b5e742edaf8c00d5a87",
+    "tests/location-cli.test.ts": "93a6ecf2494cb6828bb87a75784cd1e2f112398a1a25001f0641a5cf70c2a5c2",
+    "tests/store.test.ts": "da9df65604a5d073e84c8e3160e2a9d8c65684acd768f274f8d605fae7f4699d",
+    "tests/two-agents.e2e.test.ts": "9454639516aa0d6e4a5887db342584e5a95057ede5a848386d8d2bf5429a92a4"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-STO-003",
+    "REQ-STO-005"
+  ],
+  "task": "m1-store-and-cli/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/store.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "989ae734082fb59b1f60319d19cc311caec8174c6ef99199b3e78b3e23406f1f"
+  }
+}

@@ -1,4 +1,5 @@
 // Deterministic statement normalization for duplicate detection. No ML, no embeddings.
+// REQ-STO-006
 
 export function normalizeStatement(text: string): string {
   return text
