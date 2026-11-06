@@ -31,7 +31,7 @@ A person can use PersonaKit without knowing how to code. The proposed first inte
 
 ## Current status
 
-This repository contains design documents. The team has not yet run OpenSpec or spec-ctx initialization here. The next implementation change must bootstrap those tools and record the result in a reviewed pull request.
+This repository contains design documents. OpenSpec 1.16.0 and spec-ctx 0.5.0 are set up. No OpenSpec change exists yet. The first change is the M0 schema and fixtures.
 
 ## Related tools
 

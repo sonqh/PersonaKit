@@ -3,3 +3,6 @@
 .ctx/current.json
 .ctx/gate-log.jsonl
 .ctx/evidence/**/*.fail-*.json
+
+# spec-ctx
+adopt-report.md
