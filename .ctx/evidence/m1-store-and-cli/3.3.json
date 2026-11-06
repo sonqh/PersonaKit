@@ -1,8 +1,7 @@
 {
-  "at": "2026-11-06T15:55:10.284Z",
-  "bundle_chars": 7631,
+  "at": "2026-11-06T16:04:04.627Z",
   "files": {
-    "src/cli/main.ts": "4899f99a61a22aae7a5dc6fec57ec17d5383297fcf51b251057860693396e8a2",
+    "src/cli/main.ts": "7fb0274b9a81e10a53f721350dfdcebed0878b044a94914641d7e6b608fe5b9a",
     "src/core/brief.ts": "976e7ace0727aa5fed1853cdcad7c3896243d3d637cb4304648024e0a39b0617",
     "tests/fixtures.test.ts": "ce6e883a6c1720507b1a9548c5a2d87863868390dc17c7458dab9ed8c6ee30ef",
     "tests/privacy.test.ts": "bfe396e4ebc6e5dfc515a78b8971c2dd3dcbc5dc0fe9e48fb5c1ebb0188091bd"
@@ -11,13 +10,12 @@
   "reqs": [
     "REQ-VIS-001"
   ],
-  "started_at": "2026-11-06T15:54:51.592Z",
   "task": "m1-store-and-cli/3.3",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/privacy.test.ts tests/fixtures.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "97088923761913713bf1521bc0db228cbe0e9d5880c6847fbddfa0d3ba79881b"
+    "stdout_sha256": "eff3b636c31630245e788ec738d32ae1473708a00391bd73576051fa68f1f0ae"
   }
 }
