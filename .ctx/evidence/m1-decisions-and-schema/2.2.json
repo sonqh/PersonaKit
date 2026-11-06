@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-06T15:50:06.248Z",
+  "bundle_chars": 7974,
+  "files": {
+    "tests/check-privacy.test.ts": "a6407f973264f011a37a63f2b0548a34a0b0795de7166f4a39e6b4255c92c52f"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-STO-002"
+  ],
+  "started_at": "2026-11-06T15:50:00.872Z",
+  "task": "m1-decisions-and-schema/2.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/check-privacy.test.ts && npm run check:privacy",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "59e8cf327be14ad86e20f683bf58c54deda4e0264586fcf4077bac50517ae2b4"
+  }
+}

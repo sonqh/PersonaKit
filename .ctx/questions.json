@@ -1,0 +1,24 @@
+[
+  {
+    "n": 1,
+    "asked_at": "2026-11-06T15:45:16.837Z",
+    "task": "m1-decisions-and-schema",
+    "text": "plan ready for m1-decisions-and-schema. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "The owner approved all three M1 plans in chat on 2026-11-06 22:49: \"Duyệt\"",
+    "resolved_at": "2026-11-06T15:49:13.154Z"
+  },
+  {
+    "n": 2,
+    "asked_at": "2026-11-06T15:51:21.470Z",
+    "task": "m1-decisions-and-schema",
+    "text": "archive m1-decisions-and-schema?",
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: \"Đồng ý với đề xuất của bạn, hãy tiếp tục\"",
+    "resolved_at": "2026-11-06T17:29:09.034Z"
+  }
+]

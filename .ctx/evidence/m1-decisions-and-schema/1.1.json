@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-06T15:49:31.466Z",
+  "bundle_chars": 7789,
+  "files": {
+    "src/core/schema.ts": "d922752caeff9cf55f0869cbad72687a4a760b825865cc1ca0917e6bc23b0581",
+    "tests/schema.test.ts": "773ca986f2d2a35ea40e0ed4e3a47acf3ba1db2bebc313699bac8f6d209dc7e5"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-PER-001",
+    "REQ-PER-002",
+    "REQ-PER-003"
+  ],
+  "started_at": "2026-11-06T15:49:26.424Z",
+  "task": "m1-decisions-and-schema/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/schema.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "962783ddcb58a8fc5ce498ec3cb4cb7e0d1363dc6ee71e2fb5832c6bf5cb5624"
+  }
+}

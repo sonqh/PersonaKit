@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T15:49:39.991Z",
+  "bundle_chars": 7043,
+  "files": {
+    "src/core/canonical.ts": "b575060190ee0409af61e552a45ca0286085e12806fe518119a75d2b96d54f34",
+    "src/core/ulid.ts": "ed1dc652e11e58cf631eb4a88a4335317cb06f5f78d8eba5e52035967e2331d6",
+    "tests/serialization.test.ts": "51beed5cad0f7c4d9d24c3e5920a13c7992c32a1cd8ec35cf984f3cb9d0759f9"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-PER-004"
+  ],
+  "started_at": "2026-11-06T15:49:35.124Z",
+  "task": "m1-decisions-and-schema/1.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/serialization.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "d780ba9f9ab0f616b726945c7dec73ec67bd0be8bbc2705c031ebfee588ac707"
+  }
+}

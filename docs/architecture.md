@@ -1,6 +1,6 @@
 # PersonaKit architecture proposal
 
-Status: Proposed. This design has not been implemented.
+Status: Proposed. M1 implements the record store and the CLI. See [the M1 design](m1-design.md).
 
 ## User experience
 
@@ -26,7 +26,7 @@ Recommended conceptual shape:
 
 ```ts
 type RecordKind = "identity" | "experience" | "capability" | "preference" | "intent";
-type RecordState = "proposed" | "accepted" | "retired";
+type RecordState = "proposed" | "accepted" | "rejected" | "retired";
 type Visibility = "private" | "ai" | "public";
 
 interface PersonaRecord {
@@ -52,9 +52,9 @@ Visibility has an order: `private` < `ai` < `public`.
 
 - The AI pack receives `ai` and `public` records.
 - A CV receives `public` records only.
-- A `private` record never leaves the device.
+- A `private` record never enters an output for agents, models, or CVs. The owner can sync the store to a private git remote. That remote is a trust boundary the owner chooses.
 
-This example is a design sketch. It is not a published schema. Sensitive identity fields may need separate records so the user can disclose them independently.
+This example is a design sketch. Schema v0 in `src/core/schema.ts` is the implemented form. It uses snake_case field names on disk, inline `sources` with an optional `ref` and `excerpt` as evidence, and puts `contribution` in `facets`. Sensitive identity fields may need separate records so the user can disclose them independently.
 
 ## Two output paths
 
@@ -87,7 +87,9 @@ The checks can catch structural mismatches. They cannot guarantee that every par
 
 ## Local storage
 
-The first app can keep a working copy in browser storage. Provide a versioned archive format, export, import, and visible backup guidance. Browser storage can be cleared. Do not present it as a permanent vault.
+The store is a folder outside any repository, `~/.personakit/` by default. It holds one file for each record and one file for each event. The owner can make it a private git repository for backup and sync. See [the store decision](../decisions/store-outside-repo.md).
+
+A later web app reads the same store through the core. If the web app keeps a copy in browser storage, it must not present that copy as a permanent vault.
 
 Keep model access optional. When the app uses an external model, show which records it will share and ask for consent.
 
@@ -100,7 +102,8 @@ Role packs supply interview questions, examples, terminology, and CV section sug
 - Domain core: types, validation, access checks, selection, citation checks.
 - Application layer: onboarding, record review, import, output preparation.
 - Web interface: forms, record editing, export preview, backup.
-- Adapters later: JSON Resume, optional LLMs, CLI, MCP.
+- CLI (M1): a thin wrapper around the core. Agents and the owner use it.
+- Adapters later: JSON Resume, optional LLMs, MCP.
 
 Keep personal record IDs separate from spec-ctx requirement IDs. The first identifies user-owned data. The second identifies product requirements and tests.
 
@@ -111,6 +114,6 @@ Keep personal record IDs separate from spec-ctx requirement IDs. The first ident
 ## Open decisions
 
 - The archive format and migration policy.
-- How to handle conflicts between accepted records.
+- How to resolve a record that two machines changed. M1 detects this case in `doctor`.
 - How to measure better AI responses in a blind comparison.
 - Whether career-led onboarding attracts users who only want AI personalization.

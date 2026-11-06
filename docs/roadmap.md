@@ -1,6 +1,6 @@
 # Delivery plan
 
-Status: Proposed. Validate demand before building the full application.
+Status: Proposed. Test demand before building the full application.
 
 ## M0. Research and specification bootstrap
 
@@ -17,17 +17,23 @@ Set these decision rules before the test runs:
 - At least 30% of participants still use the brief after 7 days.
 - At least 40% of participants would use the CV draft for their next application.
 
-Exit: All decision rules pass, and the repository has a valid specification change. If a rule fails, record the failed assumption as an issue. Revise the positioning before M1 starts.
+Exit: All decision rules pass, and the repository has a valid specification change. If a rule fails, record the failed assumption as an issue and revise the positioning. M1 work can run in parallel with this research.
 
-## M1. Domain core
+## M1. Domain core, store, and CLI
 
+The owner decided on 2026-11-06 that agents write to one persona before the web UI exists. See [the decision](../decisions/proposal-only-agent-writes.md). The M0 research stays open and does not block M1.
+
+- Keep the store outside any repository. See [the decision](../decisions/store-outside-repo.md).
+- Add a CLI that wraps the core. Agents propose records. Only the owner accepts them.
+- Give Claude Code and Codex the same instructions and the same `personakit` skill.
+- Test two agents that write to one store at the same time.
 - Define five record groups and shared metadata.
-- Validate IDs, states, evidence references, and visibility.
+- Reject invalid IDs, states, evidence references, and visibility.
 - Add a deterministic compiler for short and full AI briefs.
 - Add a CV projection that preserves cited record IDs.
 - Test that rejected and private records never enter disallowed exports.
 
-Exit: Synthetic records produce both outputs, with tests for disclosure and claim traceability.
+Exit: Synthetic records produce both outputs, with tests for disclosure and claim traceability. Two agents can propose records to one store at the same time without lost writes.
 
 ## M2. First web workflow
 
@@ -46,13 +52,13 @@ Exit: Nontechnical users can finish the complete flow without a terminal.
 - Add CV file import (local PDF and DOCX parsing) and JSON Resume interoperability.
 - Add role packs supported by user research.
 - Add optional LLM extraction and writing.
-- Add CLI and read-only MCP after the file export is useful.
+- Add an MCP server that wraps the same core.
 
 Exit: Each integration has compatibility tests and does not change the canonical model.
 
 ## Exclusions from the first web release
 
-Accounts, cloud sync, OCR, hosted AI proxy, multi-user coaching, agent write-back, vector database, and automatic publication of personal data.
+Accounts, cloud sync, OCR, hosted AI proxy, multi-user coaching, automatic acceptance of agent proposals, vector database, and automatic publication of personal data.
 
 ## Delivery rules
 
