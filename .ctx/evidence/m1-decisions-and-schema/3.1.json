@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-06T15:50:54.931Z",
+  "bundle_chars": 7702,
+  "files": {
+    "src/core/location.ts": "296f7eb64d4513e241aa15531a0c0c0c65fd4d325294f04cd4177a68437f4abc",
+    "tests/location.test.ts": "17855ff8672b70c27c30943ce46402a714290b66d08abd3af99c69022eed1021"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-STO-001"
+  ],
+  "started_at": "2026-11-06T15:50:09.850Z",
+  "task": "m1-decisions-and-schema/3.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npx -y spec-ctx@0.5.0 lint ste decisions/store-outside-repo.md decisions/proposal-only-agent-writes.md decisions/tech-stack.md docs/roadmap.md docs/architecture.md docs/m1-design.md && npx -y spec-ctx@0.5.0 lint tells decisions/store-outside-repo.md decisions/proposal-only-agent-writes.md decisions/tech-stack.md docs/roadmap.md docs/architecture.md docs/m1-design.md",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "5a35367ec989f53ef049961108205fad7857ee9c45da86ae5ff6758f88131a4e"
+  }
+}

@@ -1,6 +1,6 @@
 # Delivery plan
 
-Status: Proposed. Validate demand before building the full application.
+Status: Proposed. Test demand before building the full application.
 
 ## M0. Research and specification bootstrap
 
@@ -28,7 +28,7 @@ The owner decided on 2026-11-06 that agents write to one persona before the web 
 - Give Claude Code and Codex the same instructions and the same `personakit` skill.
 - Test two agents that write to one store at the same time.
 - Define five record groups and shared metadata.
-- Validate IDs, states, evidence references, and visibility.
+- Reject invalid IDs, states, evidence references, and visibility.
 - Add a deterministic compiler for short and full AI briefs.
 - Add a CV projection that preserves cited record IDs.
 - Test that rejected and private records never enter disallowed exports.

@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-06T15:49:57.222Z",
+  "bundle_chars": 7336,
+  "files": {
+    "src/core/location.ts": "296f7eb64d4513e241aa15531a0c0c0c65fd4d325294f04cd4177a68437f4abc",
+    "tests/location.test.ts": "17855ff8672b70c27c30943ce46402a714290b66d08abd3af99c69022eed1021"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-STO-001"
+  ],
+  "started_at": "2026-11-06T15:49:52.303Z",
+  "task": "m1-decisions-and-schema/2.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/location.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "e4afd1c08014f357502859f14fc9e5dfea1af2af5218edd309e8f5612fc5e690"
+  }
+}
