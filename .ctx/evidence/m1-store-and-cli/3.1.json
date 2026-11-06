@@ -1,23 +1,21 @@
 {
-  "at": "2026-11-06T15:54:38.416Z",
-  "bundle_chars": 7027,
+  "at": "2026-11-06T17:15:09.673Z",
   "files": {
     "src/core/brief.ts": "976e7ace0727aa5fed1853cdcad7c3896243d3d637cb4304648024e0a39b0617",
     "tests/brief.test.ts": "7ae6a3ba216ff3d13777ebebdeb52d7385e72a78a3c48c531a9a31bc78906120",
-    "tests/privacy.test.ts": "bfe396e4ebc6e5dfc515a78b8971c2dd3dcbc5dc0fe9e48fb5c1ebb0188091bd",
+    "tests/privacy.test.ts": "1ecf006067cab0fe274da55ad27d2dd1b983a1ddf119031f8c5c0c739b923cc2",
     "tests/two-agents.e2e.test.ts": "9454639516aa0d6e4a5887db342584e5a95057ede5a848386d8d2bf5429a92a4"
   },
   "kind": "command",
   "reqs": [
     "REQ-AIP-001"
   ],
-  "started_at": "2026-11-06T15:54:32.423Z",
   "task": "m1-store-and-cli/3.1",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/brief.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "c2b8e9f1f014447154a9dcc0d8a5fd010c774029ef5b5eb46fd435b8e7928ad4"
+    "stdout_sha256": "8946988fd33d3635994e764eb262df04639bd4c24128a742e6fea6b08c532762"
   }
 }

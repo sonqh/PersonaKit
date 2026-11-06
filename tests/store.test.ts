@@ -3,9 +3,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, mkdirSync, readdirSync, readFileSync, utimesSync, writeFileSync } from "node:fs";
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { doctor, getRecord, ownerAction, propose, readAll, readEvents, setVisibility, update, type ProposeInput } from "../src/core/store.ts";
-import { withLocks } from "../src/core/fsutil.ts";
+import { removeStaleLock, withLocks } from "../src/core/fsutil.ts";
 import { REPO } from "./helpers.ts";
 import { PersonaKitError } from "../src/core/errors.ts";
 import { tempStore } from "./helpers.ts";
@@ -122,6 +123,8 @@ test("SCN-STO-006-3 a statement the owner rejected is flagged on the next propos
   ownerAction(store, "reject", first.id, {}, owner);
   const again = propose(store, input("Is a certified pilot."), codex);
   assert.deepEqual(again.duplicates.rejected, [first.id]);
+  // The rejected record is private, so an agent does not learn about it.
+  assert.deepEqual(again.duplicates.rejected_visible, []);
 });
 
 test("visibility changes write an event and keep the statement", () => {
@@ -226,17 +229,20 @@ test("SCN-STO-005-6 a lock from a dead process is removed and a live lock times 
   // A live lock (this process) is not stale: the second process waits, then reports a conflict.
   writeFileSync(join(locks, `${id}.lock`), JSON.stringify({ pid: process.pid, hostname: require_hostname(), started_at: "x", command: "test" }));
   assert.throws(() => withLocks(locks, [id], "test", () => "ran", 200), (e: unknown) => e instanceof PersonaKitError && e.code === "conflict");
+  // A live lock that replaced a stale one between the check and the removal goes back untouched.
+  const live = readFileSync(join(locks, `${id}.lock`), "utf8");
+  assert.equal(removeStaleLock(join(locks, `${id}.lock`)), false);
+  assert.equal(readFileSync(join(locks, `${id}.lock`), "utf8"), live);
 });
 
-test("SCN-STO-007-3 an interrupted write is an orphan event, not a fork", () => {
+test("SCN-STO-007-3 an interrupted last write is an orphan event, not a fork", () => {
   const { store } = tempStore();
   const { record } = propose(store, input("Half written."), codex);
-  // Simulate a crash: an event for revision 1 -> 2 whose record change never landed.
+  // Simulate a crash: an event for revision 1 -> 2 from the current file, whose record change never landed.
+  const current = createHash("sha256").update(readFileSync(join(store.root, "records", `${record.id}.json`), "utf8")).digest("hex");
   const proposed = readEvents(store).events[0]!;
-  const orphan = { ...proposed, id: "01ZZZZZZZZZZZZZZZZZZZZZZZZ", type: "updated", from_revision: 1, to_revision: 2, next_sha256: "a".repeat(64) };
+  const orphan = { ...proposed, id: "01ZZZZZZZZZZZZZZZZZZZZZZZZ", type: "updated", from_revision: 1, to_revision: 2, prior_sha256: current, next_sha256: "a".repeat(64) };
   writeFileSync(join(store.root, "events", `${orphan.id}.json`), JSON.stringify(orphan));
-  // The next real update also starts from revision 1.
-  update(store, record.id, 1, { statement: "Fully written." }, codex);
   const report = doctor(store);
   assert.ok(report.findings.some((f) => f.code === "orphan-event"));
   assert.ok(!report.findings.some((f) => f.code === "forked-history"));
@@ -244,6 +250,21 @@ test("SCN-STO-007-3 an interrupted write is an orphan event, not a fork", () => 
   assert.ok(fixed.fixed.some((f) => f.includes("orphan")));
   assert.equal(doctor(store).ok, true);
   assert.ok(existsSync(join(store.root, "events", "orphaned", `${orphan.id}.json`)));
+});
+
+test("SCN-STO-007-5 a fork with one change on each side is reported, not dropped", () => {
+  const { store } = tempStore();
+  const { record } = propose(store, input("Merged twice."), codex);
+  ownerAction(store, "accept", record.id, {}, owner);
+  // The other machine also changed revision 1 -> 2. Git kept this machine's file.
+  const accepted = readEvents(store).events.find((e) => e.type === "accepted")!;
+  const other = { ...accepted, id: "01ZZZZZZZZZZZZZZZZZZZZZZZZ", type: "rejected", next_sha256: "b".repeat(64) };
+  writeFileSync(join(store.root, "events", `${other.id}.json`), JSON.stringify(other));
+  const report = doctor(store);
+  assert.ok(report.findings.some((f) => f.code === "forked-history"));
+  assert.ok(!report.findings.some((f) => f.code === "orphan-event"));
+  doctor(store, { fix: true });
+  assert.ok(existsSync(join(store.root, "events", `${other.id}.json`)), "--fix must not move the other side of a fork");
 });
 
 test("SCN-STO-007-4 doctor --fix removes old temporary files and stale locks", () => {

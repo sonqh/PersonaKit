@@ -30,3 +30,7 @@ Refs: ADR-001
 #### Scenario: SCN-VIS-001-5 Review needs a terminal
 - **WHEN** an agent runs `review --yes` without a terminal
 - **THEN** the command exits with code 4 and prints no private text
+
+#### Scenario: SCN-VIS-001-6 Owner prompts show no private text
+- **WHEN** the owner runs `accept`, `reject`, `retire`, or `visibility` without `--yes` in a terminal
+- **THEN** the confirmation prompt shows the record as redacted, with no private text

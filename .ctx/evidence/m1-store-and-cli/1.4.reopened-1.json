@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-06T15:53:22.219Z",
+  "bundle_chars": 7917,
+  "files": {
+    "src/core/store.ts": "80c8e7e430622a2aa16e2285d1cb8a74a89c8719420f8e6f280c52bfe7570a01",
+    "tests/store.test.ts": "e362b57ec5ec392fb75f3429baaf42bdc6ffb9280bc7a467ceb3036b73a31948"
+  },
+  "kind": "command",
+  "reason": "archive-stop fixes: stale lock race, redacted owner prompts, fork classification",
+  "reqs": [
+    "REQ-STO-007"
+  ],
+  "started_at": "2026-11-06T15:53:15.701Z",
+  "task": "m1-store-and-cli/1.4",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/store.test.ts tests/location-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "5334997fa7b1914ad1b8ef197376bdb2718733ff7962f4ad1aa2164b96f873d8"
+  }
+}

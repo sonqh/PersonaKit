@@ -1,24 +1,22 @@
 {
-  "at": "2026-11-06T15:53:52.104Z",
-  "bundle_chars": 7997,
+  "at": "2026-11-06T17:14:45.821Z",
   "files": {
-    "src/core/fsutil.ts": "58dd087947ddf1a11ab4bb99f0fd63eb84572953ca2bcf545d9cf252a39a455d",
-    "src/core/store.ts": "80c8e7e430622a2aa16e2285d1cb8a74a89c8719420f8e6f280c52bfe7570a01",
+    "src/core/fsutil.ts": "1d57e23bbda4fc3abb372eb4910036c98d78eb60c8cd33daaf81e9fabc98df15",
+    "src/core/store.ts": "c1b70838cf75e8891c01e93904948b121c167c03c9ef047f4e6b93b520fba0ca",
     "tests/location-cli.test.ts": "93a6ecf2494cb6828bb87a75784cd1e2f112398a1a25001f0641a5cf70c2a5c2",
-    "tests/store.test.ts": "e362b57ec5ec392fb75f3429baaf42bdc6ffb9280bc7a467ceb3036b73a31948",
+    "tests/store.test.ts": "75901d308cf085eba84b22362e6c684ca9b79223cebf3bec5e962065a5913c88",
     "tests/two-agents.e2e.test.ts": "9454639516aa0d6e4a5887db342584e5a95057ede5a848386d8d2bf5429a92a4"
   },
   "kind": "command",
   "reqs": [
     "REQ-STO-003"
   ],
-  "started_at": "2026-11-06T15:53:26.019Z",
   "task": "m1-store-and-cli/1.5",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/two-agents.e2e.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "5d55cd2629c0ef5ef2d5832e08f62e0d73e67f2399f2c8b967e7e4f59b7d6fef"
+    "stdout_sha256": "1b7f6c15bc7d2372df79ade804a47ce4c18f0e01ea73944e0d6453f533c7deb1"
   }
 }

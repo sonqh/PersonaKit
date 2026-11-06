@@ -109,20 +109,20 @@ function tryAcquire(path: string, command: string): boolean {
 }
 
 /**
- * Remove a lock that was judged stale, without removing a live lock that replaced it.
- * Rename is atomic: only one process gets the file. If the renamed file is not the lock
- * that was judged stale, another process took the lock in between: put it back.
+ * Remove a stale lock without removing a live lock that replaced it.
+ * Rename is atomic, so only one process gets the file, and rename keeps its content and mtime.
+ * The process then checks the file it actually took. A live lock goes back.
+ * Remaining window: if a third process takes the lock between the rename and the put-back,
+ * the put-back fails and the live lock is lost. Both steps are microseconds apart.
  */
 export function removeStaleLock(path: string): boolean {
-  const judged = readLock(path);
   const grave = `${path}.stale.${process.pid}.${randomBytes(4).toString("hex")}`;
   try {
     renameSync(path, grave);
   } catch {
     return false; // another process removed or replaced it first
   }
-  const taken = readLock(grave);
-  if (JSON.stringify(taken) !== JSON.stringify(judged)) {
+  if (!isLockStale(grave)) {
     try { linkSync(grave, path); } catch { /* a newer lock exists; keep it */ }
     try { unlinkSync(grave); } catch { /* gone */ }
     return false;

@@ -68,3 +68,15 @@ Fixed:
 - `LC_ALL` in the locale test, JSON errors for unknown options, and the exact sort order in REQ-AIP-001.
 
 Deferred: a `doctor` test for more than one successor. Accept now prevents that case on one machine. It can still happen after a git merge, and `doctor` reports it.
+
+## Archive-stop review, 2026-11-07
+
+The architect reviewed the diff before the archive. Fixed:
+
+- Blocker: `removeStaleLock` read the lock again before the rename, so it could remove a live lock that replaced the stale one. It now checks the file it renamed and puts a live lock back. A test swaps in a live lock.
+- Blocker: the confirmation prompt of `accept`, `reject`, and `retire` printed private text in a terminal. The prompt now shows the redacted view. SCN-VIS-001-6 runs the prompts in a pseudo-terminal.
+- `doctor` classified a fork with one change on each side as an interrupted write, and `--fix` moved the other side away. An unapplied event is now an orphan only when it starts from the current file. SCN-STO-007-5 tests the fork.
+- `previously_rejected` revealed a private rejected match. It now counts visible matches only.
+- `--statement ""` was ignored. It now fails validation.
+
+Known limit: an in-place update of a proposal keeps only the hash of the earlier version. The earlier statement is not kept. Proposals are drafts, and an accepted record never changes in place.

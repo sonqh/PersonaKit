@@ -94,7 +94,7 @@ A proposal whose normalized statement matches a record of the same kind SHALL ge
 - **THEN** the output says that the owner rejected it
 
 ### Requirement: REQ-STO-007 Store diagnosis
-`doctor` SHALL report bad record files, git conflict markers, and two applied changes from one revision of a record. It SHALL report an event whose record change was not written, and a record superseded by more than one accepted record. It SHALL also report temporary files, stale locks, and missing git settings. `doctor --fix` SHALL remove stale locks and old temporary files, and move orphan events to `events/orphaned/`.
+`doctor` SHALL report bad record files, git conflict markers, and two applied changes from one revision of a record. It SHALL report an event whose record change was not written. Such an event is an orphan only when it starts from the current record file. Otherwise `doctor` SHALL report a fork. It SHALL report a record superseded by more than one accepted record. It SHALL also report temporary files, stale locks, and missing git settings. `doctor --fix` SHALL remove stale locks and old temporary files, and move orphan events to `events/orphaned/`.
 
 #### Scenario: SCN-STO-007-1 A forked history is reported
 - **WHEN** two applied events change one record from the same revision
@@ -104,10 +104,14 @@ A proposal whose normalized statement matches a record of the same kind SHALL ge
 - **WHEN** a record file holds git conflict markers
 - **THEN** `doctor` reports the file
 
-#### Scenario: SCN-STO-007-3 An interrupted write is not a fork
-- **WHEN** an event exists whose record change was not written, and a later update starts from the same revision
+#### Scenario: SCN-STO-007-3 An interrupted last write is an orphan
+- **WHEN** an event starts from the current record file, and its record change was not written
 - **THEN** `doctor` reports an orphan event and no fork, and `doctor --fix` moves the event to `events/orphaned/`
 
 #### Scenario: SCN-STO-007-4 Doctor removes leftovers
 - **WHEN** an old temporary file and a lock from a dead process exist
 - **THEN** `doctor` reports both, and `doctor --fix` removes both
+
+#### Scenario: SCN-STO-007-5 A fork with one change on each side
+- **WHEN** two machines each change one record from the same revision, and git keeps one record file
+- **THEN** `doctor` reports a forked history, and `doctor --fix` keeps both events
