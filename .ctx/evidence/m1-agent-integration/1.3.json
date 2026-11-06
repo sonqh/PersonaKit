@@ -1,21 +1,19 @@
 {
-  "at": "2026-11-06T15:57:02.300Z",
-  "bundle_chars": 2826,
+  "at": "2026-11-06T17:17:52.381Z",
   "files": {
-    "src/cli/main.ts": "7fb0274b9a81e10a53f721350dfdcebed0878b044a94914641d7e6b608fe5b9a",
+    "src/cli/main.ts": "8d587aaf4e2c61c455315cfd00f4eb03465715c59a25c2f524c8665c42d07cae",
     "tests/agents.test.ts": "c6cbcda9ccf3a7870de02d15c8337ad228bb9f59b75d35360adce2ff43c1980d"
   },
   "kind": "command",
   "reqs": [
     "REQ-AGT-003"
   ],
-  "started_at": "2026-11-06T15:56:56.918Z",
   "task": "m1-agent-integration/1.3",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/agents.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "22f41f445d7861d453d64177e7534ad38a0459cf3a33e00b69724e93cf6177ec"
+    "stdout_sha256": "bf6e3e7d90b96cb281d69b2bc1b63c6af1d52cba154ce5f34182eb9f0caf45c2"
   }
 }

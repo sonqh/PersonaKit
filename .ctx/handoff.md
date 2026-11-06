@@ -1,16 +1,20 @@
 # Handoff
 change: m1-agent-integration
 current: none
-base: 2026-11-06T16:04:04.627Z
-as_of: 2026-11-06T17:15:09.673Z
+base: 2026-11-06T17:15:09.673Z
+as_of: 2026-11-06T17:18:30.095Z
 done:
-- m1-store-and-cli/1.1
-- m1-store-and-cli/1.2
-- m1-store-and-cli/1.3
-- m1-store-and-cli/1.4
-- m1-store-and-cli/1.5
-- m1-store-and-cli/3.1
+- m1-agent-integration/1.3
+- m1-store-and-cli/2.1
+- m1-store-and-cli/2.2
+- m1-store-and-cli/2.3
+- m1-store-and-cli/3.3
 reopened:
+- m1-agent-integration/1.3 merged archive-stop fixes from m1-store-and-cli (at 2026-11-06T17:17:49.551Z)
+- m1-store-and-cli/2.1 merged archive-stop fixes from m1-store-and-cli (at 2026-11-06T17:17:53.197Z)
+- m1-store-and-cli/2.2 merged archive-stop fixes from m1-store-and-cli (at 2026-11-06T17:18:00.130Z)
+- m1-store-and-cli/2.3 merged archive-stop fixes from m1-store-and-cli (at 2026-11-06T17:18:06.659Z)
+- m1-store-and-cli/3.3 merged archive-stop fixes from m1-store-and-cli (at 2026-11-06T17:18:13.014Z)
 open_questions:
 - Q2 archive m1-decisions-and-schema? (task m1-decisions-and-schema, 2026-11-06)
 - Q4 archive m1-store-and-cli? (task m1-store-and-cli, 2026-11-06)
