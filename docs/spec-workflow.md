@@ -1,35 +1,32 @@
 # Specification workflow
 
-PersonaKit will use [OpenSpec](https://github.com/Fission-AI/OpenSpec) with [spec-ctx](https://github.com/sonqh/spec-ctx). The repository does not yet contain an initialized OpenSpec project.
+PersonaKit uses [OpenSpec](https://github.com/Fission-AI/OpenSpec) with [spec-ctx](https://github.com/sonqh/spec-ctx). OpenSpec 1.16.0 and spec-ctx 0.5.0 are set up.
 
-## Bootstrap on a development machine
+## Work on a development machine
 
-Use Node.js 22 or newer. Initialize OpenSpec before spec-ctx.
+Use Node.js 22 or newer. The repository holds the setup, so a clone needs no `init`.
+
+```bash
+npx -y spec-ctx@0.5.0 status
+npx -y spec-ctx@0.5.0 gate --strict
+```
+
+## How the repository was set up
+
+These commands ran once, on 2026-11-06. Do not run them again.
 
 ```bash
 npx -y @fission-ai/openspec@latest init --tools claude --no-animation
-npx -y spec-ctx@0.4.1 init --all
-npx -y spec-ctx@0.4.1 status
-npx -y spec-ctx@0.4.1 gate --strict
+npx -y spec-ctx@0.5.0 init --all
 ```
 
-After `init`, register the capability codes. `specctx id new REQ PER` exits with code 2 unless the code is in `[ids] caps`. Add this line under `[ids]` in `spec-ctx.toml`:
-
-```toml
-caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC"]
-```
-
-Then rebuild the index:
-
-```bash
-npx -y spec-ctx@0.4.1 build
-```
-
-Review the generated configuration. Commit the OpenSpec files, templates, and agent skill. The bootstrap commands are instructions. We have not executed them in this design change.
+- `init` pinned `[gate] openspec` to `npx -y @fission-ai/openspec@1.16.0`.
+- `[ids] caps` in `spec-ctx.toml` lists the capability codes below. With this list, `specctx id new` exits with code 2 for any other code. An empty list accepts any code.
+- Add a capability code to `caps` before you allocate its first ID. Then run `npx -y spec-ctx@0.5.0 build`.
 
 ## Requirement IDs
 
-Use spec-ctx to allocate IDs after initialization. Register these capability codes during bootstrap:
+Use spec-ctx to allocate IDs after initialization. `spec-ctx.toml` registers these capability codes:
 
 | Code | Capability |
 | --- | --- |
@@ -65,6 +62,14 @@ Commit the task evidence in `.ctx/evidence/` because `specctx check --strict` ne
 Read only the context needed for the current task. The generated `specctx-run` skill provides the task loop. Do not duplicate that loop in custom scripts before a specific gap is found.
 
 Use [ste-humanize](https://github.com/sonqh/ste-humanize-skill) for README files, design notes, issue text, and PR descriptions. Use its Human mode for prose and Strict mode for agent instructions and errors.
+
+In Claude Code 2.1.275 or newer:
+
+```text
+/plugin install ste-humanize --marketplace sonqh/ste-humanize-skill
+```
+
+In other agents:
 
 ```bash
 npx skills add sonqh/ste-humanize-skill

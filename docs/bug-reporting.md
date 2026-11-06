@@ -61,14 +61,16 @@ The issue remains the record of the failure. The spec defines expected behavior.
 
 File a defect in spec-ctx in the [spec-ctx issue tracker](https://github.com/sonqh/spec-ctx/issues), not here. This applies when you find the defect during PersonaKit work. Do not add a workaround in PersonaKit.
 
-Include:
+spec-ctx keeps a local run log in `.ctx/local/runs.jsonl`. The log holds the command name, the exit code, the run time, and a fixed set of signals. It holds no path, argument value, requirement ID, or spec text. It never leaves the machine, and git ignores it.
 
-- The spec-ctx version.
-- The command you ran.
-- The exit code.
-- The output, with machine paths removed.
+To file a defect:
 
-An upstream proposal adds a `specctx report` command. That command is not available yet.
+1. Run `npx -y spec-ctx@0.5.0 report > specctx-report.md`.
+2. Read the report. Add what you ran, what you expected, and what happened.
+3. Run `gh issue create -R sonqh/spec-ctx --body-file specctx-report.md`.
+4. Delete `specctx-report.md`. Do not commit it.
+
+`SPECCTX_JOURNAL=0` turns the run log off for one shell.
 
 ## Learning from bugs
 
