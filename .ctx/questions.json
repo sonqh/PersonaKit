@@ -17,5 +17,24 @@
     "text": "archive m1-decisions-and-schema?",
     "status": "open",
     "stage": "archive"
+  },
+  {
+    "n": 3,
+    "asked_at": "2026-11-06T15:52:42.876Z",
+    "task": "m1-store-and-cli",
+    "text": "plan ready for m1-store-and-cli. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "Owner Son Quach approved all three M1 plans in chat on 2026-11-06 22:49: \"Duyệt\"",
+    "resolved_at": "2026-11-06T15:52:43.729Z"
+  },
+  {
+    "n": 4,
+    "asked_at": "2026-11-06T15:56:19.868Z",
+    "task": "m1-store-and-cli",
+    "text": "archive m1-store-and-cli?",
+    "status": "open",
+    "stage": "archive"
   }
 ]
