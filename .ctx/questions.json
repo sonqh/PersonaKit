@@ -15,7 +15,10 @@
     "asked_at": "2026-11-06T15:51:21.470Z",
     "task": "m1-decisions-and-schema",
     "text": "archive m1-decisions-and-schema?",
-    "status": "open",
-    "stage": "archive"
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: \"Đồng ý với đề xuất của bạn, hãy tiếp tục\"",
+    "resolved_at": "2026-11-06T17:29:09.034Z"
   }
 ]
