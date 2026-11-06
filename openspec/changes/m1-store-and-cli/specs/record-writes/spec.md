@@ -115,3 +115,7 @@ A proposal whose normalized statement matches a record of the same kind SHALL ge
 #### Scenario: SCN-STO-007-5 A fork with one change on each side
 - **WHEN** two machines each change one record from the same revision, and git keeps one record file
 - **THEN** `doctor` reports a forked history, and `doctor --fix` keeps both events
+
+#### Scenario: SCN-STO-007-6 A retry after a crash is not a fork
+- **WHEN** a write crashes after its event, and the user then retries the same change with success
+- **THEN** the retry moves the crashed event to `events/orphaned/`, and `doctor` finds no error

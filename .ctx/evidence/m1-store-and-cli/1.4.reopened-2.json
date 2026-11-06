@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-06T17:14:22.371Z",
+  "files": {
+    "src/core/store.ts": "c1b70838cf75e8891c01e93904948b121c167c03c9ef047f4e6b93b520fba0ca",
+    "tests/store.test.ts": "75901d308cf085eba84b22362e6c684ca9b79223cebf3bec5e962065a5913c88"
+  },
+  "kind": "command",
+  "reason": "orphan sweep under the record lock",
+  "reqs": [
+    "REQ-STO-007"
+  ],
+  "task": "m1-store-and-cli/1.4",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/store.test.ts tests/location-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "116e3e266f93dba5cc6469203930174cd52d9662db1b4d7f7766cba7e16e2207"
+  }
+}

@@ -190,6 +190,21 @@ export function readEvents(store: Store): { events: PersonaEvent[]; problems: Re
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
+/**
+ * Call under the record lock, before a change. An event that starts from the current file
+ * cannot have landed: the file would differ. It is an orphan from an interrupted write, so it
+ * moves to events/orphaned/. Then a retry after a crash never looks like a fork.
+ */
+function sweepOrphans(store: Store, recordId: string, currentContent: string): void {
+  const current = sha256(currentContent);
+  const dir = dirs(store.root).events;
+  for (const e of readEvents(store).events) {
+    if (e.record_id !== recordId || e.prior_sha256 !== current || !e.next_sha256 || e.next_sha256 === current) continue;
+    mkdirSync(join(dir, "orphaned"), { recursive: true });
+    renameSync(join(dir, `${e.id}.json`), join(dir, "orphaned", `${e.id}.json`));
+  }
+}
+
 function writeEvent(store: Store, e: Omit<PersonaEvent, "schema" | "id" | "at">): PersonaEvent {
   const event: PersonaEvent = { schema: EVENT_SCHEMA, id: store.ulid(), at: store.now().toISOString(), ...e };
   writeNewFileAtomic(join(dirs(store.root).events, `${event.id}.json`), stringifyCanonical(event));
@@ -367,6 +382,7 @@ export function update(store: Store, id: string, baseRevision: number, patch: Up
       if (duplicates.all.length || duplicates.rejected.length) next.possible_duplicate_of = [...duplicates.all, ...duplicates.rejected];
       const record = assertValid(next);
       const prior = readFileSync(path, "utf8");
+      sweepOrphans(store, id, prior);
       const content = stringifyCanonical(record);
       writeEvent(store, { type: "updated", record_id: id, from_revision: current.revision, to_revision: record.revision, prior_sha256: sha256(prior), next_sha256: sha256(content), ...labelFields(label) });
       replaceFileAtomic(path, content);
@@ -413,6 +429,7 @@ const TRANSITIONS: Record<OwnerAction, { from: PersonaRecord["state"][]; to: Per
 function writeTransition(store: Store, current: PersonaRecord, changes: Partial<PersonaRecord>, type: EventType, label: ActorLabel, details?: Record<string, unknown>): PersonaRecord {
   const path = recordPath(store, current.id);
   const prior = readFileSync(path, "utf8");
+  sweepOrphans(store, current.id, prior);
   const record = assertValid({ ...current, ...changes, revision: current.revision + 1 });
   const content = stringifyCanonical(record);
   const event: Omit<PersonaEvent, "schema" | "id" | "at"> = {
