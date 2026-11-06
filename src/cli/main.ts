@@ -1,10 +1,12 @@
 // personakit CLI. A thin wrapper around src/core. Agents pass --json and read JSON from stdout.
-// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001
+// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001 REQ-AGT-003
 
 import { parseArgs, type ParseArgsConfig } from "node:util";
 import { createInterface } from "node:readline/promises";
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { stringifyCanonical } from "../core/canonical.ts";
 import { ExitCode, PersonaKitError } from "../core/errors.ts";
 import { defaultStorePath } from "../core/location.ts";
@@ -17,6 +19,8 @@ import {
   ACTORS, RECORD_KINDS, RECORD_STATES, SOURCE_KINDS, VISIBILITIES,
   type Actor, type Facets, type PersonaRecord, type RecordKind, type Source, type Visibility,
 } from "../core/schema.ts";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 export interface Io {
   stdout: (s: string) => void;
@@ -51,6 +55,7 @@ const OPTIONS = {
   level: { type: "string" },
   out: { type: "string" },
   fix: { type: "boolean" },
+  target: { type: "string" },
 } as const satisfies ParseArgsConfig["options"];
 
 type Values = ReturnType<typeof parseArgs<{ options: typeof OPTIONS; allowPositionals: true }>>["values"];
@@ -75,6 +80,7 @@ Owner commands (ask for confirmation):
   retire ID...                                       Retire accepted records
   visibility ID LEVEL                                Change visibility: private, ai, or public
   doctor [--fix]                                     Check the store
+  skill install [--target claude|codex|all]          Install the personakit skill for your agents
 
 Common options:
   --store PATH      Store folder. Default: $PERSONAKIT_HOME or ~/.personakit
@@ -190,7 +196,7 @@ async function cmdInit(v: Values, io: Io): Promise<Result> {
   const r = initStore(v.store ?? defaultStorePath(io.env), { cwd: io.cwd });
   const lines = [r.created ? `Created the store at ${r.root}.` : `The store at ${r.root} already exists.`];
   if (r.warning) lines.push(`Warning: ${r.warning}`);
-  lines.push("Next: propose a record, or ask an agent to propose one.");
+  lines.push("Next: install the agent skill with \"personakit skill install\".");
   return { data: r, text: lines.join("\n") };
 }
 
@@ -359,6 +365,23 @@ async function cmdDoctor(v: Values, io: Io): Promise<Result> {
   return { data: report, text: lines.join("\n"), exitCode: report.ok ? ExitCode.ok : ExitCode.invalid };
 }
 
+// REQ-AGT-003
+async function cmdSkill(v: Values, io: Io, args: string[]): Promise<Result> {
+  if (args[0] !== "install") throw usage('Use "personakit skill install".');
+  const target = pickEnum("target", ["claude", "codex", "all"] as const, v.target) ?? "all";
+  const source = join(REPO_ROOT, ".agents", "skills", "personakit", "SKILL.md");
+  if (!existsSync(source)) throw new PersonaKitError("notFound", `The skill file ${source} is missing.`);
+  const home = io.env.HOME ?? homedir();
+  const dests: string[] = [];
+  if (target !== "codex") dests.push(join(home, ".claude", "skills", "personakit", "SKILL.md"));
+  if (target !== "claude") dests.push(join(home, ".agents", "skills", "personakit", "SKILL.md"));
+  for (const d of dests) {
+    mkdirSync(dirname(d), { recursive: true });
+    copyFileSync(source, d);
+  }
+  return { data: { installed: dests }, text: `Installed the personakit skill:\n${dests.map((d) => `  ${d}`).join("\n")}` };
+}
+
 // ---------- entry ----------
 
 export async function run(argv: string[], io: Io): Promise<number> {
@@ -391,6 +414,7 @@ export async function run(argv: string[], io: Io): Promise<number> {
       retire: () => cmdOwner("retire", values, io, args),
       visibility: () => cmdVisibility(values, io, args),
       doctor: () => cmdDoctor(values, io),
+      skill: () => cmdSkill(values, io, args),
     };
     const handler = handlers[command];
     if (!handler) throw usage(`Unknown command "${command}". Run "personakit --help".`);

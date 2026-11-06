@@ -2,7 +2,7 @@
 
 PersonaKit helps people keep a personal profile they own. The same profile can produce an AI brief and a draft CV. People can review the facts and choose what each output may include.
 
-The project is at the design stage. There is no released application or CLI yet.
+The project is in early development. A CLI works from a clone. There is no released package or web app yet.
 
 ## First experience
 
@@ -10,7 +10,7 @@ The project is at the design stage. There is no released application or CLI yet.
 2. Review the extracted facts, skills, preferences, and goals.
 3. Export an AI context pack and a CV draft from the accepted records.
 
-A person can use PersonaKit without knowing how to code. The proposed first interface is a local-first web app.
+The goal is that a person can use PersonaKit without knowing how to code. The first interface is a CLI for the owner and AI agents. A local-first web app comes in M2.
 
 ## Design rules
 
@@ -29,9 +29,28 @@ A person can use PersonaKit without knowing how to code. The proposed first inte
 - [Specification workflow with spec-ctx](docs/spec-workflow.md)
 - [Bug reports and learning loop](docs/bug-reporting.md)
 
+## Use it with Claude Code and Codex
+
+You need Node.js 22.18 or newer.
+
+1. Clone this repository and run `npm link` in it. This puts the `personakit` command on your path.
+2. Run `personakit init`. This creates your store in `~/.personakit/`. Your data stays outside this repository.
+3. Run `personakit skill install`. Claude Code and Codex can now use the `personakit` skill in any project.
+4. Ask an agent to remember a fact about you. The agent proposes a record.
+5. Run `personakit review` in your own terminal. Accept or reject each proposal. Choose `ai` visibility for facts that assistants may use.
+6. Run `personakit brief`. Give the brief to any assistant.
+
+Agents can only propose. You decide what is accepted. This step protects against agent mistakes. It does not stop a program that has full access to your files.
+
+claude.ai cannot run commands. Move the brief and proposals by hand. [Use PersonaKit with claude.ai](docs/claude-ai.md) has the steps and a prompt to paste.
+
+After you update this repository, run `personakit skill install` again.
+
+To back up your store or use it on two machines, make `~/.personakit/` a private git repository. Run `personakit doctor` after a merge.
+
 ## Current status
 
-This repository contains design documents. OpenSpec 1.16.0 and spec-ctx 0.5.0 are set up. No OpenSpec change exists yet. The first change is the M0 schema and fixtures.
+M1 is in progress: the record schema, the store, the CLI, and the agent skill. The CV projection comes next. See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
 
 ## Related tools
 
