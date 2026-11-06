@@ -78,5 +78,6 @@ The architect reviewed the diff before the archive. Fixed:
 - `doctor` classified a fork with one change on each side as an interrupted write, and `--fix` moved the other side away. An unapplied event is now an orphan only when it starts from the current file. SCN-STO-007-5 tests the fork.
 - `previously_rejected` revealed a private rejected match. It now counts visible matches only.
 - `--statement ""` was ignored. It now fails validation.
+- Re-check: the fork fix made a crash followed by a retry look like a fork. Every change now moves orphan events of its record to `events/orphaned/` under the lock, before it writes. SCN-STO-007-6 tests the retry.
 
 Known limit: an in-place update of a proposal keeps only the hash of the earlier version. The earlier statement is not kept. Proposals are drafts, and an accepted record never changes in place.

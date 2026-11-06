@@ -252,6 +252,19 @@ test("SCN-STO-007-3 an interrupted last write is an orphan event, not a fork", (
   assert.ok(existsSync(join(store.root, "events", "orphaned", `${orphan.id}.json`)));
 });
 
+test("SCN-STO-007-6 a retry after a crash leaves no fork and no orphan", () => {
+  const { store } = tempStore();
+  const { record } = propose(store, input("Retry me."), codex);
+  const current = createHash("sha256").update(readFileSync(join(store.root, "records", `${record.id}.json`), "utf8")).digest("hex");
+  const proposed = readEvents(store).events[0]!;
+  const crashed = { ...proposed, id: "01ZZZZZZZZZZZZZZZZZZZZZZZZ", type: "updated", from_revision: 1, to_revision: 2, prior_sha256: current, next_sha256: "c".repeat(64) };
+  writeFileSync(join(store.root, "events", `${crashed.id}.json`), JSON.stringify(crashed));
+  // The user retries the same update, and it succeeds from revision 1.
+  update(store, record.id, 1, { statement: "Retried." }, codex);
+  assert.equal(doctor(store).ok, true, JSON.stringify(doctor(store).findings));
+  assert.ok(existsSync(join(store.root, "events", "orphaned", `${crashed.id}.json`)));
+});
+
 test("SCN-STO-007-5 a fork with one change on each side is reported, not dropped", () => {
   const { store } = tempStore();
   const { record } = propose(store, input("Merged twice."), codex);
