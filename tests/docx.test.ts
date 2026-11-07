@@ -151,3 +151,44 @@ test("SCN-ONB-009-2 a refused or missing file proposes nothing and quotes nothin
   }
   assert.equal(readAll(store).records.length, 0);
 });
+
+test("each ZIP and XML rule refuses its case", () => {
+  const doc = documentXml(para("x"));
+  const many = Array.from({ length: 1001 }, (_, i) => ({ name: `f${i}.xml`, data: "<x/>", method: 0 as const }));
+  const ok = buildDocx(para("x"));
+  const eocd = ok.length - 22;
+  const cdPastEnd = Buffer.from(ok);
+  cdPastEnd.writeUInt32LE(ok.readUInt32LE(eocd + 12) + 50, eocd + 12);
+  const cases: [string, Buffer][] = [
+    ["more than 1000 entries", buildZip([...many, { name: "word/document.xml", data: doc }])],
+    ["entry counts differ", (() => { const z = Buffer.from(ok); z.writeUInt16LE(1, z.length - 22 + 8); return z; })()],
+    ["compressed size 0", buildDocx(para("x"), { centralComp: 0 })],
+    ["method 12", buildDocx(para("x"), { method: 12 as 0 })],
+    ["flag 0x40", buildDocx(para("x"), { flags: 0x40 })],
+    ["method 99", buildDocx(para("x"), { method: 99 as 0 })],
+    ["data past the central directory", buildDocx(para("x"), { centralComp: 100000 })],
+    ["central directory past the end record", cdPastEnd],
+    ["closing tag mismatch", buildDocx("<w:p><w:r><w:t>x</w:r></w:t></w:p>")],
+    ["8-digit reference", buildDocx(para("&#12345678;"))],
+  ];
+  for (const [label, input] of cases) assert.ok(refused(() => readDocxText(input)), label);
+  assert.equal(text(para("a&#1;b")), "a b\n");
+  assert.equal(text(`<w:p><w:r><w:rPr><w:br/></w:rPr><w:t>No break</w:t></w:r></w:p>`), "No break\n");
+});
+
+test("another prefix for the markup-compatibility namespace still skips the fallback", () => {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:ve="http://schemas.openxmlformats.org/markup-compatibility/2006"><w:body><w:p><w:r><ve:AlternateContent><ve:Choice Requires="wps"><w:txbxContent>${para("Once")}</w:txbxContent></ve:Choice><ve:Fallback><w:txbxContent>${para("Once")}</w:txbxContent></ve:Fallback></ve:AlternateContent></w:r></w:p></w:body></w:document>`;
+  assert.equal(documentText(Buffer.from(xml)), "Once\n");
+});
+
+test("a nested binding to the same Word URI is allowed, and text boxes keep the reading order", () => {
+  const ns = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  assert.equal(text(`<w:p xmlns:w="${ns}"><w:r w:rsidR="xmlns:w=fake"><w:t>Same URI</w:t></w:r></w:p>`), "Same URI\n");
+  const body = `<w:p><w:r><w:t>Before</w:t></w:r><w:r><w:drawing><w:txbxContent>${para("Box")}</w:txbxContent></w:drawing></w:r><w:r><w:t>After</w:t></w:r></w:p>`;
+  assert.equal(text(body), "Before\n\nBox\n\nAfter\n");
+});
+
+test("import docx refuses a directory with exit code 6", () => {
+  const { root } = tempStore();
+  assert.equal(cli(root, ["import", "docx", tempDir(), "--json"]).code, 6);
+});

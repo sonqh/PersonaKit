@@ -1,6 +1,7 @@
 // Compare the DOCX reader with mammoth on a file on your own computer. Development only.
 // Usage: node scripts/compare-docx.ts FILE.docx
-// Prints counts and the first difference. Never commit a real CV to the repository.
+// Prints counts and the first difference. The difference shows a few words of your CV:
+// do not paste this output into an issue, a log, or a pull request. Never commit a real CV to the repository.
 
 import { readFileSync } from "node:fs";
 import mammoth from "mammoth";

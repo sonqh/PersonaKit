@@ -33,9 +33,9 @@ A DOCX file is a ZIP archive. The text of the body is in `word/document.xml`, in
 
 - Bytes decode as UTF-8 with `TextDecoder` in fatal mode. A UTF-16 byte order mark, or a declared encoding other than UTF-8, refuses the file. Refs: REQ-ONB-008
 - A linear scanner reads comments (`<!-- -->`) and processing instructions (`<? ?>`) as one unit each. A quoted attribute value can hold `>`. `<!DOCTYPE` or `<!ENTITY` anywhere refuses the file. CDATA is text inside `w:t` and is skipped elsewhere. Refs: REQ-ONB-008
-- The root element binds a prefix to the WordprocessingML namespace, Transitional or Strict. The scanner uses that prefix, not a fixed `w:`. It refuses a default namespace binding for it, and a prefix that is bound again deeper. Element names match exactly up to white space, `/`, or `>`. Refs: REQ-ONB-008
+- The root element binds a prefix to the WordprocessingML namespace, Transitional or Strict. The scanner uses that prefix, not a fixed `w:`. It refuses a default namespace binding for it, and a deeper binding of that prefix to another URI. A deeper binding to the same URI is allowed. Element names match exactly up to white space, `/`, or `>`. Refs: REQ-ONB-008
 - Only `w:t` inside a run writes text. `w:tab` and `w:br` or `w:cr` inside a run write a tab and a line break. The same names inside `w:pPr` or `w:rPr` write nothing. `w:noBreakHyphen` writes `-`. `w:softHyphen`, `w:sym`, and `w:lastRenderedPageBreak` write nothing. Refs: REQ-ONB-008
-- The end of each `w:p` writes a blank line, so each paragraph becomes its own draft in the splitter. A paragraph with `w:numPr` (a Word list item) starts with `- `. `<w:p/>` writes a blank line. Refs: REQ-ONB-008, REQ-ONB-009
+- The end of each `w:p` writes a blank line, so each paragraph becomes its own draft in the splitter. When a paragraph opens inside another one (a text box), the outer text so far becomes its own block first. A paragraph with `w:numPr` (a Word list item) starts with `- `. `<w:p/>` writes a blank line. Refs: REQ-ONB-008, REQ-ONB-009
 - The scanner skips the content of `mc:Fallback`, `w:del`, and `w:moveFrom`, and keeps `mc:Choice`, `w:ins`, and `w:moveTo`. A self-closing `<w:del/>` or `<w:ins/>` inside run properties opens no skip. So text-box text appears once, and deleted tracked changes are left out. Field codes stay out, because they are in `w:instrText`, not `w:t`. Refs: REQ-ONB-008
 - Entities: the five XML entities and numeric references with at most 7 decimal or 6 hexadecimal digits. Some references refuse the file: 0, a surrogate, a value above 0x10FFFF, FFFE, FFFF, and a malformed reference. Any other named entity refuses the file. A reference to another control character becomes a space. Refs: REQ-ONB-008
 
@@ -58,3 +58,14 @@ The architect found three blockers, now in the decisions above. Paragraphs must 
 
 - A DOCX that keeps its text in text boxes or tables gives few drafts. Mitigation: the owner can paste the text instead, and the command prints the draft count.
 - A hand-written parser can have bugs. Mitigation: limits on every size, `maxOutputLength`, a CRC check, and tests with broken and hostile files.
+
+## Diff review, 2026-11-07
+
+The architect rated the diff ready. A fuzz run of 400,000 damaged files gave only fixed invalid errors. Fixed before the archive:
+
+- A nested binding of the Word prefix to the same URI no longer refuses a valid file.
+- Text-box paragraphs keep the reading order of the outer paragraph.
+- CDATA writes text only inside a run, like plain text.
+- `import docx` gives exit code 6 for a directory or a file it cannot open.
+- New tests for each ZIP and XML rule that had none, and for another prefix of the markup-compatibility namespace.
+- `scripts/compare-docx.ts` says that its output can hold CV text.

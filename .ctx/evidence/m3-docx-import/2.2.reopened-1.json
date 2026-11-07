@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T03:42:31.242Z",
+  "bundle_chars": 4186,
+  "files": {
+    "src/cli/main.ts": "2c7d6ce15feb64039fac8ef4fd241d3358f802084da929a41aea19b8283e892f",
+    "tests/docx.test.ts": "de7cfb46b83290f0f399a761332b3ed53be1fba46283f584f190299eaf0909c2"
+  },
+  "kind": "command",
+  "reason": "architect diff review fixes",
+  "reqs": [
+    "REQ-ONB-009"
+  ],
+  "started_at": "2026-11-07T03:42:24.752Z",
+  "task": "m3-docx-import/2.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && npx -y spec-ctx@0.5.0 lint ste decisions/m3-scope.md docs/roadmap.md README.md",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "5dc261d11a8baa1473a30a62951c234bf74ec30d8833dc8965764ecfda278651"
+  }
+}

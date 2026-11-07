@@ -204,7 +204,7 @@ export function documentText(xmlBytes: Buffer): string {
     if (s.startsWith("<![CDATA[", i)) {
       const j = s.indexOf("]]>", i + 9);
       if (j < 0) refuse("the XML is damaged.");
-      if (top()?.name === q("t")) write(s.slice(i + 9, j));
+      if (top()?.name === q("t") && parent()?.name === q("r")) write(s.slice(i + 9, j));
       i = j + 3;
       continue;
     }
@@ -238,8 +238,11 @@ export function documentText(xmlBytes: Buffer): string {
           } else if (uri === MC_URI && prefix !== undefined) mc = prefix;
         }
         if (!w) refuse("it is not a Word document.");
-      } else if (!closing && body.includes(`xmlns:${w}=`)) {
-        refuse("the Word namespace is bound again.");
+      } else if (!closing && body.includes("xmlns:")) {
+        // A nested binding of the Word prefix to the same URI is allowed. Another URI refuses the file.
+        for (const m of body.matchAll(/\sxmlns:([^\s=]+)\s*=\s*["']([^"']*)["']/gu)) {
+          if (m[1] === w && !W_URIS.has(m[2]!)) refuse("the Word namespace is bound again.");
+        }
       }
 
       if (closing) {
@@ -263,7 +266,18 @@ export function documentText(xmlBytes: Buffer): string {
       }
       const skip = skipping() || name === q("del") || name === q("moveFrom") || (mc !== "" && name === `${mc}:Fallback`);
       stack.push({ name, skip });
-      if (name === q("p")) paragraphs.push({ text: "", numbered: false });
+      if (name === q("p")) {
+        // A paragraph inside a text box: the text of the outer paragraph so far becomes its own block first,
+        // so the reading order stays Before, Box, After.
+        const outer = paragraphs[paragraphs.length - 1];
+        if (outer && !skip) {
+          const sofar = outer.text.trim();
+          if (sofar) blocks.push(outer.numbered ? `- ${sofar}` : sofar);
+          outer.text = "";
+          outer.numbered = false;
+        }
+        paragraphs.push({ text: "", numbered: false });
+      }
       continue;
     }
     // Text node.

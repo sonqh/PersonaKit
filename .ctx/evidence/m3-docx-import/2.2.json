@@ -1,15 +1,13 @@
 {
-  "at": "2026-11-07T03:42:31.242Z",
-  "bundle_chars": 4186,
+  "at": "2026-11-07T03:47:39.957Z",
   "files": {
-    "src/cli/main.ts": "2c7d6ce15feb64039fac8ef4fd241d3358f802084da929a41aea19b8283e892f",
-    "tests/docx.test.ts": "de7cfb46b83290f0f399a761332b3ed53be1fba46283f584f190299eaf0909c2"
+    "src/cli/main.ts": "5b9737f34364dc52ae9b68e012ac9f764382bc64ebea8cdf971b1ed8d992aeae",
+    "tests/docx.test.ts": "16f74ee612b399b78ee8a793de58b904665426a99b3d1d82f9df80e04f5ba4fd"
   },
   "kind": "command",
   "reqs": [
     "REQ-ONB-009"
   ],
-  "started_at": "2026-11-07T03:42:24.752Z",
   "task": "m3-docx-import/2.2",
   "tool_version": "0.5.0",
   "verify": {

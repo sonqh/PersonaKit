@@ -173,5 +173,13 @@
     "verdict": "approved",
     "answer": "The owner approved the m3-docx-import plan in chat on 2026-11-07 10:37 with the recommended option: \"Ok đồng ý khuyến nghị của bạn\" (hand-written reader, plus a comparison that uses mammoth as a devDependency only).",
     "resolved_at": "2026-11-07T03:37:55.409Z"
+  },
+  {
+    "n": 17,
+    "asked_at": "2026-11-07T03:47:45.868Z",
+    "task": "m3-docx-import",
+    "text": "archive m3-docx-import?",
+    "status": "open",
+    "stage": "archive"
   }
 ]

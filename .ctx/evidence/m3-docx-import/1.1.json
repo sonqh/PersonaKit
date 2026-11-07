@@ -1,22 +1,20 @@
 {
-  "at": "2026-11-07T03:41:52.422Z",
-  "bundle_chars": 7553,
+  "at": "2026-11-07T03:47:24.780Z",
   "files": {
-    "src/core/docx.ts": "304fc296497160acc3be33e4c3d716bab2adf0f6aa69288915b03c8f977905ab",
+    "src/core/docx.ts": "a66c33da0b20c2b3ede01bf0a72975f32ef709d9be24b2e2c979c7ea7a25eba0",
     "tests/docx-compare.test.ts": "9125819bfbbfb282bd0972ccfa62f2ba69cb1c6a19d7f222933c861cd6dc00d9",
-    "tests/docx.test.ts": "de7cfb46b83290f0f399a761332b3ed53be1fba46283f584f190299eaf0909c2"
+    "tests/docx.test.ts": "16f74ee612b399b78ee8a793de58b904665426a99b3d1d82f9df80e04f5ba4fd"
   },
   "kind": "command",
   "reqs": [
     "REQ-ONB-008"
   ],
-  "started_at": "2026-11-07T03:41:45.768Z",
   "task": "m3-docx-import/1.1",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/docx.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "3d57c3b3b9967f0c1ff1c8c1a4af1b4e5f860beda4e340ac25f10fda0719114f"
+    "stdout_sha256": "70dfe47b25410991ed0f685a0ec28f75035cd0cf52f9f088a51234aa6010a91c"
   }
 }

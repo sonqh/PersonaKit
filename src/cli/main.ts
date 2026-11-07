@@ -510,11 +510,14 @@ function readInputBytes(path: string | undefined, what: string, limit: number): 
   let fd: number;
   try {
     fd = openSync(path, "r");
-  } catch {
-    throw new PersonaKitError("notFound", `The ${what} file ${path} does not exist.`, { file: path });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") throw new PersonaKitError("notFound", `The ${what} file ${path} does not exist.`, { file: path });
+    throw new PersonaKitError("invalid", `The ${what} file ${path} cannot be opened.`, { file: path });
   }
   try {
-    const size = fstatSync(fd).size;
+    const st = fstatSync(fd);
+    if (!st.isFile()) throw new PersonaKitError("invalid", `${path} is not a file.`, { file: path });
+    const size = st.size;
     if (size > limit) throw new PersonaKitError("invalid", `The ${what} file ${path} is larger than ${limit / 1024 / 1024} MiB.`, { file: path });
     const buf = Buffer.alloc(size);
     let off = 0;

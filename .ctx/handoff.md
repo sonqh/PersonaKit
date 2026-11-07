@@ -1,12 +1,22 @@
 # Handoff
 change: m3-docx-import
 current: none
-base: 2026-11-07T03:42:21.442Z
-as_of: 2026-11-07T03:42:31.242Z
+base: 2026-11-07T03:42:31.242Z
+as_of: 2026-11-07T03:47:44.199Z
 done:
+- m3-docx-import/1.1
+- m3-docx-import/1.2
+- m3-docx-import/2.1
 - m3-docx-import/2.2
+- m3-docx-import/2.3
 reopened:
+- m3-docx-import/1.1 architect diff review fixes (at 2026-11-07T03:47:20.429Z)
+- m3-docx-import/1.2 architect diff review fixes (at 2026-11-07T03:47:25.549Z)
+- m3-docx-import/2.1 architect diff review fixes (at 2026-11-07T03:47:30.768Z)
+- m3-docx-import/2.2 architect diff review fixes (at 2026-11-07T03:47:35.945Z)
+- m3-docx-import/2.3 architect diff review fixes (at 2026-11-07T03:47:40.871Z)
 open_questions:
+- Q17 archive m3-docx-import? (task m3-docx-import, 2026-11-07)
 resolved:
 - Q7 archive m1-agent-integration? (task m1-agent-integration, 2026-11-06) answer: The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: "Đồng ý với đề xuất của bạn, hãy tiếp tục"
 - Q8 plan ready for m1-cv-projection. Approve to start the tasks? (task m1-cv-projection, 2026-11-07) answer: The owner approved the m1-cv-projection plan in chat on 2026-11-07 07:54: "Ok đồng ý duyệt"
