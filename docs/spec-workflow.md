@@ -7,8 +7,8 @@ PersonaKit uses [OpenSpec](https://github.com/Fission-AI/OpenSpec) with [spec-ct
 Use Node.js 22 or newer. The repository holds the setup, so a clone needs no `init`.
 
 ```bash
-npx -y spec-ctx@0.5.0 status
-npx -y spec-ctx@0.5.0 gate --strict
+npx -y spec-ctx@0.6.0 status
+npx -y spec-ctx@0.6.0 gate --strict
 ```
 
 ## How the repository was set up
@@ -22,7 +22,7 @@ npx -y spec-ctx@0.5.0 init --all
 
 - `init` pinned `[gate] openspec` to `npx -y @fission-ai/openspec@1.16.0`.
 - `[ids] caps` in `spec-ctx.toml` lists the capability codes below. With this list, `specctx id new` exits with code 2 for any other code. An empty list accepts any code.
-- Add a capability code to `caps` before you allocate its first ID. Then run `npx -y spec-ctx@0.5.0 build`.
+- Add a capability code to `caps` before you allocate its first ID. Then run `npx -y spec-ctx@0.6.0 build`.
 
 ## Requirement IDs
 
