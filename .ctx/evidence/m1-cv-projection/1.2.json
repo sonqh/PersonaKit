@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:03:45.791Z",
+  "bundle_chars": 7148,
+  "files": {
+    "src/cli/main.ts": "b54667e3ebd04b88ee4cbda1a318256fd9a0b6692859cc0939e0f75e52ee48c5",
+    "src/core/cv.ts": "32c4d2e580057d54ebb3a0fd7db9601130a55630d680939bd2f27a9116988bdc",
+    "tests/cv.test.ts": "3fb7a515437cf5c050d8ae0512b98eeb4070ddcf7bf8a000d5318a887d12b0e5"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CV-002"
+  ],
+  "started_at": "2026-11-07T01:03:40.697Z",
+  "task": "m1-cv-projection/1.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cv.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "d9695e1f82491a445d9ae73343b907db12240516d962619ba2605bc3ccc27000"
+  }
+}

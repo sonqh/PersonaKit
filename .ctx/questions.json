@@ -74,5 +74,24 @@
     "verdict": "approved",
     "answer": "The owner approved the archive of all three M1 changes in chat on 2026-11-07 00:28: \"Đồng ý với đề xuất của bạn, hãy tiếp tục\"",
     "resolved_at": "2026-11-06T17:31:46.598Z"
+  },
+  {
+    "n": 8,
+    "asked_at": "2026-11-07T00:52:07.785Z",
+    "task": "m1-cv-projection",
+    "text": "plan ready for m1-cv-projection. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "The owner approved the m1-cv-projection plan in chat on 2026-11-07 07:54: \"Ok đồng ý duyệt\"",
+    "resolved_at": "2026-11-07T00:56:38.649Z"
+  },
+  {
+    "n": 9,
+    "asked_at": "2026-11-07T01:05:48.577Z",
+    "task": "m1-cv-projection",
+    "text": "archive m1-cv-projection?",
+    "status": "open",
+    "stage": "archive"
   }
 ]

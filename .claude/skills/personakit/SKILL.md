@@ -17,7 +17,7 @@ Run every command with `--json` and read the JSON from stdout. Check the exit co
 
 ## Propose a fact
 
-Propose a fact only when the user states it or confirms it in this conversation.
+Propose a fact only when the user states it, or says yes to it, in this conversation.
 
 1. Write one fact in one statement. Use the user's words where possible.
 2. Run:
@@ -44,6 +44,14 @@ Propose a fact only when the user states it or confirms it in this conversation.
    - `superseding_proposal`: the record is accepted or changed after you read it. PersonaKit created a new proposal. The user reviews it.
 4. Exit code 3 means a revision conflict. Do not try again with a new revision. Tell the user.
 
+## Write a CV
+
+1. Run `personakit cv draft --out cv.md`. The draft holds public records only.
+2. Rewrite the text in `cv.md` for the user. Keep each `[pk:<ID>]` marker at the end of the line that uses that record. A line that uses two records gets `[pk:<ID>,<ID>]`.
+3. Do not add a claim that no cited record supports. Do not add `[pk:self]`. Only the user adds owner lines.
+4. Run `personakit cv check cv.md --json`. Fix every error. Show the user each finding with its line number.
+5. Tell the user to review the text and run `personakit cv strip cv.md` for the final version.
+
 ## Rules
 
 - Do not run `accept`, `reject`, `retire`, `visibility`, or `review`.
@@ -58,9 +66,9 @@ Propose a fact only when the user states it or confirms it in this conversation.
 | Code | Meaning | Action |
 | --- | --- | --- |
 | 0 | Success | Continue |
-| 2 | Usage error | Correct the command |
+| 2 | Usage error | Fix the command |
 | 3 | Revision conflict | Tell the user. PersonaKit created a proposal. |
 | 4 | Confirmation required | You ran an owner command. Stop. |
 | 5 | Not found | Check the ID |
-| 6 | Invalid record | Read `error.message` and correct the input |
+| 6 | Invalid record | Read `error.message` and fix the input |
 | 7 | Unsafe store path | Tell the user. Do not change `PERSONAKIT_HOME`. |

@@ -17,6 +17,29 @@ claude.ai cannot run commands on your computer. In M1 you move data between clau
 
 If one line is not valid, PersonaKit proposes nothing and names the line. Fix the line and run the command again.
 
+## Write a CV with claude.ai
+
+1. Run `personakit cv draft --out cv.md`.
+2. Paste the content of `cv.md` into a claude.ai chat with the CV prompt below.
+3. Save the reply as `cv.md`. Keep the `[pk:...]` markers.
+4. Run `personakit cv check cv.md`. Fix each line that it names.
+5. Read the text. Then run `personakit cv strip cv.md --out cv-final.md`.
+
+For your name, contact details, or a link, add a line that ends with `[pk:self]`. The check lists these lines so you can review them.
+
+## CV prompt for claude.ai
+
+```text
+Rewrite this CV draft so that it reads well for a reader who hires.
+Rules:
+- Keep the [pk:...] marker at the end of each line that uses that record.
+- If a line uses two records, end it with [pk:ID1,ID2].
+- Do not add a fact, number, date, title, or organization that is not in the cited line.
+- Do not make my role larger. Keep words such as "contributed" or "supported".
+- Keep the section headings. Do not add [pk:self].
+- Output only the CV text.
+```
+
 ## Prompt for claude.ai
 
 ```text
