@@ -2,7 +2,7 @@
 // CV draft and CV line check. No model, no clock: the same records give the same bytes.
 
 import { ULID_PATTERN } from "./ulid.ts";
-import { checkFacts, type FactCode } from "./cv-facts.ts";
+import { buildFactContext, checkFacts, type FactCode } from "./cv-facts.ts";
 import type { PersonaRecord } from "./schema.ts";
 
 export const CV_TITLE = "CV draft";
@@ -175,6 +175,7 @@ export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
   const publicRecords = records.filter(cvCitable);
   const byId = new Map(publicRecords.map((r) => [r.id, r]));
   const citable = new Set(byId.keys());
+  const factContext = buildFactContext(publicRecords);
   const findings: CvFinding[] = [];
   const ownerLines: number[] = [];
   const cited = new Set<string>();
@@ -226,7 +227,7 @@ export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
     // REQ-CV-003 REQ-CV-004 REQ-CV-007: fact warnings run only when every cited ID is citable.
     if (allCitable) {
       const recs = ids.map((id) => byId.get(id)!);
-      for (const w of checkFacts(m.body, recs, { publicRecords })) {
+      for (const w of checkFacts(m.body, recs, factContext)) {
         findings.push({ line: n, level: "warning", code: w.code, message: w.message, ids });
       }
     }

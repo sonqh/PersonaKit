@@ -37,16 +37,17 @@ The previous change made every final CV line cite accepted public records. The p
 
 - Names come from the organization and role facets of accepted public records only. A private name could leak through the warnings otherwise. Refs: REQ-CV-007
 - The check matches names case-sensitively, longest first, and removes each match from the line before it looks for the next. So `Arc Labs` does not also match `Arc`, and `Archive` matches neither. Refs: REQ-CV-007
-- A name that belongs to a cited record and to an uncited record passes. Refs: REQ-CV-007
+- A name that belongs to a cited record, or appears in a cited record's text, passes. Refs: REQ-CV-007
+- The core builds the name index once for each check, so a large CV with many records stays fast. Refs: REQ-CV-007
 - Seniority words are senior, principal, chief, director, and manager. Each one must appear in a cited role or statement. Lead and head are verbs here, so the ownership check handles them. Refs: REQ-CV-007
 
 ### Ownership verbs
 
-- Verb families have fixed English forms. The co-lead family matches first and is removed, so `led` inside `co-led` does not match again. Refs: REQ-CV-004
+- Verb families have fixed English forms. The check reads only the first word of a claim, because CV lines start with their verb. Bare forms that are also nouns or adjectives (own, found, head, direct, leading) are left out. A verb in the middle of a line is not checked. Refs: REQ-CV-004
 - A line that cites several records uses the highest contribution level among them. Refs: REQ-CV-004
-- A verb passes when any form of its family is in a cited statement. For example, "Managed" passes when the statement says "managing". Refs: REQ-CV-004
+- A verb passes when any form of its family is in a cited statement or role. Refs: REQ-CV-004
 - When no cited record has a contribution level and the statement does not have the verb family, the check gives a contribution-unknown warning. The owner can add the level or reword the line. Refs: REQ-CV-004
-- Known false positives: negation ("did not lead") and passive voice ("led by"). Tests record this behavior. Refs: REQ-CV-004
+- Known gap: a verb in the middle of a line is not checked. Negation at the start gives no warning. Tests record this behavior. Refs: REQ-CV-004
 
 ### Output
 
@@ -62,3 +63,13 @@ The previous change made every final CV line cite accepted public records. The p
 ## Plan review
 
 The product manager and the architect gave the rules above when they reviewed the m1-cv-projection plan on 2026-11-07. The owner delegated the approval of this plan while away. The architect reviews the diff before the archive.
+
+## Diff review, 2026-11-07
+
+The architect rated the diff ready to archive. Fixed before the archive:
+
+- The name index was rebuilt for every line. It is now built once for each check. A test checks a large CV.
+- Verbs in the middle of a line gave false positives, such as "a leading bank". The check now reads the first word only, without bare noun forms.
+- A name or a verb in the cited record's own text or role now passes.
+- The spec now names the tens words up to one hundred, as the code does.
+- Digits inside words, such as ES2015 or 1st, are no longer numbers. The co-own forms belong to the co-lead family.

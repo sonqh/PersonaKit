@@ -3,7 +3,7 @@
 ## ADDED Requirements
 
 ### Requirement: REQ-CV-003 Years and numbers match the cited records
-`cv check` SHALL warn when a cited line has a year from 1900 to 2099 outside every cited period or date. A year that a cited text contains SHALL pass. It SHALL warn when another number, or a number word from one to twenty, is not in a cited statement or facet. The check SHALL ignore the marker, the list prefix, and record IDs. A warning SHALL give the line number and the token, never record text.
+`cv check` SHALL warn when a cited line has a year from 1900 to 2099 outside every cited period or date. A year that a cited text contains SHALL pass. It SHALL warn when another number is not in a cited statement or facet. Number words from one to twenty, and tens words up to one hundred, count as numbers. The check SHALL ignore the marker, the list prefix, and record IDs. A warning SHALL give the line number and the token, never record text.
 
 #### Scenario: SCN-CV-003-1 A wrong year is flagged
 - **WHEN** a line says 2019 and cites a record with the period 2021 to 2023
@@ -41,7 +41,7 @@
 - **THEN** the check reports a seniority warning
 
 ### Requirement: REQ-CV-004 Ownership verbs match the contribution level
-`cv check` SHALL warn when a cited line uses an ownership verb above the highest contribution level of its cited records. The order is contributed, supported, co-led, led, owned. Forms of lead, manage, head, and direct need led. Forms of own and found need owned. Forms of co-lead need co-led and match first. A verb whose family is in a cited statement SHALL pass. `--strict` SHALL make warnings fail with code 6.
+`cv check` SHALL warn when a cited line uses an ownership verb above the highest contribution level of its cited records. The order is contributed, supported, co-led, led, owned. The check reads the first word of a claim. Forms of lead, manage, and direct need led. Owned and founded need owned. Co-lead forms need co-led. A verb whose family is in a cited statement or role SHALL pass. `--strict` SHALL make warnings fail with code 6.
 
 #### Scenario: SCN-CV-004-1 An overstated verb is flagged
 - **WHEN** a line says "Led" and cites a record with contribution contributed

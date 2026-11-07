@@ -24,18 +24,23 @@ const NUMBER_WORDS: Record<string, string> = {
   seventy: "70", eighty: "80", ninety: "90", hundred: "100",
 };
 const NUMBER_WORD_RE = new RegExp(`${B}(${Object.keys(NUMBER_WORDS).join("|")})${A}`, "giu");
-const DIGITS_RE = /\d[\d,_]*/gu;
+// A digit run on word boundaries. A trailing %, +, k, or x is allowed, so "5k" gives 5 and "1st" gives nothing.
+const DIGITS_RE = /(?<![\p{L}\p{N}])\d[\d,_]*(?=[%+kKxX]?(?![\p{L}\p{N}]))/gu;
 const YEAR_RE = /^(19|20)\d\d$/u;
 
 export const SENIORITY_WORDS = ["senior", "principal", "chief", "director", "manager"] as const;
 
-/** Verb families. The level is the minimum contribution that the verb claims. */
-const VERB_FAMILIES: { family: string; level: Contribution; forms: string[] }[] = [
-  { family: "co-lead", level: "co-led", forms: ["co-lead", "co-leads", "co-leading", "co-led", "co-managed", "co-manage", "co-managing", "co-founded", "co-founder"] },
-  { family: "own", level: "owned", forms: ["own", "owns", "owned", "owning", "founded", "founder", "found"] },
-  { family: "lead", level: "led", forms: ["lead", "leads", "leading", "led", "headed", "heads", "heading", "head"] },
-  { family: "manage", level: "led", forms: ["manage", "manages", "managed", "managing"] },
-  { family: "direct", level: "led", forms: ["direct", "directs", "directed", "directing", "spearhead", "spearheads", "spearheaded", "spearheading"] },
+/**
+ * Verb families. The level is the minimum contribution that the verb claims.
+ * Only the first word of a claim counts (CV lines start with their verb). Bare forms that are
+ * also common nouns or adjectives (own, found, head, direct, leading) are left out.
+ */
+const VERB_FAMILIES: { family: string; level: Contribution; forms: string[]; related: string[] }[] = [
+  { family: "co-lead", level: "co-led", forms: ["co-lead", "co-leads", "co-led", "co-managed", "co-manage", "co-manages", "co-founded", "co-own", "co-owns", "co-owned"], related: ["co-leading", "co-managing", "co-founder", "co-owner"] },
+  { family: "own", level: "owned", forms: ["owns", "owned", "founded"], related: ["own", "owner", "owning", "founder"] },
+  { family: "lead", level: "led", forms: ["lead", "leads", "led", "headed"], related: ["leading", "head", "heads", "heading", "leader"] },
+  { family: "manage", level: "led", forms: ["manage", "manages", "managed"], related: ["managing", "manager"] },
+  { family: "direct", level: "led", forms: ["directed", "spearheaded", "spearheads", "spearhead"], related: ["directing", "director", "spearheading"] },
 ];
 
 const LEVEL = (c: Contribution | undefined): number => (c ? CONTRIBUTIONS.indexOf(c) : -1);
@@ -87,14 +92,16 @@ function escapeRe(s: string): string {
 }
 
 /** Find names in a line: case-sensitive, Unicode word boundaries, longest first, each match removed. */
-function findNames(line: string, names: string[]): string[] {
+function findNames(line: string, index: NameIndex): NameIndex["names"] {
   let rest = line;
-  const found: string[] = [];
-  for (const name of [...new Set(names)].sort((a, b) => b.length - a.length || (a < b ? -1 : 1))) {
-    const re = new RegExp(`${B}${escapeRe(name)}${A}`, "gu");
-    if (re.test(rest)) {
-      found.push(name);
-      rest = rest.replace(re, " ");
+  const found: NameIndex["names"] = [];
+  for (const entry of index.names) {
+    if (!rest.includes(entry.name)) continue; // cheap test before the regex
+    entry.re.lastIndex = 0;
+    if (entry.re.test(rest)) {
+      found.push(entry);
+      entry.re.lastIndex = 0;
+      rest = rest.replace(entry.re, " ");
     }
   }
   return found;
@@ -104,9 +111,28 @@ function wordRe(words: string[]): RegExp {
   return new RegExp(`${B}(${words.map(escapeRe).join("|")})${A}`, "giu");
 }
 
+interface NameIndex {
+  /** Names longest first, each with its compiled pattern and the IDs of the records that hold it. */
+  names: { name: string; re: RegExp; owners: Set<string> }[];
+}
+
 export interface FactContext {
-  /** All accepted public records: the only source of organization and role names. */
-  publicRecords: PersonaRecord[];
+  organizations: NameIndex;
+  roles: NameIndex;
+}
+
+/** Build once per check: names come from accepted public records only. */
+export function buildFactContext(publicRecords: PersonaRecord[]): FactContext {
+  const index = (field: "organization" | "role"): NameIndex => {
+    const map = new Map<string, Set<string>>();
+    for (const r of publicRecords) {
+      const v = r.facets?.[field]?.normalize("NFC");
+      if (v) map.set(v, (map.get(v) ?? new Set()).add(r.id));
+    }
+    const names = [...map.keys()].sort((a, b) => b.length - a.length || (a < b ? -1 : a > b ? 1 : 0));
+    return { names: names.map((name) => ({ name, re: new RegExp(`${B}${escapeRe(name)}${A}`, "gu"), owners: map.get(name)! })) };
+  };
+  return { organizations: index("organization"), roles: index("role") };
 }
 
 /** Check one cited line against its cited records. */
@@ -134,21 +160,15 @@ export function checkFacts(body: string, cited: PersonaRecord[], ctx: FactContex
 
   // Organizations and roles from uncited public records. REQ-CV-007
   const citedIds = new Set(cited.map((r) => r.id));
-  const owners = (field: "organization" | "role") => {
-    const map = new Map<string, Set<string>>();
-    for (const r of ctx.publicRecords) {
-      const v = r.facets?.[field]?.normalize("NFC");
-      if (v) map.set(v, (map.get(v) ?? new Set()).add(r.id));
-    }
-    return map;
-  };
   const nfcLine = line.normalize("NFC");
-  for (const [field, code, label] of [["organization", "organization-not-cited", "organization"], ["role", "role-not-cited", "role"]] as const) {
-    const map = owners(field);
-    for (const name of findNames(nfcLine, [...map.keys()])) {
-      if (![...map.get(name)!].some((id) => citedIds.has(id))) {
-        warnings.push({ code, message: `The ${label} "${name}" belongs to a record that this line does not cite.` });
-      }
+  const nfcText = text.normalize("NFC");
+  for (const [index, code, label] of [[ctx.organizations, "organization-not-cited", "organization"], [ctx.roles, "role-not-cited", "role"]] as const) {
+    for (const entry of findNames(nfcLine, index)) {
+      if ([...entry.owners].some((id) => citedIds.has(id))) continue;
+      // A name in the cited record's own text is supported, for example a product name in the statement.
+      entry.re.lastIndex = 0;
+      if (entry.re.test(nfcText)) continue;
+      warnings.push({ code, message: `The ${label} "${entry.name}" belongs to a record that this line does not cite.` });
     }
   }
   const lowerText = text.toLowerCase();
@@ -159,21 +179,21 @@ export function checkFacts(body: string, cited: PersonaRecord[], ctx: FactContex
     }
   }
 
-  // Ownership verbs. REQ-CV-004
+  // Ownership verbs: the first word of the claim only. REQ-CV-004
   const top = Math.max(...cited.map((r) => LEVEL(r.facets?.contribution)), -1);
-  let rest = nfcLine;
-  const statements = cited.map((r) => r.statement).join(" \n ");
+  const first = /^\s*([\p{L}][\p{L}-]*)/u.exec(nfcLine)?.[1]?.toLowerCase();
+  const statements = cited.map((r) => `${r.statement} \n ${r.facets?.role ?? ""}`).join(" \n ");
   for (const fam of VERB_FAMILIES) {
-    const re = wordRe(fam.forms);
-    const hit = rest.match(re);
-    if (!hit) continue;
-    rest = rest.replace(re, " "); // co-led is removed before the lead family looks
-    if (wordRe(fam.forms).test(statements)) continue;
+    if (!first || !fam.forms.includes(first)) continue; // co-lead comes first, so "co-led" never matches "led"
+    const hit = [first];
+    // The cited statement or role supports the claim when it has any form of the family.
+    if (wordRe([...fam.forms, ...fam.related]).test(statements)) break;
     if (top < 0) {
       warnings.push({ code: "contribution-unknown", message: `"${hit[0]}" claims at least ${fam.level}, but record ${ids} has no contribution level. Add the level, or reword the line.` });
     } else if (top < LEVEL(fam.level)) {
       warnings.push({ code: "overstated-ownership", message: `"${hit[0]}" claims at least ${fam.level}. Record ${ids} says ${CONTRIBUTIONS[top]}.` });
     }
+    break;
   }
   return warnings;
 }

@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-07T01:25:42.376Z",
+  "bundle_chars": 7291,
+  "files": {
+    "src/core/cv-facts.ts": "5c3b0c87fcd908ba9aa6cf792f982d0a36d768e1b6ce87e50bf63ef4e0b7f87d",
+    "src/core/cv.ts": "ff00640e4d83c4c9305489229041852b9d1afb50afce762577d7da9963fb2c9c",
+    "tests/cv-facts.test.ts": "e8e87f866499c96b67cf5f78711bfa6be51a992b97c7ff4dfa8ac4d517ca1a83"
+  },
+  "kind": "command",
+  "reason": "architect diff review fixes",
+  "reqs": [
+    "REQ-CV-003"
+  ],
+  "started_at": "2026-11-07T01:25:35.456Z",
+  "task": "m1-cv-fact-check/2.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/agents.test.ts && npx -y spec-ctx@0.5.0 lint ste .agents/skills/personakit/SKILL.md",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "367da5deec812f42ab95d7af896f447faa3296eee93242a4ca878abae3d46350"
+  }
+}
