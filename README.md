@@ -59,6 +59,7 @@ The app keeps no record data in browser storage. The browser keeps only the sess
 - `personakit export --out FILE` writes every record and event to one file. The Export button in the app does the same. The file holds private records too. Keep it private.
 - `personakit import archive FILE` restores an export into an empty store. Restore in the app comes in M3.
 - `personakit import text FILE` turns the text of a CV into proposals, like the paste page of the app.
+- `personakit import docx FILE` reads a Word CV (.docx) and turns its text into private proposals. Each paragraph becomes one draft. The command needs no extra software. It refuses damaged or unsafe files. To compare its text with the mammoth library on your own file, run `node scripts/compare-docx.ts FILE` in a clone. Do not add a real CV to the repository.
 
 ## Use it with Claude Code and Codex
 

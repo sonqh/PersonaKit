@@ -9,6 +9,7 @@
 - The core in `src/core/` has no framework and no dependency on a model provider.
 - Runtime dependencies: none. ULIDs, validation, canonical JSON, atomic writes, and locks use Node built-ins.
 - Development dependencies: `typescript` for the type check and `@types/node` for Node types. Tests use the built-in `node:test` runner.
+- `mammoth` is a development dependency only (owner decision, 2026-11-07). Tests compare the DOCX reader with its raw text output. No runtime code imports it.
 - Every new runtime dependency needs a line in this record and the owner's approval.
 
 ## Alternatives considered

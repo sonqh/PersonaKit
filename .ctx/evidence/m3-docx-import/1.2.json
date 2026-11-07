@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-07T03:47:29.970Z",
+  "files": {
+    "src/core/docx.ts": "a66c33da0b20c2b3ede01bf0a72975f32ef709d9be24b2e2c979c7ea7a25eba0",
+    "tests/docx-compare.test.ts": "9125819bfbbfb282bd0972ccfa62f2ba69cb1c6a19d7f222933c861cd6dc00d9",
+    "tests/docx.test.ts": "16f74ee612b399b78ee8a793de58b904665426a99b3d1d82f9df80e04f5ba4fd"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-008"
+  ],
+  "task": "m3-docx-import/1.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/docx.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "0f85265bc27b9261fcb0dcdcf9df8d7669ea9ec47cb750d8e9f2aa14fe05e87e"
+  }
+}
