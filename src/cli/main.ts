@@ -10,12 +10,19 @@ import { fileURLToPath } from "node:url";
 import { stringifyCanonical } from "../core/canonical.ts";
 import { ExitCode, PersonaKitError } from "../core/errors.ts";
 import { defaultStorePath } from "../core/location.ts";
-import { agentView, compileBriefJson, compileBriefMarkdown, type BriefLevel } from "../core/brief.ts";
-import { buildCvDraft, checkCv, renderCvMarkdown, stripCv, type CvCheckResult } from "../core/cv.ts";
+import { agentView, type BriefLevel } from "../core/brief.ts";
+import { stripCv, type CvCheckResult } from "../core/cv.ts";
+import { exportArchive, restoreArchive } from "../core/archive.ts";
+import { splitText } from "../core/text-import.ts";
+import { writeNewFileAtomic } from "../core/fsutil.ts";
+import { startServer } from "../server/server.ts";
 import {
-  checkProposal, doctor, getRecord, initStore, openStore, ownerAction, propose, readAll, setVisibility, update,
+  doctor, getRecord, initStore, openStore, ownerAction, proposeBatch, readAll, setVisibility, update,
   type ActorLabel, type OwnerAction, type ProposeInput, type Store, type UpdatePatch,
 } from "../core/store.ts";
+import { McpServer, installCrashLogging, serveStdio } from "../mcp/server.ts";
+import { replaceFileAtomic } from "../core/fsutil.ts";
+import { briefText, cvCheck, cvDraft, exportJsonResume, importJsonResume, cvRecords as cvRecordsOp, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
 import {
   ACTORS, RECORD_KINDS, RECORD_STATES, SOURCE_KINDS, VISIBILITIES,
   type Actor, type Facets, type PersonaRecord, type RecordKind, type Source, type Visibility,
@@ -31,6 +38,8 @@ export interface Io {
   env: NodeJS.ProcessEnv;
   cwd: string;
   prompt?: (question: string) => Promise<string>;
+  /** Process streams for the MCP server. Only main() sets them. */
+  streams?: { stdin: NodeJS.ReadableStream; stdout: NodeJS.WritableStream };
 }
 
 const OPTIONS = {
@@ -59,6 +68,8 @@ const OPTIONS = {
   target: { type: "string" },
   "as-of": { type: "string" },
   strict: { type: "boolean" },
+  port: { type: "string" },
+  open: { type: "boolean" },
 } as const satisfies ParseArgsConfig["options"];
 
 type Values = ReturnType<typeof parseArgs<{ options: typeof OPTIONS; allowPositionals: true }>>["values"];
@@ -72,11 +83,15 @@ Agent commands (never print private records):
   cv draft [--as-of DATE] [--json] [--out FILE]      Build a cited CV draft from public records
   cv check FILE [--strict]                           Check CV lines; --strict fails on warnings
   cv strip FILE [--out FILE]                         Print the final CV text without markers
+  export json-resume [--out FILE]                    Build JSON Resume 1.0.0 from public records
+  import json-resume FILE                            Propose records from a JSON Resume file
+  mcp                                                Start the MCP server on stdin and stdout
   propose --kind K --statement TEXT [options]        Propose one record
   propose --from FILE|-                              Propose records from JSON Lines
   update ID --revision N [fields]                    Change a proposal, or propose a change to an accepted record
   list [--state S] [--kind K]                        List records
   show ID                                            Show one record
+  import text FILE [--user-stated]                   Propose records from pasted CV text in a file
 
 Owner commands (ask for confirmation):
   init                                               Create the store
@@ -87,6 +102,9 @@ Owner commands (ask for confirmation):
   visibility ID LEVEL                                Change visibility: private, ai, or public
   doctor [--fix]                                     Check the store
   skill install [--target claude|codex|all]          Install the personakit skill for your agents
+  serve [--port N] [--open]                          Start the local web app on 127.0.0.1
+  export --out FILE                                  Write the whole store to one archive file (holds private records)
+  import archive FILE                                Restore an archive into an empty store
 
 Common options:
   --store PATH      Store folder. Default: $PERSONAKIT_HOME or ~/.personakit
@@ -218,18 +236,8 @@ async function cmdPropose(v: Values, io: Io): Promise<Result> {
   } else {
     inputs = [proposeInputFromFlags(v)];
   }
-  // All or nothing: check every proposal before the first write.
-  const ids = new Set(readAll(store).records.map((r) => r.id));
-  const problems = inputs.flatMap((input, i) => checkProposal(store, input, ids).map((p) => (inputs.length > 1 ? `line ${i + 1}: ${p}` : p)));
-  if (problems.length) {
-    throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join("; ")}.`, { problems });
-  }
-  const results = inputs.map((input) => {
-    const { record, duplicates } = propose(store, input, label);
-    // Echo no statement in any mode: no CLI output path prints the text of a private record.
-    // Report only duplicates the caller may see.
-    return { id: record.id, state: record.state, revision: record.revision, visibility: record.visibility, possible_duplicates: duplicates.visible, previously_rejected: duplicates.rejected_visible.length > 0 };
-  });
+  // All or nothing, and no statement in any mode: no CLI output path prints the text of a private record.
+  const results = proposeRecords(store, inputs, label);
   const text = results.map((r, i) => `Proposed ${r.id} (${inputs[i]!.kind}, rev ${r.revision}, ${r.visibility}).${r.possible_duplicates.length ? `\n  Possible duplicate of ${r.possible_duplicates.join(", ")}` : ""}${r.previously_rejected ? "\n  The owner rejected the same statement before." : ""}`).join("\n");
   return { data: results.length === 1 ? results[0] : { proposed: results }, text: `${text}\nThe owner reviews proposals with "personakit review".` };
 }
@@ -257,26 +265,27 @@ async function cmdList(v: Values, io: Io): Promise<Result> {
   const store = storeFor(v, io);
   const state = pickEnum("state", RECORD_STATES, v.state);
   const kind = pickEnum("kind", RECORD_KINDS, v.kind);
-  const { records, problems } = readAll(store);
-  const views = records.filter((r) => (!state || r.state === state) && (!kind || r.kind === kind)).map(agentView);
-  const data: Record<string, unknown> = { records: views };
-  if (problems.length) data.problems = problems.length;
+  const filter: { state?: typeof state; kind?: typeof kind } = {};
+  if (state) filter.state = state;
+  if (kind) filter.kind = kind;
+  const data = listRecords(store, filter);
+  const views = data.records;
+  const problems = data.problems ?? 0;
   const text = views.length ? views.map(describeView).join("\n") : "No records match.";
-  return { data, text: problems.length ? `${text}\n${problems.length} record files have problems. Run "personakit doctor".` : text };
+  return { data, text: problems ? `${text}\n${problems} record files have problems. Run "personakit doctor".` : text };
 }
 
 async function cmdShow(v: Values, io: Io, args: string[]): Promise<Result> {
   const id = args[0];
   if (!id) throw usage("show needs a record ID.");
-  const view = agentView(getRecord(storeFor(v, io), id));
+  const view = showRecord(storeFor(v, io), id);
   return { data: view, text: describeView(view) };
 }
 
 async function cmdBrief(v: Values, io: Io): Promise<Result> {
   const store = storeFor(v, io);
   const level = (pickEnum("level", ["short", "full"] as const, v.level) ?? "full") as BriefLevel;
-  const { records } = readAll(store);
-  const out = v.json ? stringifyCanonical(compileBriefJson(records, level)) : compileBriefMarkdown(records, level);
+  const out = briefText(store, level, v.json === true);
   if (v.out) {
     writeFileSync(v.out, out);
     return { data: { written: resolve(v.out), level }, text: `Wrote the ${level} brief to ${resolve(v.out)}.` };
@@ -390,7 +399,7 @@ async function cmdSkill(v: Values, io: Io, args: string[]): Promise<Result> {
 }
 
 // REQ-CV-001 REQ-CV-002 REQ-CV-005 REQ-CV-006 REQ-VIS-002
-export const CV_FILE_LIMIT = 1024 * 1024;
+export const CV_FILE_LIMIT = TEXT_INPUT_LIMIT;
 
 function readCvFile(path: string | undefined): string {
   if (!path) throw usage("Give the CV file: personakit cv check FILE.");
@@ -400,11 +409,7 @@ function readCvFile(path: string | undefined): string {
 }
 
 function cvRecords(v: Values, io: Io): PersonaRecord[] {
-  const { records, problems } = readAll(storeFor(v, io));
-  if (problems.length) {
-    throw new PersonaKitError("invalid", `${problems.length} record file${problems.length === 1 ? "" : "s"} cannot be read. Run "personakit doctor".`, { unreadable: problems.length });
-  }
-  return records;
+  return cvRecordsOp(storeFor(v, io));
 }
 
 function describeCheck(r: CvCheckResult): string {
@@ -419,15 +424,12 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
   const [sub, file] = args;
   if (sub === "draft") {
     if (v["as-of"] !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(v["as-of"])) throw usage("--as-of must be a date as YYYY-MM-DD.");
-    const records = cvRecords(v, io);
-    const draft = buildCvDraft(records, v["as-of"]);
-    const count = draft.sections.reduce((n, s) => n + s.items.length, 0);
-    const aiOnly = records.filter((r) => r.state === "accepted" && r.visibility === "ai" && r.kind !== "intent" && r.kind !== "preference").length;
+    const { draft, markdown, count, ai_only: aiOnly } = cvDraft(storeFor(v, io), v["as-of"]);
     if (count < 3 && aiOnly > 0) {
       // Counts only, never text. The hint goes to stderr, so it never enters the draft.
       io.stderr(`${aiOnly} accepted records have visibility ai. A CV uses public records only. To add one, run "personakit visibility <id> public".\n`);
     }
-    const out = v.json ? stringifyCanonical(draft) : renderCvMarkdown(draft);
+    const out = v.json ? stringifyCanonical(draft) : markdown;
     if (v.out) {
       writeFileSync(v.out, out);
       return { data: { written: resolve(v.out), records: count }, text: `Wrote the CV draft with ${count} records to ${resolve(v.out)}.` };
@@ -436,7 +438,7 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
   }
   if (sub === "check") {
     const text = readCvFile(file);
-    const result = checkCv(text, cvRecords(v, io));
+    const result = cvCheck(storeFor(v, io), text);
     // REQ-CV-004: --strict makes warnings fail.
     const failed = !result.ok || (v.strict === true && result.warnings > 0);
     return { data: result, text: describeCheck(result), exitCode: failed ? ExitCode.invalid : ExitCode.ok };
@@ -457,6 +459,140 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
     return { data: undefined, text: final, raw: true } as Result & { raw: boolean };
   }
   throw usage('Use "personakit cv draft", "personakit cv check FILE", or "personakit cv strip FILE".');
+}
+
+// ---------- import, export ----------
+// REQ-ONB-004 REQ-ARC-001 REQ-ARC-002 REQ-ARC-003
+
+export const ARCHIVE_FILE_LIMIT = 64 * 1024 * 1024;
+export const EXPORT_WARNING = "Warning: the archive holds every record, private records too. Keep the file private. Do not upload it or share it.";
+
+function readInputFile(path: string | undefined, what: string, limit: number): string {
+  if (!path) throw usage(`Give the ${what} file.`);
+  if (!existsSync(path)) throw new PersonaKitError("notFound", `The ${what} file ${path} does not exist.`, { file: path });
+  if (statSync(path).size > limit) throw new PersonaKitError("invalid", `The ${what} file ${path} is larger than ${limit / 1024 / 1024} MiB.`, { file: path });
+  return readFileSync(path, "utf8");
+}
+
+async function cmdImport(v: Values, io: Io, args: string[]): Promise<Result> {
+  const [sub, file] = args;
+  if (sub === "json-resume") return cmdImportJsonResume(v, io, args);
+  if (sub === "text") {
+    const text = readInputFile(file, "text", 1024 * 1024);
+    const drafts = splitText(text);
+    if (drafts.length === 0) throw new PersonaKitError("invalid", "The file gives no drafts. Nothing was proposed.");
+    const problems = drafts.flatMap((d, i) => d.problems.map((p) => `draft ${i + 1}: ${p}`));
+    if (problems.length) throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join(" ")}`, { problems });
+    const inputs: ProposeInput[] = drafts.map((d) => ({ kind: d.kind, statement: d.statement, sources: [{ kind: "cv", label: "pasted text" }], user_stated: v["user-stated"] === true }));
+    let batch: ReturnType<typeof proposeBatch>;
+    try {
+      batch = proposeBatch(storeFor(v, io), inputs, actorLabel(v, io.env));
+    } catch (err) {
+      if (err instanceof PersonaKitError && Array.isArray(err.details.problems)) {
+        const named = (err.details.problems as string[]).map((p) => p.replace(/^item (\d+):/, "draft $1:"));
+        throw new PersonaKitError(err.code, `Nothing was proposed. ${named.join("; ")}.`, { problems: named });
+      }
+      throw err;
+    }
+    // IDs and counts only: no statement text in any mode.
+    const proposed = batch.map(({ record }) => ({ id: record.id, kind: record.kind, revision: record.revision, visibility: record.visibility }));
+    const text2 = `Proposed ${proposed.length} records:\n${proposed.map((r) => `  ${r.id} (${r.kind})`).join("\n")}\nThe owner reviews proposals with "personakit review" or in the web app.`;
+    return { data: { proposed, count: proposed.length }, text: text2 };
+  }
+  if (sub === "archive") {
+    const text = readInputFile(file, "archive", ARCHIVE_FILE_LIMIT);
+    const r = restoreArchive(v.store ?? defaultStorePath(io.env), text, { cwd: io.cwd });
+    const msg = `${r.resumed ? "Finished the restore" : "Restored the archive"} into ${r.root}: ${r.records} records and ${r.events} events.`;
+    return { data: r, text: msg };
+  }
+  throw usage('Use "personakit import text FILE", "personakit import archive FILE", or "personakit import json-resume FILE".');
+}
+
+async function cmdExport(v: Values, io: Io, args: string[]): Promise<Result> {
+  if (args[0] === "json-resume") return cmdExportJsonResume(v, io, args);
+  if (args.length) throw usage('Use "personakit export --out FILE" for an archive, or "personakit export json-resume [--out FILE]".');
+  if (!v.out) throw usage("export needs --out FILE.");
+  const out = resolve(v.out);
+  if (existsSync(out)) throw new PersonaKitError("invalid", `The file ${out} already exists. Choose a new file name.`, { file: out });
+  const store = storeFor(v, io);
+  const text = exportArchive(store);
+  const parsed = JSON.parse(text) as { records: unknown[]; events: unknown[] };
+  try {
+    writeNewFileAtomic(out, text);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "EEXIST") throw new PersonaKitError("invalid", `The file ${out} already exists. Choose a new file name.`, { file: out });
+    throw err;
+  }
+  io.stderr(`${EXPORT_WARNING}\n`);
+  return { data: { written: out, records: parsed.records.length, events: parsed.events.length }, text: `Wrote ${parsed.records.length} records and ${parsed.events.length} events to ${out}.` };
+}
+
+// ---------- serve ----------
+// REQ-WEB-001 REQ-WEB-004 REQ-WEB-009
+
+async function cmdServe(v: Values, io: Io): Promise<Result> {
+  let port: number | undefined;
+  if (v.port !== undefined) {
+    port = Number(v.port);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) throw usage("--port must be a whole number from 1 to 65535.");
+  }
+  const opts: Parameters<typeof startServer>[0] = { storePath: v.store ?? defaultStorePath(io.env), cwd: io.cwd, open: v.open === true };
+  if (port !== undefined) opts.port = port;
+  const running = await startServer(opts);
+  // Only the URL and the store path. No request log, no record text.
+  const lines = [
+    "PersonaKit is running on this computer only.",
+    v.open ? "Your browser opens the app. If it does not open, use this URL:" : "Open this URL in your browser:",
+    `  ${running.url}`,
+    `Store: ${running.storeRoot}`,
+  ];
+  if (running.warning) lines.push(`Warning: ${running.warning}`);
+  lines.push("Keep this window open while you use the app. Press Ctrl+C to stop.");
+  io.stdout(`${lines.join("\n")}\n`);
+  await new Promise<void>((resolveStop) => {
+    const stop = (): void => { process.off("SIGINT", stop); process.off("SIGTERM", stop); void running.close().then(resolveStop); };
+    process.on("SIGINT", stop);
+    process.on("SIGTERM", stop);
+  });
+  return { data: { stopped: true }, text: "PersonaKit stopped." };
+}
+
+// REQ-MCP-001 REQ-MCP-008
+async function cmdMcp(v: Values, io: Io): Promise<Result> {
+  if (!io.streams) throw usage("personakit mcp needs the process streams.");
+  const log = (line: string): void => io.stderr(`${line}\n`);
+  // Only the error class goes to stderr: an error message can quote input or record text.
+  installCrashLogging(log);
+  const server = new McpServer({ storePath: v.store ?? defaultStorePath(io.env), cwd: io.cwd, log });
+  await serveStdio(server, io.streams.stdin as unknown as import("node:stream").Readable, io.streams.stdout as unknown as import("node:stream").Writable, log);
+  return { data: undefined, text: "", raw: true } as Result & { raw: boolean };
+}
+
+// REQ-RES-001 REQ-RES-002 REQ-RES-003
+async function cmdExportJsonResume(v: Values, io: Io, args: string[]): Promise<Result> {
+  if (args[0] !== "json-resume" || args.length > 1) throw usage('Use "personakit export json-resume [--out FILE]".');
+  const r = exportJsonResume(storeFor(v, io));
+  const left = r.career_breaks ? ` ${r.career_breaks} public career break${r.career_breaks === 1 ? " was" : "s were"} left out: JSON Resume has no section for them.` : "";
+  if (v.out) {
+    const target = resolve(v.out);
+    replaceFileAtomic(target, r.text);
+    return { data: { written: target, records: r.used.length, used: r.used, career_breaks: r.career_breaks }, text: `Wrote JSON Resume with ${r.used.length} records to ${target}.${left}` };
+  }
+  if (left) io.stderr(`${left.trim()}\n`);
+  return { data: undefined, text: r.text, raw: true } as Result & { raw: boolean };
+}
+
+// REQ-RES-004 REQ-RES-005
+async function cmdImportJsonResume(v: Values, io: Io, args: string[]): Promise<Result> {
+  const [format, file] = args;
+  if (format !== "json-resume" || !file || args.length > 2) throw usage('Use "personakit import json-resume FILE".');
+  if (!existsSync(file)) throw new PersonaKitError("notFound", `The file ${file} does not exist.`, { file });
+  if (statSync(file).size > TEXT_INPUT_LIMIT) throw new PersonaKitError("invalid", "Nothing was imported. The file is larger than 1 MiB.", { problems: ["/ the file is larger than 1 MiB"] });
+  const r = importJsonResume(storeFor(v, io), readFileSync(file));
+  const lines = [`Proposed ${r.proposed.length} records from ${file} with source ${r.source_label}.`];
+  if (r.skipped.length) lines.push(`Skipped: ${r.skipped.join(", ")}.`);
+  lines.push('The owner reviews proposals with "personakit review".');
+  return { data: r, text: lines.join("\n") };
 }
 
 // ---------- entry ----------
@@ -493,6 +629,10 @@ export async function run(argv: string[], io: Io): Promise<number> {
       doctor: () => cmdDoctor(values, io),
       skill: () => cmdSkill(values, io, args),
       cv: () => cmdCv(values, io, args),
+      import: () => cmdImport(values, io, args),
+      export: () => cmdExport(values, io, args),
+      serve: () => cmdServe(values, io),
+      mcp: () => cmdMcp(values, io),
     };
     const handler = handlers[command];
     if (!handler) throw usage(`Unknown command "${command}". Run "personakit --help".`);
@@ -518,6 +658,7 @@ export async function main(): Promise<void> {
     isInteractive: interactive,
     env: process.env,
     cwd: process.cwd(),
+    streams: { stdin: process.stdin, stdout: process.stdout },
   };
   if (interactive) {
     io.prompt = async (q) => {

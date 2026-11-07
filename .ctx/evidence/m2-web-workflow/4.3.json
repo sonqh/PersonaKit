@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-07T02:05:38.738Z",
+  "files": {
+    "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
+    "src/web/app.js": "146ca26ac83d19092f9fb6eab7d489158ec26467ba94aba7172950f6369d5e56",
+    "src/web/logic.js": "b1ae1098d885d21e8589d19a299de88f2bfe5eda5f087624dfeb996bd48484a5",
+    "tests/server-api.test.ts": "e46d004c1b088fe65a9ec5af35ba86c66b4c614bd4bee97196c9943c3cb019bb",
+    "tests/web-logic.test.ts": "08a293d54bb0bfd34148a5b7849486a8f44c762b9df7961bdf1460c6afc82544",
+    "tests/web-static.test.ts": "1034f73ddd0d9603dcab2af0b56dbde02539b8353b67e2fe981a827bbb6af018"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-001",
+    "REQ-ONB-006"
+  ],
+  "task": "m2-web-workflow/4.3",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/web-static.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "c73034459d187d811488bd9fb34ffc04d6ef95780468fe3fa41fe17c3e2747ab"
+  }
+}

@@ -1,0 +1,13 @@
+exit 6
+{
+  "error": {
+    "code": "invalid",
+    "details": {
+      "problems": [
+        "statement must not be empty"
+      ]
+    },
+    "exit_code": 6,
+    "message": "Nothing was proposed. statement must not be empty."
+  }
+}

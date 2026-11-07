@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-07T02:06:28.581Z",
+  "files": {
+    "src/cli/main.ts": "7153f5683e1826fd70e8dd80182bfa892ea639b84f6a9a67dc34a7b9b30a7b0b",
+    "src/mcp/server.ts": "7e7e7433d69f9a55f993fe323c34297741daff7002f74ca0404df25f8bfbfe9c",
+    "tests/mcp-privacy.test.ts": "81d7dd56496c216664deebe0c6d060dbd5f0c0392c5b8dc9427884eaf5630ed5"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-MCP-008"
+  ],
+  "task": "m3-mcp-and-json-resume/2.8",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/mcp-privacy.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "555ccf23e601c7c7246f5bfdd543fad050ff9051bfedad8da1a8a8f853df9536"
+  }
+}

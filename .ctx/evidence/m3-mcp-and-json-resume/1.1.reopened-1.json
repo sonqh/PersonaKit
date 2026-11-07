@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:40:41.946Z",
+  "bundle_chars": 8014,
+  "files": {
+    "src/app/operations.ts": "09999ccdc8e9395e2a9ad7b2aaac3be2f863033de86234dbadcc2128068a528b",
+    "tests/golden.test.ts": "39516b3e4bd5cfd426bbde01d7373957b0fdf7b7dbfecc38703dcb09b6bc7aee"
+  },
+  "kind": "command",
+  "reason": "stale evidence: src/app/operations.ts",
+  "reqs": [
+    "REQ-MCP-005"
+  ],
+  "started_at": "2026-11-07T01:39:02.644Z",
+  "task": "m3-mcp-and-json-resume/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run check",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "0bc9acf8ac256912a30cc31581d0a799ea10140654e618923f2236635377fbbc"
+  }
+}

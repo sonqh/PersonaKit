@@ -47,12 +47,16 @@ Exit: Synthetic records produce both outputs, with tests for disclosure and clai
 
 Exit: Nontechnical users can finish the complete flow without a terminal.
 
+The OpenSpec change `m2-web-workflow` builds this milestone with `personakit serve`, a local web app on 127.0.0.1. After the one-time install of Node 22 and `npm link`, a launcher script starts the app with a double-click. Restore in the web app moves to M3. M2 restores an archive with the CLI.
+
 ## M3. Optional integrations
 
-- Add CV file import (local PDF and DOCX parsing) and JSON Resume interoperability.
+- Add an MCP server that wraps the same core. The change `m3-mcp-and-json-resume` adds it.
+- Add JSON Resume export and import. The same change adds them.
+- Add CV file import (local PDF and DOCX parsing). This needs a runtime dependency or a large parser, so the owner must approve it first.
 - Add role packs supported by user research.
-- Add optional LLM extraction and writing.
-- Add an MCP server that wraps the same core.
+- Add optional LLM extraction and writing. This sends personal data to a model provider, so the owner must decide first.
+- Add archive restore in the web app.
 
 Exit: Each integration has compatibility tests and does not change the canonical model.
 

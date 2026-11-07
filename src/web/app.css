@@ -1,0 +1,35 @@
+:root { --fg: #1d1d1f; --muted: #5a5a60; --line: #d6d6db; --accent: #2f5d50; --warn: #8a4b00; --bg: #fbfbf8; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+.top { padding: 12px 20px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.top h1 { margin: 0; font-size: 20px; }
+nav button { margin-right: 4px; }
+main { max-width: 860px; margin: 0 auto; padding: 16px 20px 48px; }
+.view { display: none; }
+.view.active { display: block; }
+button { font: inherit; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+button.primary, button.big { background: var(--accent); color: #fff; border-color: var(--accent); }
+button.big { padding: 14px 20px; margin: 8px 8px 8px 0; }
+nav button.current { border-color: var(--accent); font-weight: 600; }
+textarea, input, select { font: inherit; width: 100%; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+label { display: block; margin: 12px 0 4px; font-weight: 600; }
+.hint, .help { color: var(--muted); font-size: 14px; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 12px 0; background: #fff; }
+.warning { border-color: var(--warn); }
+.problem { color: var(--warn); }
+.meta { color: var(--muted); font-size: 14px; }
+pre.output { white-space: pre-wrap; word-break: break-word; background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 12px; max-height: 420px; overflow: auto; }
+#message { max-width: 860px; margin: 8px auto 0; padding: 0 20px; }
+#message:not(:empty) { padding: 8px 20px; border-left: 4px solid var(--accent); background: #eef4f1; }
+#message.error { border-left-color: var(--warn); background: #fbf1e6; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row > * { width: auto; }
+fieldset { border: 1px solid var(--line); border-radius: 6px; margin: 8px 0; }
+@media print {
+  body > *:not(#print-view) { display: none !important; }
+  #print-view { display: block !important; }
+  #print-text { white-space: pre-wrap; font: 11pt/1.4 Georgia, serif; }
+}
+input.radio { width: auto; margin-right: 4px; }
+label.inline { display: inline; font-weight: normal; margin: 0; }

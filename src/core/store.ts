@@ -188,6 +188,17 @@ export function readEvents(store: Store): { events: PersonaEvent[]; problems: Re
 
 // ---------- writing helpers ----------
 
+/**
+ * REQ-ARC-004: a restore holds locks/restore.lock. Writes wait for no one: they fail with the conflict code.
+ * A stale lock (dead process on this host, or older than the stale limit) does not block.
+ */
+export function assertNoRestore(store: Store): void {
+  const path = join(dirs(store.root).locks, "restore.lock");
+  if (existsSync(path) && !isLockStale(path)) {
+    throw new PersonaKitError("conflict", "A restore runs on this store. Try again after it ends. If no restore runs, run \"personakit doctor --fix\".", { lock: "locks/restore.lock" });
+  }
+}
+
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
 /**
@@ -295,6 +306,7 @@ export function checkProposal(store: Store, input: ProposeInput, existingIds?: S
 }
 
 export function propose(store: Store, input: ProposeInput, label: ActorLabel): ProposeResult {
+  assertNoRestore(store);
   const { records } = readAll(store);
   for (const id of input.supersedes ?? []) {
     if (!records.some((r) => r.id === id)) throw new PersonaKitError("notFound", `Record ${id} in supersedes does not exist.`, { record_id: id });
@@ -326,6 +338,39 @@ export function propose(store: Store, input: ProposeInput, label: ActorLabel): P
   return { record, duplicates };
 }
 
+// ---------- batch propose ----------
+// REQ-ONB-007
+
+export interface BatchItemResult extends ProposeResult {}
+
+/**
+ * Propose several records, all or nothing at the check step.
+ * Every input is checked before the first write. Then the inputs are written in input order.
+ * A crash can leave the first part of the batch. An unexpected write error lists the IDs written so far.
+ */
+export function proposeBatch(store: Store, inputs: ProposeInput[], label: ActorLabel): BatchItemResult[] {
+  assertNoRestore(store);
+  if (inputs.length === 0) throw new PersonaKitError("usage", "The batch has no records.");
+  const ids = new Set(readAll(store).records.map((r) => r.id));
+  const problems = inputs.flatMap((input, i) => checkProposal(store, input, ids).map((p) => (inputs.length > 1 ? `item ${i + 1}: ${p}` : p)));
+  if (problems.length) {
+    throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join("; ")}.`, { problems });
+  }
+  const results: BatchItemResult[] = [];
+  for (const input of inputs) {
+    try {
+      results.push(propose(store, input, label));
+    } catch (err) {
+      const written = results.map((r) => r.record.id);
+      if (err instanceof PersonaKitError) {
+        throw new PersonaKitError(err.code, `${err.message} The batch wrote ${written.length} records before the error.`, { ...err.details, written });
+      }
+      throw new PersonaKitError("unexpected", `A write failed after ${written.length} records: ${(err as Error).message ?? String(err)}`, { written });
+    }
+  }
+  return results;
+}
+
 // ---------- update ----------
 
 export interface UpdatePatch {
@@ -354,7 +399,9 @@ export interface UpdateResult {
  * - A stale revision never overwrites. The update becomes a new proposal, and conflict is true.
  */
 export function update(store: Store, id: string, baseRevision: number, patch: UpdatePatch, label: ActorLabel): UpdateResult {
+  assertNoRestore(store);
   return withLocks(dirs(store.root).locks, [id], "update", () => {
+    assertNoRestore(store); // again under the lock: a restore can start between the first check and the lock
     const path = recordPath(store, id);
     const current = getRecord(store, id);
     if (current.state === "rejected" || current.state === "retired") {
@@ -445,9 +492,11 @@ function writeTransition(store: Store, current: PersonaRecord, changes: Partial<
 
 /** accept, reject, or retire. Only the owner runs these; the CLI asks for confirmation. */
 export function ownerAction(store: Store, action: OwnerAction, id: string, opts: OwnerActionOptions, label: ActorLabel): OwnerActionResult {
+  assertNoRestore(store);
   const first = getRecord(store, id);
   const lockIds = [id, ...(action === "accept" ? first.supersedes ?? [] : [])];
   return withLocks(dirs(store.root).locks, lockIds, action, () => {
+    assertNoRestore(store); // again under the lock
     const current = getRecord(store, id);
     const rule = TRANSITIONS[action];
     if (!rule.from.includes(current.state)) {
@@ -487,7 +536,9 @@ export function ownerAction(store: Store, action: OwnerAction, id: string, opts:
 
 /** Change who may see a proposed or accepted record. The statement does not change. */
 export function setVisibility(store: Store, id: string, visibility: Visibility, opts: { expectedRevision?: number }, label: ActorLabel): PersonaRecord {
+  assertNoRestore(store);
   return withLocks(dirs(store.root).locks, [id], "visibility", () => {
+    assertNoRestore(store); // again under the lock
     const current = getRecord(store, id);
     if (current.state !== "proposed" && current.state !== "accepted") {
       throw new PersonaKitError("invalid", `Cannot change the visibility of record ${id}: its state is ${current.state}.`, { record_id: id });

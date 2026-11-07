@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-07T01:54:25.812Z",
+  "files": {
+    "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
+    "tests/import-cli.test.ts": "53a517442cf15c837912e2a7aa86a00592e962e2b61332fe4975f241ca112510"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-004"
+  ],
+  "task": "m2-web-workflow/2.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/import-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "8c5904a034a9529a9735e389480d4668c952588781cf0d5c77573589c2465171"
+  }
+}

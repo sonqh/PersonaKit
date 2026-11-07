@@ -1,0 +1,7 @@
+exit 6
+--- stdout
+line 42: error missing-citation: This line has no citation marker. Add [pk:<record ID>], or remove the line.
+line 43: error not-citable: Record 01JC9Z99999999999999999999 cannot be cited. A CV can cite accepted public records only.
+2 errors. Fix them before "personakit cv strip".
+
+--- stderr

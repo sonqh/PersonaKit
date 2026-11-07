@@ -1,0 +1,136 @@
+exit 0
+--- stdout
+{
+  "records": [
+    {
+      "actor": "cli",
+      "facets": {
+        "level": "beginner",
+        "tags": [
+          "spreadsheets",
+          "SQL",
+          "Python"
+        ]
+      },
+      "id": "01JC9Z00000000000000000022",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Can clean and summarize data in spreadsheets and is learning SQL and basic Python.",
+      "user_stated": true,
+      "visibility": "public"
+    },
+    {
+      "actor": "cli",
+      "id": "01JC9Z00000000000000000025",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Brings years of people management, scheduling, and customer handling from retail work.",
+      "user_stated": false,
+      "visibility": "ai"
+    },
+    {
+      "actor": "cli",
+      "facets": {
+        "tags": [
+          "branding",
+          "print",
+          "packaging",
+          "web"
+        ]
+      },
+      "id": "01JC9Z00000000000000000067",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Builds brand identities, print layouts, and simple web page designs, from first sketch to print-ready files.",
+      "user_stated": true,
+      "visibility": "public"
+    },
+    {
+      "actor": "cli",
+      "id": "01JC9Z00000000000000000070",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Explains design choices to small business owners without design jargon.",
+      "user_stated": false,
+      "visibility": "ai"
+    },
+    {
+      "actor": "cli",
+      "facets": {
+        "level": "advanced",
+        "tags": [
+          "TypeScript",
+          "Go",
+          "PostgreSQL",
+          "Redis"
+        ]
+      },
+      "id": "01JC9Z00000000000000000106",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Designs and operates TypeScript and Go services backed by PostgreSQL and Redis.",
+      "user_stated": true,
+      "visibility": "public"
+    },
+    {
+      "actor": "cli",
+      "id": "01JC9Z00000000000000000109",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Writes clear incident reviews and explains trade-offs to non-technical stakeholders.",
+      "user_stated": false,
+      "visibility": "ai"
+    },
+    {
+      "actor": "cli",
+      "facets": {
+        "expires_on": "2026-11-15",
+        "issued_on": "2023-11-15",
+        "organization": "Guild of Service Practitioners",
+        "type": "credential"
+      },
+      "id": "01JC9Z00000000000000000145",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Holds a Certified Customer Care Professional credential from the fictional Guild of Service Practitioners.",
+      "user_stated": true,
+      "visibility": "public"
+    },
+    {
+      "actor": "cli",
+      "id": "01JC9Z00000000000000000148",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Calms upset callers and gets to the real problem quickly, with a satisfaction score that stays above the team average.",
+      "user_stated": false,
+      "visibility": "ai"
+    },
+    {
+      "actor": "cli",
+      "facets": {
+        "tags": [
+          "ticketing",
+          "knowledge base",
+          "spreadsheets"
+        ]
+      },
+      "id": "01JC9Z00000000000000000151",
+      "kind": "capability",
+      "revision": 2,
+      "state": "accepted",
+      "statement": "Uses a shared ticketing system, a knowledge base editor, and spreadsheet reports for weekly queue reviews.",
+      "user_stated": true,
+      "visibility": "ai"
+    }
+  ]
+}
+
+--- stderr
