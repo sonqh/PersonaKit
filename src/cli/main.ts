@@ -58,6 +58,7 @@ const OPTIONS = {
   fix: { type: "boolean" },
   target: { type: "string" },
   "as-of": { type: "string" },
+  strict: { type: "boolean" },
 } as const satisfies ParseArgsConfig["options"];
 
 type Values = ReturnType<typeof parseArgs<{ options: typeof OPTIONS; allowPositionals: true }>>["values"];
@@ -69,7 +70,7 @@ Usage: personakit <command> [options]
 Agent commands (never print private records):
   brief [--level short|full] [--json] [--out FILE]   Compile the AI brief
   cv draft [--as-of DATE] [--json] [--out FILE]      Build a cited CV draft from public records
-  cv check FILE                                      Check that every CV line cites public records
+  cv check FILE [--strict]                           Check CV lines; --strict fails on warnings
   cv strip FILE [--out FILE]                         Print the final CV text without markers
   propose --kind K --statement TEXT [options]        Propose one record
   propose --from FILE|-                              Propose records from JSON Lines
@@ -409,6 +410,7 @@ function cvRecords(v: Values, io: Io): PersonaRecord[] {
 function describeCheck(r: CvCheckResult): string {
   const lines = r.findings.map((f) => `line ${f.line}: ${f.level} ${f.code}: ${f.message}`);
   if (r.owner_lines.length) lines.push(`Owner-stated lines to review: ${r.owner_lines.join(", ")}.`);
+  if (r.warnings) lines.push(`${r.warnings} warning${r.warnings === 1 ? "" : "s"}. Read each line and its records again.`);
   lines.push(r.ok ? `No errors. ${r.cited_ids.length} records cited.` : `${r.errors} error${r.errors === 1 ? "" : "s"}. Fix them before "personakit cv strip".`);
   return lines.join("\n");
 }
@@ -435,7 +437,9 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
   if (sub === "check") {
     const text = readCvFile(file);
     const result = checkCv(text, cvRecords(v, io));
-    return { data: result, text: describeCheck(result), exitCode: result.ok ? ExitCode.ok : ExitCode.invalid };
+    // REQ-CV-004: --strict makes warnings fail.
+    const failed = !result.ok || (v.strict === true && result.warnings > 0);
+    return { data: result, text: describeCheck(result), exitCode: failed ? ExitCode.invalid : ExitCode.ok };
   }
   if (sub === "strip") {
     const text = readCvFile(file);

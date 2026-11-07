@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-07T01:29:42.401Z",
+  "files": {
+    "src/core/cv-facts.ts": "bc0a618973024dbd6c2526d9fa818e55988392941b430ed7a8ef73bc2921cfa7",
+    "src/core/cv.ts": "589581431b4f0564c6f1e3ac2b142856df2087bf9ee551c75e3ea87cbb7bbd89",
+    "tests/cv-facts.test.ts": "18769050a620785c8dd5ddbbf065bb5e02d42e95dde75b16c58b421105665ca4"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CV-003"
+  ],
+  "task": "m1-cv-fact-check/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cv-facts.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "77bb0c08550a27431b60616b7c6a7132ce8cb47ca757f880b779b1a3892834ba"
+  }
+}

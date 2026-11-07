@@ -50,6 +50,8 @@ Propose a fact only when the user states it, or says yes to it, in this conversa
 2. Rewrite the text in `cv.md` for the user. Keep each `[pk:<ID>]` marker at the end of the line that uses that record. A line that uses two records gets `[pk:<ID>,<ID>]`.
 3. Do not add a claim that no cited record supports. Do not add `[pk:self]`. Only the user adds owner lines.
 4. Run `personakit cv check cv.md --json`. Fix every error. Show the user each finding with its line number.
+   - A warning means that a year, a number, a name, a title, or a verb does not match the cited records.
+   - Change the line back to what the records say. Do not change a record to match the line.
 5. Tell the user to review the text and run `personakit cv strip cv.md` for the final version.
 
 ## Rules

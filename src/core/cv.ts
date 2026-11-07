@@ -2,6 +2,7 @@
 // CV draft and CV line check. No model, no clock: the same records give the same bytes.
 
 import { ULID_PATTERN } from "./ulid.ts";
+import { buildFactContext, checkFacts, type FactCode } from "./cv-facts.ts";
 import type { PersonaRecord } from "./schema.ts";
 
 export const CV_TITLE = "CV draft";
@@ -128,7 +129,7 @@ export function renderCvMarkdown(draft: CvDraft): string {
 export interface CvFinding {
   line: number;
   level: "error" | "warning";
-  code: "missing-citation" | "misplaced-marker" | "malformed-marker" | "fenced-code" | "not-citable";
+  code: "missing-citation" | "misplaced-marker" | "malformed-marker" | "fenced-code" | "not-citable" | FactCode;
   message: string;
   ids?: string[];
 }
@@ -171,7 +172,10 @@ export function normalizeCvInput(text: string): string {
  * Output holds line numbers, codes, and IDs only, never record text.
  */
 export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
-  const citable = new Set(records.filter(cvCitable).map((r) => r.id));
+  const publicRecords = records.filter(cvCitable);
+  const byId = new Map(publicRecords.map((r) => [r.id, r]));
+  const citable = new Set(byId.keys());
+  const factContext = buildFactContext(publicRecords);
   const findings: CvFinding[] = [];
   const ownerLines: number[] = [];
   const cited = new Set<string>();
@@ -211,10 +215,21 @@ export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
       findings.push({ line: n, level: "error", code: "malformed-marker", message: "A marker holds record IDs of 26 characters, separated by commas, or the word self." });
       return;
     }
+    let allCitable = true;
     for (const id of ids) {
       if (citable.has(id)) cited.add(id);
-      // One code for missing, not accepted, and not public: no reason, so nothing leaks about private records.
-      else findings.push({ line: n, level: "error", code: "not-citable", message: `Record ${id} cannot be cited. A CV can cite accepted public records only.`, ids: [id] });
+      else {
+        allCitable = false;
+        // One code for missing, not accepted, and not public: no reason, so nothing leaks about private records.
+        findings.push({ line: n, level: "error", code: "not-citable", message: `Record ${id} cannot be cited. A CV can cite accepted public records only.`, ids: [id] });
+      }
+    }
+    // REQ-CV-003 REQ-CV-004 REQ-CV-007: fact warnings run only when every cited ID is citable.
+    if (allCitable) {
+      const recs = ids.map((id) => byId.get(id)!);
+      for (const w of checkFacts(m.body, recs, factContext)) {
+        findings.push({ line: n, level: "warning", code: w.code, message: w.message, ids });
+      }
     }
   });
   const errors = findings.filter((f) => f.level === "error").length;

@@ -96,5 +96,27 @@
     "verdict": "approved",
     "answer": "The owner approved the archive of m1-cv-projection in chat on 2026-11-07 08:13: \"Ok đồng ý, hãy làm theo hướng tốt nhất. Tôi duyệt\"",
     "resolved_at": "2026-11-07T01:15:06.217Z"
+  },
+  {
+    "n": 10,
+    "asked_at": "2026-11-07T01:22:42.591Z",
+    "task": "m1-cv-fact-check",
+    "text": "plan ready for m1-cv-fact-check. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi ... Bạn hãy tự chọn cách code (team or bạn tự code) miễn là hiệu quả\". The owner reviews and merges the pull request.",
+    "resolved_at": "2026-11-07T01:22:43.403Z"
+  },
+  {
+    "n": 11,
+    "asked_at": "2026-11-07T01:30:16.172Z",
+    "task": "m1-cv-fact-check",
+    "text": "archive m1-cv-fact-check?",
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi\". The architect rated the diff ready. The owner reviews and merges the pull request.",
+    "resolved_at": "2026-11-07T01:30:16.938Z"
   }
 ]
