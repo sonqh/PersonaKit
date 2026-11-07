@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-07T01:55:30.777Z",
+  "files": {
+    "src/cli/main.ts": "6153dbe0f90ac22dea4aba8435f50d7eed9a335fcdb2ea527eb306c76051661f",
+    "src/mcp/server.ts": "b891671fcd3ffba2d7e278ae23a810c3611b56a38f28b6a357bbdf788c226bb6",
+    "tests/mcp-privacy.test.ts": "cfe77e0b309e5b2039b75d64538e8721985f55c23557fcf3446e5e7af3c8267d"
+  },
+  "kind": "command",
+  "reason": "stale evidence after the diff review fixes",
+  "reqs": [
+    "REQ-MCP-008"
+  ],
+  "task": "m3-mcp-and-json-resume/2.8",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/mcp-privacy.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "4657ac330b27a67810ff0f1356f92e94542115fbb79cf13c0b68af2f2940ec4b"
+  }
+}

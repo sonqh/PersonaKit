@@ -32,7 +32,8 @@ function goldenStore(): { root: string; ids: string[] } {
 
 function compare(name: string, actual: string): void {
   const file = join(GOLDEN, `${name}.txt`);
-  if (process.env.UPDATE_GOLDEN === "1" || !existsSync(file)) writeFileSync(file, actual);
+  if (process.env.UPDATE_GOLDEN === "1") writeFileSync(file, actual);
+  assert.ok(existsSync(file), `golden file ${name} is missing. Run the test with UPDATE_GOLDEN=1 to write it.`);
   assert.equal(actual, readFileSync(file, "utf8"), `golden output ${name} changed`);
 }
 
@@ -50,12 +51,11 @@ test("the moved CLI commands keep their golden outputs", () => {
     ["list-json", ["list", "--json"]],
     ["list-capability-json", ["list", "--kind", "capability", "--state", "accepted", "--json"]],
     ["show-first", ["show", ids[0]!]],
-    ["show-all-json", ...[]],
     ["cv-draft", ["cv", "draft"]],
     ["cv-draft-json", ["cv", "draft", "--json", "--as-of", "2026-06-01"]],
     ["cv-check", ["cv", "check", cvFile]],
     ["cv-check-json", ["cv", "check", cvFile, "--json"]],
-  ].filter((c) => c.length === 2) as [string, string[]][];
+  ];
   for (const [name, args] of cases) {
     const r = cli(root, args);
     compare(name, `exit ${r.code}\n--- stdout\n${r.stdout}\n--- stderr\n${r.stderr}`);

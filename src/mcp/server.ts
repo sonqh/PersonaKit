@@ -12,7 +12,7 @@ import {
 } from "../core/schema.ts";
 import { ULID_PATTERN } from "../core/ulid.ts";
 import type { BriefLevel } from "../core/brief.ts";
-import { briefJson, briefText, cvCheck, cvDraft, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
+import { briefBoth, cvCheck, cvDraft, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
 
 export const MODERN_VERSIONS = ["2026-07-28"] as const;
 export const LEGACY_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26"] as const;
@@ -193,10 +193,15 @@ const errorResponse = (id: Id, code: number, message: string, data?: unknown): R
 export const PARSE_ERROR = errorResponse(null, -32700, "Parse error. The line is not valid JSON.");
 export const OVERSIZE_ERROR = errorResponse(null, -32600, "Invalid request. The line is larger than 4 MiB.");
 
+/** The operations that the tools call. Tests can replace one to reach an error path. */
+export const DEFAULT_OPERATIONS = { briefBoth, cvCheck, cvDraft, listRecords, proposeRecords, showRecord };
+export type Operations = typeof DEFAULT_OPERATIONS;
+
 export interface ServerOptions {
   storePath: string;
   cwd: string;
   log: (line: string) => void;
+  operations?: Partial<Operations>;
 }
 
 interface Context {
@@ -212,10 +217,12 @@ class ToolFailure {
 /** One server per process. The only state is the legacy session from initialize. */
 export class McpServer {
   private readonly opts: ServerOptions;
+  private readonly ops: Operations;
   private legacy: { version: string; clientName: unknown } | undefined;
 
   constructor(opts: ServerOptions) {
     this.opts = opts;
+    this.ops = { ...DEFAULT_OPERATIONS, ...opts.operations };
   }
 
   /** Handle one input line. Returns the response, or undefined for a notification or a response object. */
@@ -296,18 +303,20 @@ export class McpServer {
       switch (name) {
         case "brief": {
           const level = (a.level ?? "full") as BriefLevel;
-          return ok(briefText(store, level, false), briefJson(store, level));
+          // One read of the store: the Markdown and the JSON come from the same records.
+          const b = this.ops.briefBoth(store, level);
+          return ok(b.markdown, b.json);
         }
         case "list": {
           const filter: { state?: RecordState; kind?: RecordKind } = {};
           if (a.state) filter.state = a.state as RecordState;
           if (a.kind) filter.kind = a.kind as RecordKind;
-          return okJson(listRecords(store, filter));
+          return okJson(this.ops.listRecords(store, filter));
         }
         case "show": {
           const id = a.id as string;
           try {
-            return okJson(showRecord(store, id));
+            return okJson(this.ops.showRecord(store, id));
           } catch (err) {
             // A corrupt record file: the core message can quote the file. Use a fixed message.
             if (err instanceof PersonaKitError && err.code === "invalid") {
@@ -317,14 +326,14 @@ export class McpServer {
           }
         }
         case "cv_draft": {
-          const r = cvDraft(store, a.as_of as string | undefined);
+          const r = this.ops.cvDraft(store, a.as_of as string | undefined);
           return ok(r.markdown, r.draft);
         }
         case "cv_check": {
           if (Buffer.byteLength(a.text as string, "utf8") > TEXT_INPUT_LIMIT) {
             throw new PersonaKitError("invalid", "The CV text is larger than 1 MiB.");
           }
-          return okJson(cvCheck(store, a.text as string));
+          return okJson(this.ops.cvCheck(store, a.text as string));
         }
         case "propose": {
           const input: ProposeInput = {
@@ -337,7 +346,7 @@ export class McpServer {
           if (a.facets !== undefined) input.facets = a.facets as Facets;
           if (a.supersedes !== undefined) input.supersedes = a.supersedes as string[];
           const label: ActorLabel = { actor: actorFor(ctx.clientName) };
-          return okJson(proposeRecords(store, [input], label)[0]);
+          return okJson(this.ops.proposeRecords(store, [input], label)[0]);
         }
       }
       throw new Error("unreachable");
@@ -386,6 +395,12 @@ export const SCHEMA_KEYS = {
   corePeriod: [...PERIOD_KEYS].sort(),
   coreSource: [...SOURCE_KEYS].sort(),
 };
+
+/** Log only the class of an uncaught error: its message can quote input or record text. */
+export function installCrashLogging(log: (line: string) => void, proc: Pick<NodeJS.Process, "on"> = process): void {
+  proc.on("uncaughtException", (err: unknown) => log(`personakit mcp: uncaught ${errorClass(err)}`));
+  proc.on("unhandledRejection", (err: unknown) => log(`personakit mcp: unhandled ${errorClass(err)}`));
+}
 
 // ---------- stdio loop ----------
 
@@ -453,10 +468,19 @@ export function serveStdio(server: McpServer, stdin: Readable, stdout: Writable,
         start = nl + 1;
       }
     });
-    stdin.on("end", () => {
+    // A read error ends the input like end of file: answer the queued requests, then finish.
+    let finished = false;
+    const finish = (): void => {
+      if (finished) return;
+      finished = true;
       if (!dropping && size > 0) handle(Buffer.concat(parts));
       parts = [];
       queue.then(() => resolveDone());
+    };
+    stdin.on("end", finish);
+    stdin.on("error", (err) => {
+      log(`personakit mcp: stdin ${errorClass(err)}`);
+      finish();
     });
   });
 }

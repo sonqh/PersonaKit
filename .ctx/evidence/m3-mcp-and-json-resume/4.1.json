@@ -1,9 +1,8 @@
 {
-  "at": "2026-11-07T01:50:42.155Z",
-  "bundle_chars": 7480,
+  "at": "2026-11-07T02:07:09.528Z",
   "files": {
-    "src/cli/main.ts": "6153dbe0f90ac22dea4aba8435f50d7eed9a335fcdb2ea527eb306c76051661f",
-    "src/mcp/server.ts": "b891671fcd3ffba2d7e278ae23a810c3611b56a38f28b6a357bbdf788c226bb6",
+    "src/cli/main.ts": "7153f5683e1826fd70e8dd80182bfa892ea639b84f6a9a67dc34a7b9b30a7b0b",
+    "src/mcp/server.ts": "7e7e7433d69f9a55f993fe323c34297741daff7002f74ca0404df25f8bfbfe9c",
     "tests/mcp-docs.test.ts": "2387a1e3dc932af21e1c158a4f53967d1370dc920fa47fd7b26d013679b0a8a7",
     "tests/mcp.test.ts": "794116ca552dfc7daf75e54552752f38ce84f47efbf19b77e8879c6f075325cd"
   },
@@ -12,13 +11,12 @@
     "REQ-MCP-001",
     "REQ-MCP-004"
   ],
-  "started_at": "2026-11-07T01:50:38.138Z",
   "task": "m3-mcp-and-json-resume/4.1",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/mcp-docs.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "145a4e589d785d59b54135ed3e6325f71577180e5daa296aaecdcbb0b2211d9e"
+    "stdout_sha256": "9319e4649f255928c52aa33366ff7dab6295fb3e6bccc0e52e66bfe43a85ddc2"
   }
 }

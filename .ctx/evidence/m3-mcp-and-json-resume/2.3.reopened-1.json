@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:44:38.409Z",
+  "bundle_chars": 7838,
+  "files": {
+    "src/mcp/server.ts": "b891671fcd3ffba2d7e278ae23a810c3611b56a38f28b6a357bbdf788c226bb6",
+    "tests/mcp.test.ts": "794116ca552dfc7daf75e54552752f38ce84f47efbf19b77e8879c6f075325cd"
+  },
+  "kind": "command",
+  "reason": "stale evidence after the diff review fixes",
+  "reqs": [
+    "REQ-MCP-003"
+  ],
+  "started_at": "2026-11-07T01:44:32.095Z",
+  "task": "m3-mcp-and-json-resume/2.3",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/mcp.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "1f261587bcbce629c7a5d6a7e68d007a993c94084d34afcaa39c538ca77f82ce"
+  }
+}

@@ -2,7 +2,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { EventEmitter } from "node:events";
+import { dirname, join } from "node:path";
+import { PassThrough } from "node:stream";
+import { McpServer, UNEXPECTED_MESSAGE, installCrashLogging, serveStdio } from "../src/mcp/server.ts";
 import { ownerAction, propose } from "../src/core/store.ts";
 import { tempStore } from "./helpers.ts";
 import { call, req, session } from "./mcp-helpers.ts";
@@ -64,11 +67,49 @@ test("SCN-MCP-008-3 an unknown tool gets -32602", async () => {
   assert.equal((await import("../src/core/store.ts")).getRecord(store, record.id).state, "proposed");
 });
 
-test("unexpected errors use a fixed message", async () => {
+test("an unexpected error gives the fixed message and logs only the class", async () => {
   const { root } = tempStore();
-  // A store path that is a file: openStore fails in an unexpected way or with a known error. Either way no stack leaks.
-  const s = await session(join(root, "store.json"), call(1, "list", {}));
-  const r = s.byId(1).result;
-  assert.equal(r.isError, true);
-  assert.ok(!s.stdout.includes("    at "), "no stack trace");
+  const logs: string[] = [];
+  class StubFailure extends Error {}
+  const server = new McpServer({
+    storePath: root,
+    cwd: dirname(root),
+    log: (line) => logs.push(line),
+    operations: { listRecords: () => { throw new StubFailure(`${CANARY} raw error text`); } },
+  });
+  const r: any = await server.handleLine(call(1, "list", {}));
+  const result = r.result;
+  assert.equal(result.isError, true);
+  assert.equal(result.content[0].text, UNEXPECTED_MESSAGE);
+  assert.deepEqual(result.structuredContent.error, { code: "unexpected", exit_code: 1, message: UNEXPECTED_MESSAGE, details: {} });
+  assert.deepEqual(logs, ["personakit mcp: unexpected error in tool list: StubFailure"]);
+  assert.ok(!JSON.stringify(r).includes(CANARY));
+});
+
+test("the crash handlers log only the error class", () => {
+  const emitter = new EventEmitter();
+  const logs: string[] = [];
+  installCrashLogging((line) => logs.push(line), emitter as unknown as NodeJS.Process);
+  class CanaryCrash extends Error {}
+  emitter.emit("uncaughtException", new CanaryCrash(`${CANARY} uncaught text`));
+  emitter.emit("unhandledRejection", new TypeError(`${CANARY} rejection text`));
+  emitter.emit("unhandledRejection", `${CANARY} a string reason`);
+  assert.deepEqual(logs, ["personakit mcp: uncaught CanaryCrash", "personakit mcp: unhandled TypeError", "personakit mcp: unhandled String"]);
+  assert.ok(!logs.join("\n").includes(CANARY));
+});
+
+test("a stdin error drains the queue like end of file", async () => {
+  const { root } = tempStore();
+  const logs: string[] = [];
+  const server = new McpServer({ storePath: root, cwd: dirname(root), log: (line) => logs.push(line) });
+  const stdin = new PassThrough();
+  const stdout = new PassThrough();
+  let out = "";
+  stdout.on("data", (d) => (out += d));
+  const done = serveStdio(server, stdin, stdout, (line) => logs.push(line));
+  stdin.write(`${req(1, "ping")}\n${req(2, "ping")}`);
+  stdin.emit("error", new Error(`${CANARY} read failure`));
+  await done;
+  assert.deepEqual(out.trim().split("\n").map((l) => JSON.parse(l).id), [1, 2]);
+  assert.deepEqual(logs, ["personakit mcp: stdin Error"]);
 });

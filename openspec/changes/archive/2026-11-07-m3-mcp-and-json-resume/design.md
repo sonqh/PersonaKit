@@ -89,3 +89,13 @@ Sources, read on 2026-11-07:
 - JSON Resume has no place for career breaks, expiry dates, or contribution levels. Mitigation: export leaves them out and reports the count of left-out career breaks.
 - Import can create many proposals from one file. Mitigation: the proposals are private until the owner accepts them, and duplicate detection flags repeats.
 - The tool results reach a model. Mitigation: the results use the same filters as the CLI, and canary tests cover every tool.
+
+## Diff review, 2026-11-07
+
+The architect reviewed the diff and found no blocker. Fixed after the review:
+
+- The golden test writes a golden file only with `UPDATE_GOLDEN=1`. A missing golden file now fails the test. The dead `show-all-json` entry and its filter are gone.
+- A test now makes a raw `Error` reach the fallback for unexpected tool errors. The server takes optional operations for this test. The tool text equals the fixed message, and the log holds only the tool name and the error class.
+- `installCrashLogging` now holds the handlers for `uncaughtException` and `unhandledRejection`. A test sends errors with a canary message and finds only the class names in the log.
+- The `brief` tool reads the records once. It compiles the Markdown and the JSON from that one list with `briefBoth`.
+- `serveStdio` handles a stdin `error` like `end`. It answers the queued requests and then finishes. A test covers it.

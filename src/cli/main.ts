@@ -16,7 +16,7 @@ import {
   doctor, getRecord, initStore, openStore, ownerAction, readAll, setVisibility, update,
   type ActorLabel, type OwnerAction, type ProposeInput, type Store, type UpdatePatch,
 } from "../core/store.ts";
-import { McpServer, errorClass, serveStdio } from "../mcp/server.ts";
+import { McpServer, installCrashLogging, serveStdio } from "../mcp/server.ts";
 import { replaceFileAtomic } from "../core/fsutil.ts";
 import { briefText, cvCheck, cvDraft, exportJsonResume, importJsonResume, cvRecords as cvRecordsOp, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
 import {
@@ -452,8 +452,7 @@ async function cmdMcp(v: Values, io: Io): Promise<Result> {
   if (!io.streams) throw usage("personakit mcp needs the process streams.");
   const log = (line: string): void => io.stderr(`${line}\n`);
   // Only the error class goes to stderr: an error message can quote input or record text.
-  process.on("uncaughtException", (err) => log(`personakit mcp: uncaught ${errorClass(err)}`));
-  process.on("unhandledRejection", (err) => log(`personakit mcp: unhandled ${errorClass(err)}`));
+  installCrashLogging(log);
   const server = new McpServer({ storePath: v.store ?? defaultStorePath(io.env), cwd: io.cwd, log });
   await serveStdio(server, io.streams.stdin as unknown as import("node:stream").Readable, io.streams.stdout as unknown as import("node:stream").Writable, log);
   return { data: undefined, text: "", raw: true } as Result & { raw: boolean };

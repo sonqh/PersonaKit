@@ -14,8 +14,10 @@ import type { PersonaRecord, RecordKind, RecordState } from "../core/schema.ts";
 /** CV text and import files share this limit, in bytes. */
 export const TEXT_INPUT_LIMIT = 1024 * 1024;
 
-export function briefJson(store: Store, level: BriefLevel): BriefJson {
-  return compileBriefJson(readAll(store).records, level);
+/** The brief as Markdown and as JSON, compiled from one read of the store. */
+export function briefBoth(store: Store, level: BriefLevel): { markdown: string; json: BriefJson } {
+  const { records } = readAll(store);
+  return { markdown: compileBriefMarkdown(records, level), json: compileBriefJson(records, level) };
 }
 
 /** The brief as the CLI prints it: Markdown, or canonical JSON. */
