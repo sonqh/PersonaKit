@@ -110,6 +110,17 @@
   },
   {
     "n": 11,
+    "asked_at": "2026-11-07T01:26:16.399Z",
+    "task": "m2-web-workflow",
+    "text": "plan ready for m2-web-workflow. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away. Approved with the plan-review amendments the lead sent on 2026-11-07: sessionStorage token, serve --open with a one-time code and launcher scripts, CLI-only restore with a store lock, textContent-only UI with a static test, Host/Origin hardening, first-run states, src/web/logic.js for testable UI logic, proposeBatch prefix semantics, and restore validation details.",
+    "resolved_at": "2026-11-07T01:32:31.075Z"
+  },
+  {
+    "n": 12,
     "asked_at": "2026-11-07T01:30:16.172Z",
     "task": "m1-cv-fact-check",
     "text": "archive m1-cv-fact-check?",
@@ -118,5 +129,16 @@
     "verdict": "approved",
     "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi\". The architect rated the diff ready. The owner reviews and merges the pull request.",
     "resolved_at": "2026-11-07T01:30:16.938Z"
+  },
+  {
+    "n": 13,
+    "asked_at": "2026-11-07T02:08:55.928Z",
+    "task": "m2-web-workflow",
+    "text": "archive m2-web-workflow?",
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi\". The architect rated the diff ready, and the findings are fixed. The owner reviews and merges the pull request.",
+    "resolved_at": "2026-11-07T02:08:56.775Z"
   }
 ]

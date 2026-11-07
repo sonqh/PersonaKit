@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-07T02:05:24.232Z",
+  "files": {
+    "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
+    "src/core/archive.ts": "9531740704114c3cda40b89f52d2f718e017e079ce92034c462413be14d91944",
+    "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
+    "src/web/app.js": "146ca26ac83d19092f9fb6eab7d489158ec26467ba94aba7172950f6369d5e56",
+    "src/web/logic.js": "b1ae1098d885d21e8589d19a299de88f2bfe5eda5f087624dfeb996bd48484a5",
+    "tests/archive-cli.test.ts": "3279ddbd6fed23339581f99a89c15e531ea98e27f056c2890fa8fb985d648cb3",
+    "tests/archive.test.ts": "320450d4060a1da30031f8988b629930a0fd6ba020d159d482357e9db3cbd2f5",
+    "tests/server-api.test.ts": "e46d004c1b088fe65a9ec5af35ba86c66b4c614bd4bee97196c9943c3cb019bb",
+    "tests/web-flow.e2e.test.ts": "2c8a73cbb58d9639effa8fe788bd43b4cb74473ba2b87926bf8566eee3324aff",
+    "tests/web-logic.test.ts": "08a293d54bb0bfd34148a5b7849486a8f44c762b9df7961bdf1460c6afc82544",
+    "tests/web-static.test.ts": "1034f73ddd0d9603dcab2af0b56dbde02539b8353b67e2fe981a827bbb6af018"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ARC-001",
+    "REQ-ARC-003"
+  ],
+  "task": "m2-web-workflow/3.9",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/server-api.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "de133a2f29a5ce8a8468000549d1a2b1691fb86c1614fe16490cd5fe47f7912f"
+  }
+}

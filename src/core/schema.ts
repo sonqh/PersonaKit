@@ -99,7 +99,7 @@ const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 const EXTENSION_KEY = /^[a-z0-9]+(\.[a-z0-9-]+)+$/;
 // Not allowed in text: C0/C1 controls other than tab and line feed, bidi controls, zero-width characters.
 // These can hide or reorder text inside an agent brief.
-const CONTROL_CHARS = /[\u0000-\u0008\u000B-\u001F\u007F-\u009F​-‏‪-‮⁠-⁩﻿]/;
+export const CONTROL_CHARS = /[\u0000-\u0008\u000B-\u001F\u007F-\u009F​-‏‪-‮⁠-⁩﻿]/;
 
 export const STATEMENT_MAX = 2000;
 export const SHORT_TEXT_MAX = 200;

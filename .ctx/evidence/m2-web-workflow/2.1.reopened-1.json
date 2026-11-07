@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:42:54.421Z",
+  "bundle_chars": 7464,
+  "files": {
+    "src/cli/main.ts": "ff258ef4432d057e7ab1ee60fa44ec959c4c810963a708d140e733594c43710e",
+    "tests/import-cli.test.ts": "53a517442cf15c837912e2a7aa86a00592e962e2b61332fe4975f241ca112510"
+  },
+  "kind": "command",
+  "reason": "stale evidence: src/cli/main.ts",
+  "reqs": [
+    "REQ-ONB-004"
+  ],
+  "started_at": "2026-11-07T01:42:50.769Z",
+  "task": "m2-web-workflow/2.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/import-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "7b3c0b9f532de8564e8f648b53588d34eee9f452fd4854c09a99e40e68119a30"
+  }
+}

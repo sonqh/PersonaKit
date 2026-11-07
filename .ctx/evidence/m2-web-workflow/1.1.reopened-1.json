@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-07T01:39:01.323Z",
+  "bundle_chars": 8102,
+  "files": {
+    "src/core/store.ts": "c1ac21c141c2ccfdd23150bdd7ec2e118c4621807bf46116419a632d82d38689",
+    "tests/propose-batch.test.ts": "78249191be69d0e2c9756e843328bf7186c1140b212dc73356abcb1303f11434"
+  },
+  "kind": "command",
+  "reason": "stale evidence: src/core/store.ts",
+  "reqs": [
+    "REQ-ONB-007",
+    "REQ-ONB-004",
+    "REQ-ONB-003"
+  ],
+  "started_at": "2026-11-07T01:38:21.646Z",
+  "task": "m2-web-workflow/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/propose-batch.test.ts tests/cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "4d04bafbcd6ad6e4998487b635f0f4d332e24640053990e826c731dce3759be8"
+  }
+}

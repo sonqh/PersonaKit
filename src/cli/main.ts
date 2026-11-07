@@ -12,8 +12,12 @@ import { ExitCode, PersonaKitError } from "../core/errors.ts";
 import { defaultStorePath } from "../core/location.ts";
 import { agentView, compileBriefJson, compileBriefMarkdown, type BriefLevel } from "../core/brief.ts";
 import { buildCvDraft, checkCv, renderCvMarkdown, stripCv, type CvCheckResult } from "../core/cv.ts";
+import { exportArchive, restoreArchive } from "../core/archive.ts";
+import { splitText } from "../core/text-import.ts";
+import { writeNewFileAtomic } from "../core/fsutil.ts";
+import { startServer } from "../server/server.ts";
 import {
-  checkProposal, doctor, getRecord, initStore, openStore, ownerAction, propose, readAll, setVisibility, update,
+  doctor, getRecord, initStore, openStore, ownerAction, proposeBatch, readAll, setVisibility, update,
   type ActorLabel, type OwnerAction, type ProposeInput, type Store, type UpdatePatch,
 } from "../core/store.ts";
 import {
@@ -59,6 +63,8 @@ const OPTIONS = {
   target: { type: "string" },
   "as-of": { type: "string" },
   strict: { type: "boolean" },
+  port: { type: "string" },
+  open: { type: "boolean" },
 } as const satisfies ParseArgsConfig["options"];
 
 type Values = ReturnType<typeof parseArgs<{ options: typeof OPTIONS; allowPositionals: true }>>["values"];
@@ -77,6 +83,7 @@ Agent commands (never print private records):
   update ID --revision N [fields]                    Change a proposal, or propose a change to an accepted record
   list [--state S] [--kind K]                        List records
   show ID                                            Show one record
+  import text FILE [--user-stated]                   Propose records from pasted CV text in a file
 
 Owner commands (ask for confirmation):
   init                                               Create the store
@@ -87,6 +94,9 @@ Owner commands (ask for confirmation):
   visibility ID LEVEL                                Change visibility: private, ai, or public
   doctor [--fix]                                     Check the store
   skill install [--target claude|codex|all]          Install the personakit skill for your agents
+  serve [--port N] [--open]                          Start the local web app on 127.0.0.1
+  export --out FILE                                  Write the whole store to one archive file (holds private records)
+  import archive FILE                                Restore an archive into an empty store
 
 Common options:
   --store PATH      Store folder. Default: $PERSONAKIT_HOME or ~/.personakit
@@ -218,14 +228,19 @@ async function cmdPropose(v: Values, io: Io): Promise<Result> {
   } else {
     inputs = [proposeInputFromFlags(v)];
   }
-  // All or nothing: check every proposal before the first write.
-  const ids = new Set(readAll(store).records.map((r) => r.id));
-  const problems = inputs.flatMap((input, i) => checkProposal(store, input, ids).map((p) => (inputs.length > 1 ? `line ${i + 1}: ${p}` : p)));
-  if (problems.length) {
-    throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join("; ")}.`, { problems });
+  // All or nothing at the check step: proposeBatch checks every proposal before the first write.
+  let batch: ReturnType<typeof proposeBatch>;
+  try {
+    batch = proposeBatch(store, inputs, label);
+  } catch (err) {
+    // Keep the CLI wording: JSON Lines input names lines, not items.
+    if (err instanceof PersonaKitError && err.code === "invalid" && Array.isArray(err.details.problems)) {
+      const problems = (err.details.problems as string[]).map((p) => p.replace(/^item (\d+):/, "line $1:"));
+      throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join("; ")}.`, { problems });
+    }
+    throw err;
   }
-  const results = inputs.map((input) => {
-    const { record, duplicates } = propose(store, input, label);
+  const results = batch.map(({ record, duplicates }) => {
     // Echo no statement in any mode: no CLI output path prints the text of a private record.
     // Report only duplicates the caller may see.
     return { id: record.id, state: record.state, revision: record.revision, visibility: record.visibility, possible_duplicates: duplicates.visible, previously_rejected: duplicates.rejected_visible.length > 0 };
@@ -459,6 +474,99 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
   throw usage('Use "personakit cv draft", "personakit cv check FILE", or "personakit cv strip FILE".');
 }
 
+// ---------- import, export ----------
+// REQ-ONB-004 REQ-ARC-001 REQ-ARC-002 REQ-ARC-003
+
+export const ARCHIVE_FILE_LIMIT = 64 * 1024 * 1024;
+export const EXPORT_WARNING = "Warning: the archive holds every record, private records too. Keep the file private. Do not upload it or share it.";
+
+function readInputFile(path: string | undefined, what: string, limit: number): string {
+  if (!path) throw usage(`Give the ${what} file.`);
+  if (!existsSync(path)) throw new PersonaKitError("notFound", `The ${what} file ${path} does not exist.`, { file: path });
+  if (statSync(path).size > limit) throw new PersonaKitError("invalid", `The ${what} file ${path} is larger than ${limit / 1024 / 1024} MiB.`, { file: path });
+  return readFileSync(path, "utf8");
+}
+
+async function cmdImport(v: Values, io: Io, args: string[]): Promise<Result> {
+  const [sub, file] = args;
+  if (sub === "text") {
+    const text = readInputFile(file, "text", 1024 * 1024);
+    const drafts = splitText(text);
+    if (drafts.length === 0) throw new PersonaKitError("invalid", "The file gives no drafts. Nothing was proposed.");
+    const problems = drafts.flatMap((d, i) => d.problems.map((p) => `draft ${i + 1}: ${p}`));
+    if (problems.length) throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join(" ")}`, { problems });
+    const inputs: ProposeInput[] = drafts.map((d) => ({ kind: d.kind, statement: d.statement, sources: [{ kind: "cv", label: "pasted text" }], user_stated: v["user-stated"] === true }));
+    let batch: ReturnType<typeof proposeBatch>;
+    try {
+      batch = proposeBatch(storeFor(v, io), inputs, actorLabel(v, io.env));
+    } catch (err) {
+      if (err instanceof PersonaKitError && Array.isArray(err.details.problems)) {
+        const named = (err.details.problems as string[]).map((p) => p.replace(/^item (\d+):/, "draft $1:"));
+        throw new PersonaKitError(err.code, `Nothing was proposed. ${named.join("; ")}.`, { problems: named });
+      }
+      throw err;
+    }
+    // IDs and counts only: no statement text in any mode.
+    const proposed = batch.map(({ record }) => ({ id: record.id, kind: record.kind, revision: record.revision, visibility: record.visibility }));
+    const text2 = `Proposed ${proposed.length} records:\n${proposed.map((r) => `  ${r.id} (${r.kind})`).join("\n")}\nThe owner reviews proposals with "personakit review" or in the web app.`;
+    return { data: { proposed, count: proposed.length }, text: text2 };
+  }
+  if (sub === "archive") {
+    const text = readInputFile(file, "archive", ARCHIVE_FILE_LIMIT);
+    const r = restoreArchive(v.store ?? defaultStorePath(io.env), text, { cwd: io.cwd });
+    const msg = `${r.resumed ? "Finished the restore" : "Restored the archive"} into ${r.root}: ${r.records} records and ${r.events} events.`;
+    return { data: r, text: msg };
+  }
+  throw usage('Use "personakit import text FILE" or "personakit import archive FILE".');
+}
+
+async function cmdExport(v: Values, io: Io): Promise<Result> {
+  if (!v.out) throw usage("export needs --out FILE.");
+  const out = resolve(v.out);
+  if (existsSync(out)) throw new PersonaKitError("invalid", `The file ${out} already exists. Choose a new file name.`, { file: out });
+  const store = storeFor(v, io);
+  const text = exportArchive(store);
+  const parsed = JSON.parse(text) as { records: unknown[]; events: unknown[] };
+  try {
+    writeNewFileAtomic(out, text);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "EEXIST") throw new PersonaKitError("invalid", `The file ${out} already exists. Choose a new file name.`, { file: out });
+    throw err;
+  }
+  io.stderr(`${EXPORT_WARNING}\n`);
+  return { data: { written: out, records: parsed.records.length, events: parsed.events.length }, text: `Wrote ${parsed.records.length} records and ${parsed.events.length} events to ${out}.` };
+}
+
+// ---------- serve ----------
+// REQ-WEB-001 REQ-WEB-004 REQ-WEB-009
+
+async function cmdServe(v: Values, io: Io): Promise<Result> {
+  let port: number | undefined;
+  if (v.port !== undefined) {
+    port = Number(v.port);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) throw usage("--port must be a whole number from 1 to 65535.");
+  }
+  const opts: Parameters<typeof startServer>[0] = { storePath: v.store ?? defaultStorePath(io.env), cwd: io.cwd, open: v.open === true };
+  if (port !== undefined) opts.port = port;
+  const running = await startServer(opts);
+  // Only the URL and the store path. No request log, no record text.
+  const lines = [
+    "PersonaKit is running on this computer only.",
+    v.open ? "Your browser opens the app. If it does not open, use this URL:" : "Open this URL in your browser:",
+    `  ${running.url}`,
+    `Store: ${running.storeRoot}`,
+  ];
+  if (running.warning) lines.push(`Warning: ${running.warning}`);
+  lines.push("Keep this window open while you use the app. Press Ctrl+C to stop.");
+  io.stdout(`${lines.join("\n")}\n`);
+  await new Promise<void>((resolveStop) => {
+    const stop = (): void => { process.off("SIGINT", stop); process.off("SIGTERM", stop); void running.close().then(resolveStop); };
+    process.on("SIGINT", stop);
+    process.on("SIGTERM", stop);
+  });
+  return { data: { stopped: true }, text: "PersonaKit stopped." };
+}
+
 // ---------- entry ----------
 
 export async function run(argv: string[], io: Io): Promise<number> {
@@ -493,6 +601,9 @@ export async function run(argv: string[], io: Io): Promise<number> {
       doctor: () => cmdDoctor(values, io),
       skill: () => cmdSkill(values, io, args),
       cv: () => cmdCv(values, io, args),
+      import: () => cmdImport(values, io, args),
+      export: () => cmdExport(values, io),
+      serve: () => cmdServe(values, io),
     };
     const handler = handlers[command];
     if (!handler) throw usage(`Unknown command "${command}". Run "personakit --help".`);
