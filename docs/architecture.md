@@ -6,7 +6,7 @@ Status: Proposed. M1 implements the record store and the CLI. See [the M1 design
 
 The first flow accepts pasted CV text or a short interview. The user reviews the records that result. The result screen offers an AI brief and a tailored CV draft.
 
-A user can edit records later. A CV draft needs a job description. The AI brief does not.
+A user can edit records later. A CV draft can use a job description later to pick records. M1 builds the draft without one.
 
 ## Core records
 
@@ -65,14 +65,14 @@ CV / interview -> proposed records -> user review -> accepted records
                                    |                               |
                               AI context pack                  CV draft
                                    |                               |
-                            audience filter              job description
+                            audience filter            public records only
                                    |                               |
-                              short / full                cited statements
+                              short / full      cited lines -> owner review
 ```
 
 The compiler must filter records before it sends data to an optional AI model. Only accepted records can enter an output. The output records the source IDs it used.
 
-The AI brief includes relevant preferences and goals. The CV uses professional facts and capabilities. A CV must not expose private notes only because they appear in the same vault.
+The AI brief includes relevant preferences and goals. The CV uses professional facts and capabilities with visibility public. Intents and preferences never enter a CV. An agent can rewrite the draft, and `personakit cv check` refuses every final line that does not cite accepted public records. A CV must not expose private notes only because they appear in the same vault.
 
 ## Grounding rules
 

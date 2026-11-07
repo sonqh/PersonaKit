@@ -39,6 +39,7 @@ You need Node.js 22.18 or newer.
 4. Ask an agent to remember a fact about you. The agent proposes a record.
 5. Run `personakit review` in your own terminal. Accept or reject each proposal. Choose `ai` visibility for facts that assistants may use.
 6. Run `personakit brief`. Give the brief to any assistant.
+7. For a CV, run `personakit cv draft --out cv.md`. Ask an agent to rewrite it and keep the `[pk:...]` markers. Run `personakit cv check cv.md`, read the text, then run `personakit cv strip cv.md`. Only records with visibility `public` enter a CV.
 
 Agents can only propose. You decide what is accepted. This step protects against agent mistakes. It does not stop a program that has full access to your files.
 

@@ -1,9 +1,9 @@
 // personakit CLI. A thin wrapper around src/core. Agents pass --json and read JSON from stdout.
-// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001 REQ-AGT-003
+// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001 REQ-AGT-003 REQ-CV-006
 
 import { parseArgs, type ParseArgsConfig } from "node:util";
 import { createInterface } from "node:readline/promises";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,6 +11,7 @@ import { stringifyCanonical } from "../core/canonical.ts";
 import { ExitCode, PersonaKitError } from "../core/errors.ts";
 import { defaultStorePath } from "../core/location.ts";
 import { agentView, compileBriefJson, compileBriefMarkdown, type BriefLevel } from "../core/brief.ts";
+import { buildCvDraft, checkCv, renderCvMarkdown, stripCv, type CvCheckResult } from "../core/cv.ts";
 import {
   checkProposal, doctor, getRecord, initStore, openStore, ownerAction, propose, readAll, setVisibility, update,
   type ActorLabel, type OwnerAction, type ProposeInput, type Store, type UpdatePatch,
@@ -56,6 +57,7 @@ const OPTIONS = {
   out: { type: "string" },
   fix: { type: "boolean" },
   target: { type: "string" },
+  "as-of": { type: "string" },
 } as const satisfies ParseArgsConfig["options"];
 
 type Values = ReturnType<typeof parseArgs<{ options: typeof OPTIONS; allowPositionals: true }>>["values"];
@@ -66,6 +68,9 @@ Usage: personakit <command> [options]
 
 Agent commands (never print private records):
   brief [--level short|full] [--json] [--out FILE]   Compile the AI brief
+  cv draft [--as-of DATE] [--json] [--out FILE]      Build a cited CV draft from public records
+  cv check FILE                                      Check that every CV line cites public records
+  cv strip FILE [--out FILE]                         Print the final CV text without markers
   propose --kind K --statement TEXT [options]        Propose one record
   propose --from FILE|-                              Propose records from JSON Lines
   update ID --revision N [fields]                    Change a proposal, or propose a change to an accepted record
@@ -383,6 +388,71 @@ async function cmdSkill(v: Values, io: Io, args: string[]): Promise<Result> {
   return { data: { installed: dests }, text: `Installed the personakit skill:\n${dests.map((d) => `  ${d}`).join("\n")}` };
 }
 
+// REQ-CV-001 REQ-CV-002 REQ-CV-005 REQ-CV-006 REQ-VIS-002
+export const CV_FILE_LIMIT = 1024 * 1024;
+
+function readCvFile(path: string | undefined): string {
+  if (!path) throw usage("Give the CV file: personakit cv check FILE.");
+  if (!existsSync(path)) throw new PersonaKitError("notFound", `The CV file ${path} does not exist.`, { file: path });
+  if (statSync(path).size > CV_FILE_LIMIT) throw new PersonaKitError("invalid", `The CV file ${path} is larger than 1 MiB.`, { file: path });
+  return readFileSync(path, "utf8");
+}
+
+function cvRecords(v: Values, io: Io): PersonaRecord[] {
+  const { records, problems } = readAll(storeFor(v, io));
+  if (problems.length) {
+    throw new PersonaKitError("invalid", `${problems.length} record file${problems.length === 1 ? "" : "s"} cannot be read. Run "personakit doctor".`, { unreadable: problems.length });
+  }
+  return records;
+}
+
+function describeCheck(r: CvCheckResult): string {
+  const lines = r.findings.map((f) => `line ${f.line}: ${f.level} ${f.code}: ${f.message}`);
+  if (r.owner_lines.length) lines.push(`Owner-stated lines to review: ${r.owner_lines.join(", ")}.`);
+  lines.push(r.ok ? `No errors. ${r.cited_ids.length} records cited.` : `${r.errors} error${r.errors === 1 ? "" : "s"}. Fix them before "personakit cv strip".`);
+  return lines.join("\n");
+}
+
+async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
+  const [sub, file] = args;
+  if (sub === "draft") {
+    if (v["as-of"] !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(v["as-of"])) throw usage("--as-of must be a date as YYYY-MM-DD.");
+    const records = cvRecords(v, io);
+    const draft = buildCvDraft(records, v["as-of"]);
+    const count = draft.sections.reduce((n, s) => n + s.items.length, 0);
+    const aiOnly = records.filter((r) => r.state === "accepted" && r.visibility === "ai" && r.kind !== "intent" && r.kind !== "preference").length;
+    if (count < 3 && aiOnly > 0) {
+      // Counts only, never text. The hint goes to stderr, so it never enters the draft.
+      io.stderr(`${aiOnly} accepted records have visibility ai. A CV uses public records only. To add one, run "personakit visibility <id> public".\n`);
+    }
+    const out = v.json ? stringifyCanonical(draft) : renderCvMarkdown(draft);
+    if (v.out) {
+      writeFileSync(v.out, out);
+      return { data: { written: resolve(v.out), records: count }, text: `Wrote the CV draft with ${count} records to ${resolve(v.out)}.` };
+    }
+    return { data: undefined, text: out, raw: true } as Result & { raw: boolean };
+  }
+  if (sub === "check") {
+    const text = readCvFile(file);
+    const result = checkCv(text, cvRecords(v, io));
+    return { data: result, text: describeCheck(result), exitCode: result.ok ? ExitCode.ok : ExitCode.invalid };
+  }
+  if (sub === "strip") {
+    const text = readCvFile(file);
+    const { text: final, check } = stripCv(text, cvRecords(v, io));
+    if (final === undefined) {
+      io.stderr(`${describeCheck(check)}\n`);
+      throw new PersonaKitError("invalid", `The CV has ${check.errors} error${check.errors === 1 ? "" : "s"}. Nothing was printed.`, { errors: check.errors });
+    }
+    if (v.out) {
+      writeFileSync(v.out, final);
+      return { data: { written: resolve(v.out), owner_lines: check.owner_lines }, text: `Wrote the final CV to ${resolve(v.out)}. Review it before you send it.` };
+    }
+    return { data: undefined, text: final, raw: true } as Result & { raw: boolean };
+  }
+  throw usage('Use "personakit cv draft", "personakit cv check FILE", or "personakit cv strip FILE".');
+}
+
 // ---------- entry ----------
 
 export async function run(argv: string[], io: Io): Promise<number> {
@@ -416,6 +486,7 @@ export async function run(argv: string[], io: Io): Promise<number> {
       visibility: () => cmdVisibility(values, io, args),
       doctor: () => cmdDoctor(values, io),
       skill: () => cmdSkill(values, io, args),
+      cv: () => cmdCv(values, io, args),
     };
     const handler = handlers[command];
     if (!handler) throw usage(`Unknown command "${command}". Run "personakit --help".`);

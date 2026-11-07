@@ -29,6 +29,7 @@ Use the `personakit` skill. Agents propose records. Only the user accepts them.
 - Run `npm run check` and `npx -y spec-ctx@0.5.0 gate --strict` before a push. The first command runs the TypeScript compiler, the privacy scan, and the tests.
 - For a bug, use [docs/bug-reporting.md](docs/bug-reporting.md). Add a regression test and link its requirement ID.
 - Keep each skill in `.agents/skills/` and its copy in `.claude/skills/` identical. A test fails when they differ.
+- Use one branch from `main` for each change, and open its pull request against `main`. Do not stack pull requests. Start the next change after the previous pull request is merged.
 
 ## Writing
 
