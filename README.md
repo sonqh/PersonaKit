@@ -116,7 +116,12 @@ The server uses the store in `PERSONAKIT_HOME`, or `~/.personakit/`. To use anot
 
 ## Current status
 
-M1 delivered the record schema, the store, the CLI, the agent skill, and the CV projection. M2 adds the local web app, paste import, and the portable archive. See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
+- M1: the record schema, the store, the CLI, the agent skill, the cited CV draft, and the CV fact checks.
+- M2: the local web app, paste import, and the portable archive.
+- M3: the MCP server and JSON Resume export and import.
+- Not started: PDF and DOCX import, optional LLM extraction, role packs, and web restore. Each one needs an owner decision. The M0 user research is still open.
+
+See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
 
 ## Related tools
 
