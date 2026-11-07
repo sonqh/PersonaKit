@@ -1,10 +1,9 @@
-# Spec Delta
+# cv-draft Specification
 
 ## Purpose
-
 Build a CV draft from accepted public records. Make sure that every line in the final CV text cites the records behind it.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: REQ-CV-001 Cited CV draft
 `cv draft` SHALL build Markdown from accepted public records. Sections: Summary (identity), Experience, Freelance engagements, Education, Credentials (issued and expiry dates), Career breaks, and Capabilities. Intents SHALL NOT enter. Each record SHALL be one `- ` line: line feeds become spaces, and `[pk:` in record text becomes `(pk:`. The line SHALL end with `[pk:<ID>]`. The same records SHALL give the same bytes.
@@ -53,7 +52,7 @@ Build a CV draft from accepted public records. Make sure that every line in the 
 - **THEN** it reports no error and exits with code 0
 
 ### Requirement: REQ-CV-005 Final text after review
-`cv strip <file>` SHALL print the CV text without markers. It SHALL refuse a file with a check error. Then it prints the findings to stderr and no text to stdout. The owner reviews the final text. PersonaKit does not claim that a paraphrase keeps the meaning of its records.
+`cv strip <file>` SHALL print the CV text without markers. It SHALL refuse a file with a check error. Then it prints the findings to stderr and no CV text to stdout. With `--json`, the text and the owner lines SHALL be fields of one JSON object. The owner reviews the final text. PersonaKit does not claim that a paraphrase keeps the meaning of its records.
 
 #### Scenario: SCN-CV-005-1 Strip removes the markers
 - **WHEN** the owner strips a file with no check error

@@ -1,6 +1,5 @@
 {
-  "at": "2026-11-07T01:04:27.681Z",
-  "bundle_chars": 8069,
+  "at": "2026-11-07T01:14:56.963Z",
   "files": {
     "tests/agents.test.ts": "c6cbcda9ccf3a7870de02d15c8337ad228bb9f59b75d35360adce2ff43c1980d"
   },
@@ -9,13 +8,12 @@
     "REQ-AGT-002",
     "REQ-AGT-001"
   ],
-  "started_at": "2026-11-07T01:04:21.692Z",
   "task": "m1-cv-projection/3.1",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/agents.test.ts && npx -y spec-ctx@0.5.0 lint ste AGENTS.md .agents/skills/personakit/SKILL.md README.md docs/claude-ai.md docs/architecture.md",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "c31c487d60a4e6c6a35966786d3ded8f98f4700fe8927c0b29d43601fcdbd087"
+    "stdout_sha256": "1bb397ea14bebe249be1a410ae8f3a1164c2bbc87d562492d859cbe6248076d1"
   }
 }

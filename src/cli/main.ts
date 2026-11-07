@@ -448,6 +448,8 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
       writeFileSync(v.out, final);
       return { data: { written: resolve(v.out), owner_lines: check.owner_lines }, text: `Wrote the final CV to ${resolve(v.out)}. Review it before you send it.` };
     }
+    // With --json, agents read JSON from stdout: the text goes inside the object.
+    if (v.json) return { data: { text: final, owner_lines: check.owner_lines }, text: final };
     return { data: undefined, text: final, raw: true } as Result & { raw: boolean };
   }
   throw usage('Use "personakit cv draft", "personakit cv check FILE", or "personakit cv strip FILE".');

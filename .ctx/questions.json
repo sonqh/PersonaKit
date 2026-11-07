@@ -91,7 +91,10 @@
     "asked_at": "2026-11-07T01:05:48.577Z",
     "task": "m1-cv-projection",
     "text": "archive m1-cv-projection?",
-    "status": "open",
-    "stage": "archive"
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "The owner approved the archive of m1-cv-projection in chat on 2026-11-07 08:13: \"Ok đồng ý, hãy làm theo hướng tốt nhất. Tôi duyệt\"",
+    "resolved_at": "2026-11-07T01:15:06.217Z"
   }
 ]

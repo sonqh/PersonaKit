@@ -70,5 +70,5 @@ Propose a fact only when the user states it, or says yes to it, in this conversa
 | 3 | Revision conflict | Tell the user. PersonaKit created a proposal. |
 | 4 | Confirmation required | You ran an owner command. Stop. |
 | 5 | Not found | Check the ID |
-| 6 | Invalid record | Read `error.message` and fix the input |
+| 6 | Invalid input or CV check errors | Read `error.message` or the findings and fix the input |
 | 7 | Unsafe store path | Tell the user. Do not change `PERSONAKIT_HOME`. |

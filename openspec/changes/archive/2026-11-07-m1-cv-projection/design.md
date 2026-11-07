@@ -70,3 +70,14 @@ Moved to the next change `m1-cv-fact-check`:
 - ownership verbs with inflections, `co-led` first, verbs from the cited statement, and records without a contribution level
 
 Kept against advice: the `AGENTS.md` branch rule stays in this change, because the owner asked for it here. It is one line of documentation.
+
+## Archive-stop review, 2026-11-07
+
+The architect reviewed the diff. The line model held against every bypass tried: headings with markers, marker-only lines, indented code, setext headings, HTML comments, fences, and hidden characters. Fixed after the review:
+
+- Blocker: the end-of-line marker regex backtracked in quadratic time. A 1 MiB line took minutes. A linear parser with `lastIndexOf` replaces it, and a test checks a 1 MiB line in under one second.
+- `cv strip --json` printed raw text. It now prints one JSON object with the text and the owner lines.
+- A partial expiry date such as `2026-11` now lasts to the end of its month.
+- Spaces inside a marker are malformed, as the grammar says.
+- Tests now cover the freelance and career-break sections, and the draft without a hint.
+- The skill describes exit code 6 as invalid input or CV check errors.

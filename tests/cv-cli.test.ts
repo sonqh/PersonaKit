@@ -78,6 +78,23 @@ test("SCN-CV-005-2 strip with errors prints nothing to stdout and exits 6", () =
   assert.equal(r.code, 6);
   assert.equal(r.stdout, "");
   assert.match(r.stderr, /missing-citation/);
+  const j = cli(root, ["cv", "strip", file, "--json"]);
+  assert.equal(j.code, 6);
+  assert.equal(j.json().error.code, "invalid");
+  assert.ok(!("text" in j.json()), "no CV text on stdout with --json");
+});
+
+test("cv strip --json returns the text inside a JSON object", () => {
+  const { root, store } = tempStore();
+  seed(store, [{ statement: "Ran the evening shift." }]);
+  const file = join(tempDir(), "cv.md");
+  writeFileSync(file, cli(root, ["cv", "draft"]).stdout + "Alex Example [pk:self]\n");
+  const r = cli(root, ["cv", "strip", file, "--json"]);
+  assert.equal(r.code, 0, r.stderr);
+  const out = r.json();
+  assert.ok(out.text.includes("- Ran the evening shift."));
+  assert.ok(!out.text.includes("[pk:"));
+  assert.equal(out.owner_lines.length, 1);
 });
 
 test("SCN-VIS-002-3 cv check never prints record text, also with --json", () => {
@@ -104,6 +121,8 @@ test("the draft hint counts ai records on stderr and never prints their text", (
   assert.equal(r.code, 0);
   assert.match(r.stderr, /2 accepted records have visibility ai/);
   assert.ok(!r.stdout.includes("CANARY") && !r.stderr.includes("CANARY"));
+  seed(store, [{ statement: "Public one." }, { statement: "Public two." }, { statement: "Public three." }]);
+  assert.equal(cli(root, ["cv", "draft"]).stderr, "", "no hint when the draft has three or more records");
 });
 
 for (const name of fixtureNames()) {
