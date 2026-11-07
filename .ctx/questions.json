@@ -179,7 +179,10 @@
     "asked_at": "2026-11-07T03:47:45.868Z",
     "task": "m3-docx-import",
     "text": "archive m3-docx-import?",
-    "status": "open",
-    "stage": "archive"
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "The owner approved the archive of m3-docx-import in chat on 2026-11-07 15:43: \"duyệt\"",
+    "resolved_at": "2026-11-07T08:44:22.874Z"
   }
 ]
