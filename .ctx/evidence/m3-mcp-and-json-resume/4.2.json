@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-07T02:07:14.698Z",
+  "files": {
+    "src/app/operations.ts": "5b53ffc55c3211844cf23219b5abd7d56289d7a877021b56bf73fcdcf7874457",
+    "src/cli/main.ts": "7153f5683e1826fd70e8dd80182bfa892ea639b84f6a9a67dc34a7b9b30a7b0b",
+    "src/core/json-resume.ts": "1eceb35db722bd2ebe540ec1e83db39c2a5efb64d33748c7db6b5bb05908f913",
+    "src/mcp/server.ts": "7e7e7433d69f9a55f993fe323c34297741daff7002f74ca0404df25f8bfbfe9c",
+    "tests/json-resume-cli.test.ts": "e312044988b2577b1fc4988a221d16d51648006cc24b58c6e3cf67f94fae65e4",
+    "tests/json-resume.test.ts": "682848d147b497fb197eb5914adcfa8a79497550ac94c83529c4cc7b9f4377c0",
+    "tests/mcp-docs.test.ts": "2387a1e3dc932af21e1c158a4f53967d1370dc920fa47fd7b26d013679b0a8a7",
+    "tests/mcp.test.ts": "794116ca552dfc7daf75e54552752f38ce84f47efbf19b77e8879c6f075325cd"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-MCP-004",
+    "REQ-RES-004"
+  ],
+  "task": "m3-mcp-and-json-resume/4.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/agents.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "dfed573db537c37d10dd197b93f4b2cf81a270b3f2dc193d65e1bd62b5c58b7e"
+  }
+}

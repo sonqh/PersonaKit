@@ -17,7 +17,7 @@ ignore = []
 [ids]
 # Capability codes. check reports a REQ whose code is not in this list. id new accepts only these codes.
 # An empty list turns the rule off, and id new accepts any code of 2 to 6 upper case letters.
-caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC", "STO", "CLI", "AGT", "WEB"]
+caps = ["PER", "VIS", "ONB", "AIP", "CV", "BUG", "ARC", "STO", "CLI", "AGT", "WEB", "MCP", "RES"]
 # Pattern of the task number in a tasks.md checkbox.
 task_pattern = '\d+\.\d+'
 # true makes adopt and id new write the ID in square brackets, [REQ-UA-001], as OpenSpec PR #1979 reads it.

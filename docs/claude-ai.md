@@ -1,6 +1,30 @@
 # Use PersonaKit with claude.ai
 
-claude.ai cannot run commands on your computer. In M1 you move data between claude.ai and PersonaKit by hand.
+claude.ai on the web cannot run commands on your computer. There you move data between claude.ai and PersonaKit by hand. The steps below show how.
+
+## Connect Claude Desktop directly
+
+The Claude Desktop app can start PersonaKit as a local MCP server. Then you do not need the manual steps.
+
+1. Find the path to `node` with `which node`.
+2. Open the Claude Desktop settings, then Developer, then Edit Config. This opens `claude_desktop_config.json`.
+3. Add the `personakit` server. Use the full path to `node` and to `bin/personakit.mjs` in your clone:
+
+   ```json
+   {
+     "mcpServers": {
+       "personakit": {
+         "command": "/usr/local/bin/node",
+         "args": ["/path/to/PersonaKit/bin/personakit.mjs", "mcp"]
+       }
+     }
+   }
+   ```
+
+4. Restart Claude Desktop. Ask Claude to read your PersonaKit brief.
+5. When Claude proposes a record, run `personakit review` in your own terminal. Claude cannot accept records.
+
+The tools return the same data as the CLI. Private records stay redacted.
 
 ## Give claude.ai your brief
 

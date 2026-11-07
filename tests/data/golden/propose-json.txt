@@ -1,0 +1,9 @@
+exit 0
+{
+  "id": "<ID>",
+  "possible_duplicates": [],
+  "previously_rejected": false,
+  "revision": 1,
+  "state": "proposed",
+  "visibility": "private"
+}

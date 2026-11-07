@@ -1,0 +1,6 @@
+exit 0
+--- stdout
+01JC9Z00000000000000000001  identity  accepted  public  rev 2  by cli
+  Dara Penhallow is a mature student moving from retail management into data analysis.
+
+--- stderr

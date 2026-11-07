@@ -121,6 +121,17 @@
   },
   {
     "n": 12,
+    "asked_at": "2026-11-07T01:27:42.453Z",
+    "task": "m3-mcp-and-json-resume",
+    "text": "plan ready for m3-mcp-and-json-resume. Approve to start the tasks?",
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away. Approved with the architect plan-review amendments the lead sent on 2026-11-07: protocol era keyed on the _meta protocolVersion key, a byte-level JSON-RPC splitter with ordered handling and a clean drain on stdin end, fixed error texts and quiet crash handlers, honest import write semantics with a cap and one batch label, import input hygiene, an operations layer that returns data only with full-suite tests, and tool annotations.",
+    "resolved_at": "2026-11-07T01:35:00.877Z"
+  },
+  {
+    "n": 13,
     "asked_at": "2026-11-07T01:30:16.172Z",
     "task": "m1-cv-fact-check",
     "text": "archive m1-cv-fact-check?",
@@ -131,7 +142,7 @@
     "resolved_at": "2026-11-07T01:30:16.938Z"
   },
   {
-    "n": 13,
+    "n": 14,
     "asked_at": "2026-11-07T02:08:55.928Z",
     "task": "m2-web-workflow",
     "text": "archive m2-web-workflow?",
@@ -140,5 +151,16 @@
     "verdict": "approved",
     "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi\". The architect rated the diff ready, and the findings are fixed. The owner reviews and merges the pull request.",
     "resolved_at": "2026-11-07T02:08:56.775Z"
+  },
+  {
+    "n": 15,
+    "asked_at": "2026-11-07T02:10:31.222Z",
+    "task": "m3-mcp-and-json-resume",
+    "text": "archive m3-mcp-and-json-resume?",
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "Delegated by the owner on 2026-11-07 08:18 while away: \"hãy tiếp tục hoàn thành tất cả các M giúp tôi\". The architect rated the diff ready, and the findings are fixed. The owner reviews and merges the pull request.",
+    "resolved_at": "2026-11-07T02:10:32.013Z"
   }
 ]

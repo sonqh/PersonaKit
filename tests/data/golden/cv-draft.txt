@@ -1,0 +1,45 @@
+exit 0
+--- stdout
+# CV draft
+
+## Summary
+
+- Dara Penhallow is a mature student moving from retail management into data analysis. (Student) [pk:01JC9Z00000000000000000001]
+- Ilse Varga is a freelance visual and product designer who works with small businesses. (Freelance Designer) [pk:01JC9Z00000000000000000040]
+- Mira Okonkwo-Lind is a backend software engineer based in the fictional city of Port Alder. (Backend Software Engineer) [pk:01JC9Z00000000000000000085]
+- Tobias Reyna is a customer support specialist who speaks English and Spanish. (Customer Support Specialist) [pk:01JC9Z00000000000000000127]
+
+## Experience
+
+- Works as a senior backend engineer at Northwind Transit on the fare payment and trip scheduling services. (Senior Backend Engineer, Northwind Transit, 2022-03 to now) [pk:01JC9Z00000000000000000091]
+- Works as a support specialist at Harbor Lane Clinic, answering patient questions about the online portal, appointments, and billing. (Support Specialist, Harbor Lane Clinic, 2021-05 to now) [pk:01JC9Z00000000000000000133]
+- Runs an independent design practice, taking short engagements for branding, packaging, and small web projects. (Freelance Designer, 2020-04 to now) [pk:01JC9Z00000000000000000046]
+- Rewrote the clinic's twenty most-used help articles in plain language, and repeat calls about portal login dropped by about a third. (Harbor Lane Clinic, 2023-02 to 2023-06) [pk:01JC9Z00000000000000000136]
+- Led the migration of the Northwind Transit fare service from a nightly batch job to an event-driven pipeline, which cut fare reconciliation time from hours to minutes. (Northwind Transit, 2023-01 to 2023-09) [pk:01JC9Z00000000000000000094]
+- Built a spreadsheet that tracked waste and markdowns, which the area manager later shared with three other stores. (Kestrel Home Goods, 2021 to 2022) [pk:01JC9Z00000000000000000016]
+- Worked on the front desk at Cedar Row Library, handling member accounts and room bookings. (Front Desk Assistant, Cedar Row Library, 2018-09 to 2021-04) [pk:01JC9Z00000000000000000142]
+- Worked as a software developer at Bramblewood Logistics, building internal tools for warehouse stock counts. (Software Developer, Bramblewood Logistics, 2018-07 to 2022-02) [pk:01JC9Z00000000000000000103]
+- Worked as a store supervisor at Kestrel Home Goods, managing rotas and weekly stock orders for a team of nine. (Store Supervisor, Kestrel Home Goods, 2016-04 to 2023-08) [pk:01JC9Z00000000000000000010]
+
+## Freelance engagements
+
+- Designed gift box packaging for a holiday product line at Copperleaf Teas. (Copperleaf Teas, 2024-09 to 2024-10) [pk:01JC9Z00000000000000000064]
+- Contributed poster and flyer drafts to the spring fair campaign for the Larkspur Community Garden. (Larkspur Community Garden, 2024-02 to 2024-03) [pk:01JC9Z00000000000000000061]
+- Made the menu layout and table cards for the reopening of Juniper Street Cafe. (Juniper Street Cafe, 2022-06 to 2022-07) [pk:01JC9Z00000000000000000052]
+- Designed a new logo and shop sign for Tidewater Bakery. (Tidewater Bakery, 2021-03 to 2021-04) [pk:01JC9Z00000000000000000049]
+
+## Education
+
+- Studies for a diploma in data analysis at the fictional Eastmere Community College. (Eastmere Community College, 2025-09 to now) [pk:01JC9Z00000000000000000007]
+
+## Credentials
+
+- Holds a Certified Customer Care Professional credential from the fictional Guild of Service Practitioners. (Guild of Service Practitioners, issued 2023-11-15, valid until 2026-11-15) [pk:01JC9Z00000000000000000145]
+
+## Capabilities
+
+- Can clean and summarize data in spreadsheets and is learning SQL and basic Python. [pk:01JC9Z00000000000000000022]
+- Builds brand identities, print layouts, and simple web page designs, from first sketch to print-ready files. [pk:01JC9Z00000000000000000067]
+- Designs and operates TypeScript and Go services backed by PostgreSQL and Redis. [pk:01JC9Z00000000000000000106]
+
+--- stderr

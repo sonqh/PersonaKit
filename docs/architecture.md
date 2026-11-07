@@ -103,7 +103,10 @@ Role packs supply interview questions, examples, terminology, and CV section sug
 - Application layer: onboarding, record review, import, output preparation.
 - Web interface (M2): a local server in `src/server/` and static pages in `src/web/`. It binds 127.0.0.1, needs a token on every API call, and checks the Host and Origin headers. These checks are a safeguard, not a security boundary.
 - CLI (M1): a thin wrapper around the core. Agents and the owner use it.
-- Adapters later: JSON Resume, optional LLMs, MCP.
+- Application layer (M3): `src/app/operations.ts` holds the operations that the CLI and the MCP server share.
+- MCP server (M3): `personakit mcp` serves the agent tools over stdio. It has no owner actions.
+- JSON Resume (M3): export from public records, and import as proposals.
+- Adapters later: optional LLMs.
 
 Keep personal record IDs separate from spec-ctx requirement IDs. The first identifies user-owned data. The second identifies product requirements and tests.
 

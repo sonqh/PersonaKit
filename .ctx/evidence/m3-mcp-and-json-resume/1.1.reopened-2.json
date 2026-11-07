@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:54:49.072Z",
+  "files": {
+    "src/app/operations.ts": "599e86be209cc7d26ad2b11c9937e9d12bc20b871ecfb0c7d3141e8a1332deed",
+    "src/mcp/server.ts": "b891671fcd3ffba2d7e278ae23a810c3611b56a38f28b6a357bbdf788c226bb6",
+    "tests/golden.test.ts": "39516b3e4bd5cfd426bbde01d7373957b0fdf7b7dbfecc38703dcb09b6bc7aee",
+    "tests/mcp-tools.test.ts": "21660369e174415e2e734b930527b019d485a7b2a5f96d022eb704dca1f0fd37"
+  },
+  "kind": "command",
+  "reason": "stale evidence after the diff review fixes",
+  "reqs": [
+    "REQ-MCP-005"
+  ],
+  "task": "m3-mcp-and-json-resume/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run check",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "9f19464a9f95c62d3091316575dc384da483c9d5b6d9b21163cb706eb0e4bc0f"
+  }
+}
