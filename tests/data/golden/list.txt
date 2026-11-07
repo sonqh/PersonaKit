@@ -1,0 +1,114 @@
+exit 0
+--- stdout
+01JC9Z00000000000000000001  identity  accepted  public  rev 2  by cli
+  Dara Penhallow is a mature student moving from retail management into data analysis.
+01JC9Z00000000000000000004  identity  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000007  experience  accepted  public  rev 2  by cli
+  Studies for a diploma in data analysis at the fictional Eastmere Community College.
+01JC9Z00000000000000000010  experience  accepted  public  rev 2  by cli
+  Worked as a store supervisor at Kestrel Home Goods, managing rotas and weekly stock orders for a team of nine.
+01JC9Z00000000000000000013  experience  accepted  ai  rev 2  by cli
+  Took a career break to care for a family member before returning to study.
+01JC9Z00000000000000000016  experience  accepted  public  rev 2  by cli
+  Built a spreadsheet that tracked waste and markdowns, which the area manager later shared with three other stores.
+01JC9Z00000000000000000019  experience  accepted  ai  rev 2  by cli
+  Analyzed open bus ridership data for a class project and presented the findings to the course group.
+01JC9Z00000000000000000022  capability  accepted  public  rev 2  by cli
+  Can clean and summarize data in spreadsheets and is learning SQL and basic Python.
+01JC9Z00000000000000000025  capability  accepted  ai  rev 2  by cli
+  Brings years of people management, scheduling, and customer handling from retail work.
+01JC9Z00000000000000000028  preference  accepted  ai  rev 2  by cli
+  Learns best from worked examples followed by a short practice task.
+01JC9Z00000000000000000031  preference  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000034  intent  accepted  public  rev 2  by cli
+  Is looking for a junior data analyst role or internship starting in 2027.
+01JC9Z00000000000000000037  intent  accepted  ai  rev 2  by cli
+  Plans to finish an online SQL course before the end of the current term.
+01JC9Z00000000000000000040  identity  accepted  public  rev 2  by cli
+  Ilse Varga is a freelance visual and product designer who works with small businesses.
+01JC9Z00000000000000000043  identity  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000046  experience  accepted  public  rev 2  by cli
+  Runs an independent design practice, taking short engagements for branding, packaging, and small web projects.
+01JC9Z00000000000000000049  experience  accepted  public  rev 2  by cli
+  Designed a new logo and shop sign for Tidewater Bakery.
+01JC9Z00000000000000000052  experience  accepted  public  rev 2  by cli
+  Made the menu layout and table cards for the reopening of Juniper Street Cafe.
+01JC9Z00000000000000000055  experience  accepted  ai  rev 2  by cli
+  Supported an in-house team at Saltmarsh Outdoor Gear with icon drawings for their product catalog.
+01JC9Z00000000000000000058  experience  accepted  ai  rev 2  by cli
+  Co-led the booking page redesign for Fernhill Yoga Studio with a freelance web developer.
+01JC9Z00000000000000000061  experience  accepted  public  rev 2  by cli
+  Contributed poster and flyer drafts to the spring fair campaign for the Larkspur Community Garden.
+01JC9Z00000000000000000064  experience  accepted  public  rev 2  by cli
+  Designed gift box packaging for a holiday product line at Copperleaf Teas.
+01JC9Z00000000000000000067  capability  accepted  public  rev 2  by cli
+  Builds brand identities, print layouts, and simple web page designs, from first sketch to print-ready files.
+01JC9Z00000000000000000070  capability  accepted  ai  rev 2  by cli
+  Explains design choices to small business owners without design jargon.
+01JC9Z00000000000000000073  preference  accepted  ai  rev 2  by cli
+  Prefers fixed-price quotes with two rounds of changes included.
+01JC9Z00000000000000000076  preference  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000079  intent  accepted  ai  rev 2  by cli
+  Wants to find one or two long-term retainer clients to make income more stable.
+01JC9Z00000000000000000082  intent  accepted  public  rev 2  by cli
+  Plans to publish a portfolio page with case studies for each engagement.
+01JC9Z00000000000000000085  identity  accepted  public  rev 2  by cli
+  Mira Okonkwo-Lind is a backend software engineer based in the fictional city of Port Alder.
+01JC9Z00000000000000000088  identity  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000091  experience  accepted  public  rev 2  by cli
+  Works as a senior backend engineer at Northwind Transit on the fare payment and trip scheduling services.
+01JC9Z00000000000000000094  experience  accepted  public  rev 2  by cli
+  Led the migration of the Northwind Transit fare service from a nightly batch job to an event-driven pipeline, which cut fare reconciliation time from hours to minutes.
+01JC9Z00000000000000000097  experience  accepted  ai  rev 2  by cli
+  Contributed retry and idempotency handling to the shared job queue library used by four Northwind Transit teams.
+01JC9Z00000000000000000100  experience  accepted  ai  rev 2  by cli
+  Co-led the on-call process redesign at Northwind Transit, including runbooks and a paging rotation for six engineers.
+01JC9Z00000000000000000103  experience  accepted  public  rev 2  by cli
+  Worked as a software developer at Bramblewood Logistics, building internal tools for warehouse stock counts.
+01JC9Z00000000000000000106  capability  accepted  public  rev 2  by cli
+  Designs and operates TypeScript and Go services backed by PostgreSQL and Redis.
+01JC9Z00000000000000000109  capability  accepted  ai  rev 2  by cli
+  Writes clear incident reviews and explains trade-offs to non-technical stakeholders.
+01JC9Z00000000000000000112  preference  accepted  ai  rev 2  by cli
+  Prefers small pull requests with a test for each behavior change.
+01JC9Z00000000000000000115  preference  accepted  ai  rev 2  by cli
+  Wants code review comments to name the risk first and the suggested fix second.
+01JC9Z00000000000000000118  preference  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000121  intent  accepted  ai  rev 2  by cli
+  Plans to move toward a staff engineer role focused on platform reliability within two years.
+01JC9Z00000000000000000124  intent  accepted  public  rev 2  by cli
+  Is open to speaking at local meetups about event-driven payment systems.
+01JC9Z00000000000000000127  identity  accepted  public  rev 2  by cli
+  Tobias Reyna is a customer support specialist who speaks English and Spanish.
+01JC9Z00000000000000000130  identity  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000133  experience  accepted  public  rev 2  by cli
+  Works as a support specialist at Harbor Lane Clinic, answering patient questions about the online portal, appointments, and billing.
+01JC9Z00000000000000000136  experience  accepted  public  rev 2  by cli
+  Rewrote the clinic's twenty most-used help articles in plain language, and repeat calls about portal login dropped by about a third.
+01JC9Z00000000000000000139  experience  accepted  ai  rev 2  by cli
+  Trained four new team members on the ticket queue and the escalation rules for urgent clinical questions.
+01JC9Z00000000000000000142  experience  accepted  public  rev 2  by cli
+  Worked on the front desk at Cedar Row Library, handling member accounts and room bookings.
+01JC9Z00000000000000000145  capability  accepted  public  rev 2  by cli
+  Holds a Certified Customer Care Professional credential from the fictional Guild of Service Practitioners.
+01JC9Z00000000000000000148  capability  accepted  ai  rev 2  by cli
+  Calms upset callers and gets to the real problem quickly, with a satisfaction score that stays above the team average.
+01JC9Z00000000000000000151  capability  accepted  ai  rev 2  by cli
+  Uses a shared ticketing system, a knowledge base editor, and spreadsheet reports for weekly queue reviews.
+01JC9Z00000000000000000154  preference  accepted  ai  rev 2  by cli
+  Prefers written instructions in numbered steps with one action per step.
+01JC9Z00000000000000000157  preference  accepted  private  rev 2  by cli
+  (private: open "personakit review" to see it)
+01JC9Z00000000000000000160  intent  accepted  ai  rev 2  by cli
+  Wants to become a support team lead and run the knowledge base program.
+01JC9Z00000000000000000163  intent  accepted  public  rev 2  by cli
+  Plans to renew the customer care credential before it expires in November 2026.
+
+--- stderr

@@ -1,0 +1,231 @@
+exit 0
+--- stdout
+{
+  "schema": "personakit.cv-draft/v0",
+  "sections": [
+    {
+      "items": [
+        {
+          "id": "01JC9Z00000000000000000001",
+          "line": "- Dara Penhallow is a mature student moving from retail management into data analysis. (Student) [pk:01JC9Z00000000000000000001]",
+          "role": "Student",
+          "statement": "Dara Penhallow is a mature student moving from retail management into data analysis."
+        },
+        {
+          "id": "01JC9Z00000000000000000040",
+          "line": "- Ilse Varga is a freelance visual and product designer who works with small businesses. (Freelance Designer) [pk:01JC9Z00000000000000000040]",
+          "role": "Freelance Designer",
+          "statement": "Ilse Varga is a freelance visual and product designer who works with small businesses."
+        },
+        {
+          "id": "01JC9Z00000000000000000085",
+          "line": "- Mira Okonkwo-Lind is a backend software engineer based in the fictional city of Port Alder. (Backend Software Engineer) [pk:01JC9Z00000000000000000085]",
+          "role": "Backend Software Engineer",
+          "statement": "Mira Okonkwo-Lind is a backend software engineer based in the fictional city of Port Alder."
+        },
+        {
+          "id": "01JC9Z00000000000000000127",
+          "line": "- Tobias Reyna is a customer support specialist who speaks English and Spanish. (Customer Support Specialist) [pk:01JC9Z00000000000000000127]",
+          "role": "Customer Support Specialist",
+          "statement": "Tobias Reyna is a customer support specialist who speaks English and Spanish."
+        }
+      ],
+      "title": "Summary"
+    },
+    {
+      "items": [
+        {
+          "id": "01JC9Z00000000000000000091",
+          "line": "- Works as a senior backend engineer at Northwind Transit on the fare payment and trip scheduling services. (Senior Backend Engineer, Northwind Transit, 2022-03 to now) [pk:01JC9Z00000000000000000091]",
+          "organization": "Northwind Transit",
+          "period": {
+            "ongoing": true,
+            "start": "2022-03"
+          },
+          "role": "Senior Backend Engineer",
+          "statement": "Works as a senior backend engineer at Northwind Transit on the fare payment and trip scheduling services."
+        },
+        {
+          "id": "01JC9Z00000000000000000133",
+          "line": "- Works as a support specialist at Harbor Lane Clinic, answering patient questions about the online portal, appointments, and billing. (Support Specialist, Harbor Lane Clinic, 2021-05 to now) [pk:01JC9Z00000000000000000133]",
+          "organization": "Harbor Lane Clinic",
+          "period": {
+            "ongoing": true,
+            "start": "2021-05"
+          },
+          "role": "Support Specialist",
+          "statement": "Works as a support specialist at Harbor Lane Clinic, answering patient questions about the online portal, appointments, and billing."
+        },
+        {
+          "id": "01JC9Z00000000000000000046",
+          "line": "- Runs an independent design practice, taking short engagements for branding, packaging, and small web projects. (Freelance Designer, 2020-04 to now) [pk:01JC9Z00000000000000000046]",
+          "period": {
+            "ongoing": true,
+            "start": "2020-04"
+          },
+          "role": "Freelance Designer",
+          "statement": "Runs an independent design practice, taking short engagements for branding, packaging, and small web projects."
+        },
+        {
+          "id": "01JC9Z00000000000000000136",
+          "line": "- Rewrote the clinic's twenty most-used help articles in plain language, and repeat calls about portal login dropped by about a third. (Harbor Lane Clinic, 2023-02 to 2023-06) [pk:01JC9Z00000000000000000136]",
+          "organization": "Harbor Lane Clinic",
+          "period": {
+            "end": "2023-06",
+            "start": "2023-02"
+          },
+          "statement": "Rewrote the clinic's twenty most-used help articles in plain language, and repeat calls about portal login dropped by about a third."
+        },
+        {
+          "id": "01JC9Z00000000000000000094",
+          "line": "- Led the migration of the Northwind Transit fare service from a nightly batch job to an event-driven pipeline, which cut fare reconciliation time from hours to minutes. (Northwind Transit, 2023-01 to 2023-09) [pk:01JC9Z00000000000000000094]",
+          "organization": "Northwind Transit",
+          "period": {
+            "end": "2023-09",
+            "start": "2023-01"
+          },
+          "statement": "Led the migration of the Northwind Transit fare service from a nightly batch job to an event-driven pipeline, which cut fare reconciliation time from hours to minutes."
+        },
+        {
+          "id": "01JC9Z00000000000000000016",
+          "line": "- Built a spreadsheet that tracked waste and markdowns, which the area manager later shared with three other stores. (Kestrel Home Goods, 2021 to 2022) [pk:01JC9Z00000000000000000016]",
+          "organization": "Kestrel Home Goods",
+          "period": {
+            "end": "2022",
+            "start": "2021"
+          },
+          "statement": "Built a spreadsheet that tracked waste and markdowns, which the area manager later shared with three other stores."
+        },
+        {
+          "id": "01JC9Z00000000000000000142",
+          "line": "- Worked on the front desk at Cedar Row Library, handling member accounts and room bookings. (Front Desk Assistant, Cedar Row Library, 2018-09 to 2021-04) [pk:01JC9Z00000000000000000142]",
+          "organization": "Cedar Row Library",
+          "period": {
+            "end": "2021-04",
+            "start": "2018-09"
+          },
+          "role": "Front Desk Assistant",
+          "statement": "Worked on the front desk at Cedar Row Library, handling member accounts and room bookings."
+        },
+        {
+          "id": "01JC9Z00000000000000000103",
+          "line": "- Worked as a software developer at Bramblewood Logistics, building internal tools for warehouse stock counts. (Software Developer, Bramblewood Logistics, 2018-07 to 2022-02) [pk:01JC9Z00000000000000000103]",
+          "organization": "Bramblewood Logistics",
+          "period": {
+            "end": "2022-02",
+            "start": "2018-07"
+          },
+          "role": "Software Developer",
+          "statement": "Worked as a software developer at Bramblewood Logistics, building internal tools for warehouse stock counts."
+        },
+        {
+          "id": "01JC9Z00000000000000000010",
+          "line": "- Worked as a store supervisor at Kestrel Home Goods, managing rotas and weekly stock orders for a team of nine. (Store Supervisor, Kestrel Home Goods, 2016-04 to 2023-08) [pk:01JC9Z00000000000000000010]",
+          "organization": "Kestrel Home Goods",
+          "period": {
+            "end": "2023-08",
+            "start": "2016-04"
+          },
+          "role": "Store Supervisor",
+          "statement": "Worked as a store supervisor at Kestrel Home Goods, managing rotas and weekly stock orders for a team of nine."
+        }
+      ],
+      "title": "Experience"
+    },
+    {
+      "items": [
+        {
+          "id": "01JC9Z00000000000000000064",
+          "line": "- Designed gift box packaging for a holiday product line at Copperleaf Teas. (Copperleaf Teas, 2024-09 to 2024-10) [pk:01JC9Z00000000000000000064]",
+          "organization": "Copperleaf Teas",
+          "period": {
+            "end": "2024-10",
+            "start": "2024-09"
+          },
+          "statement": "Designed gift box packaging for a holiday product line at Copperleaf Teas."
+        },
+        {
+          "id": "01JC9Z00000000000000000061",
+          "line": "- Contributed poster and flyer drafts to the spring fair campaign for the Larkspur Community Garden. (Larkspur Community Garden, 2024-02 to 2024-03) [pk:01JC9Z00000000000000000061]",
+          "organization": "Larkspur Community Garden",
+          "period": {
+            "end": "2024-03",
+            "start": "2024-02"
+          },
+          "statement": "Contributed poster and flyer drafts to the spring fair campaign for the Larkspur Community Garden."
+        },
+        {
+          "id": "01JC9Z00000000000000000052",
+          "line": "- Made the menu layout and table cards for the reopening of Juniper Street Cafe. (Juniper Street Cafe, 2022-06 to 2022-07) [pk:01JC9Z00000000000000000052]",
+          "organization": "Juniper Street Cafe",
+          "period": {
+            "end": "2022-07",
+            "start": "2022-06"
+          },
+          "statement": "Made the menu layout and table cards for the reopening of Juniper Street Cafe."
+        },
+        {
+          "id": "01JC9Z00000000000000000049",
+          "line": "- Designed a new logo and shop sign for Tidewater Bakery. (Tidewater Bakery, 2021-03 to 2021-04) [pk:01JC9Z00000000000000000049]",
+          "organization": "Tidewater Bakery",
+          "period": {
+            "end": "2021-04",
+            "start": "2021-03"
+          },
+          "statement": "Designed a new logo and shop sign for Tidewater Bakery."
+        }
+      ],
+      "title": "Freelance engagements"
+    },
+    {
+      "items": [
+        {
+          "id": "01JC9Z00000000000000000007",
+          "line": "- Studies for a diploma in data analysis at the fictional Eastmere Community College. (Eastmere Community College, 2025-09 to now) [pk:01JC9Z00000000000000000007]",
+          "organization": "Eastmere Community College",
+          "period": {
+            "ongoing": true,
+            "start": "2025-09"
+          },
+          "statement": "Studies for a diploma in data analysis at the fictional Eastmere Community College."
+        }
+      ],
+      "title": "Education"
+    },
+    {
+      "items": [
+        {
+          "expires_on": "2026-11-15",
+          "id": "01JC9Z00000000000000000145",
+          "issued_on": "2023-11-15",
+          "line": "- Holds a Certified Customer Care Professional credential from the fictional Guild of Service Practitioners. (Guild of Service Practitioners, issued 2023-11-15, valid until 2026-11-15) [pk:01JC9Z00000000000000000145]",
+          "organization": "Guild of Service Practitioners",
+          "statement": "Holds a Certified Customer Care Professional credential from the fictional Guild of Service Practitioners."
+        }
+      ],
+      "title": "Credentials"
+    },
+    {
+      "items": [
+        {
+          "id": "01JC9Z00000000000000000022",
+          "line": "- Can clean and summarize data in spreadsheets and is learning SQL and basic Python. [pk:01JC9Z00000000000000000022]",
+          "statement": "Can clean and summarize data in spreadsheets and is learning SQL and basic Python."
+        },
+        {
+          "id": "01JC9Z00000000000000000067",
+          "line": "- Builds brand identities, print layouts, and simple web page designs, from first sketch to print-ready files. [pk:01JC9Z00000000000000000067]",
+          "statement": "Builds brand identities, print layouts, and simple web page designs, from first sketch to print-ready files."
+        },
+        {
+          "id": "01JC9Z00000000000000000106",
+          "line": "- Designs and operates TypeScript and Go services backed by PostgreSQL and Redis. [pk:01JC9Z00000000000000000106]",
+          "statement": "Designs and operates TypeScript and Go services backed by PostgreSQL and Redis."
+        }
+      ],
+      "title": "Capabilities"
+    }
+  ]
+}
+
+--- stderr

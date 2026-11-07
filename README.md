@@ -43,11 +43,45 @@ You need Node.js 22.18 or newer.
 
 Agents can only propose. You decide what is accepted. This step protects against agent mistakes. It does not stop a program that has full access to your files.
 
-claude.ai cannot run commands. Move the brief and proposals by hand. [Use PersonaKit with claude.ai](docs/claude-ai.md) has the steps and a prompt to paste.
+claude.ai on the web cannot run commands. Move the brief and proposals by hand, or use Claude Desktop with the MCP server below. [Use PersonaKit with claude.ai](docs/claude-ai.md) has the steps and a prompt to paste.
 
 After you update this repository, run `personakit skill install` again.
 
 To back up your store or use it on two machines, make `~/.personakit/` a private git repository. Run `personakit doctor` after a merge.
+
+## Connect an app through MCP
+
+Claude Desktop, Claude Code, and Codex can start PersonaKit as a local MCP server. The app then reads the brief and proposes records directly, with no copy and paste. The server has the same rules as the CLI. It offers the tools `brief`, `propose`, `list`, `show`, `cv_draft`, and `cv_check`. It has no tool to accept, reject, retire, or change visibility. You still run `personakit review` in your own terminal.
+
+Desktop apps can start without your shell `PATH`. So give the full path to `node` and to `bin/personakit.mjs` in your clone. Run `which node` to find the path to `node`.
+
+For Claude Desktop, add this to `claude_desktop_config.json`. For Claude Code, put the same `mcpServers` object in `.mcp.json`, or run `claude mcp add personakit -- /usr/local/bin/node /path/to/PersonaKit/bin/personakit.mjs mcp`.
+
+```json
+{
+  "mcpServers": {
+    "personakit": {
+      "command": "/usr/local/bin/node",
+      "args": ["/path/to/PersonaKit/bin/personakit.mjs", "mcp"]
+    }
+  }
+}
+```
+
+For Codex, add this to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.personakit]
+command = "/usr/local/bin/node"
+args = ["/path/to/PersonaKit/bin/personakit.mjs", "mcp"]
+```
+
+The server uses the store in `PERSONAKIT_HOME`, or `~/.personakit/`. To use another store, add `"--store", "/path/to/store"` after `"mcp"`. PersonaKit records the app name as the actor of each proposal. That name is a label, not proof of who wrote the record.
+
+## JSON Resume
+
+- `personakit export json-resume --out resume.json` writes a [JSON Resume](https://jsonresume.org) 1.0.0 file. It holds only accepted `public` records, as a CV draft does. It has no name or contact details. Add them in the file yourself.
+- `personakit import json-resume resume.json` turns a JSON Resume file into proposals. Each proposal is `private` until you accept it in `personakit review`. The import skips contact details, references, awards, publications, and interests. If one field is not valid, PersonaKit proposes nothing and names the field.
 
 ## Current status
 

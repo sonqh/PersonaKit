@@ -49,10 +49,11 @@ Exit: Nontechnical users can finish the complete flow without a terminal.
 
 ## M3. Optional integrations
 
-- Add CV file import (local PDF and DOCX parsing) and JSON Resume interoperability.
+- Add an MCP server that wraps the same core. The change `m3-mcp-and-json-resume` adds it.
+- Add JSON Resume export and import. The same change adds them.
+- Add CV file import (local PDF and DOCX parsing). This needs a runtime dependency or a large parser, so the owner must approve it first.
 - Add role packs supported by user research.
-- Add optional LLM extraction and writing.
-- Add an MCP server that wraps the same core.
+- Add optional LLM extraction and writing. This sends personal data to a model provider, so the owner must decide first.
 
 Exit: Each integration has compatibility tests and does not change the canonical model.
 
