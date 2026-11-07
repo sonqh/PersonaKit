@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-07T01:48:06.696Z",
+  "bundle_chars": 7780,
+  "files": {
+    "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
+    "src/server/server.ts": "7da3cc8d480fb5c42a3f468997d9c3b1b0a067ee4bfc96ae31246911afc1d601",
+    "src/web/app.js": "63e100a227f252125e642a65baad8a60f5ea49f862cf2722408b2d24e8323271",
+    "src/web/logic.js": "b1ae1098d885d21e8589d19a299de88f2bfe5eda5f087624dfeb996bd48484a5",
+    "tests/server.test.ts": "38292b53085e01e7e59d0854417e537e332710e73b05ecc898f557d3da0559cd"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-WEB-004"
+  ],
+  "started_at": "2026-11-07T01:48:03.111Z",
+  "task": "m2-web-workflow/3.3",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/server.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "f4e0b23558e05fb611524626b6080c7d2575d3da1053233e81ce26ed0e8e1023"
+  }
+}

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>PersonaKit</title>
+<link rel="stylesheet" href="/app.css">
+<script type="module" src="/app.js"></script>
+</head>
+<body>
+<header class="top">
+  <h1>PersonaKit</h1>
+  <nav id="nav" aria-label="Pages">
+    <button type="button" data-view="start">Start</button>
+    <button type="button" data-view="interview">Interview</button>
+    <button type="button" data-view="paste">Paste CV</button>
+    <button type="button" data-view="records">Records</button>
+    <button type="button" data-view="review">Review</button>
+    <button type="button" data-view="result">Result</button>
+    <button type="button" data-view="data">Your data</button>
+  </nav>
+</header>
+<div id="message" role="status" aria-live="polite"></div>
+<main id="main">
+  <section id="view-start" class="view">
+    <h2>Welcome</h2>
+    <p id="start-text"></p>
+    <div class="choices">
+      <button type="button" data-view="interview" class="big">Answer a short interview</button>
+      <button type="button" data-view="paste" class="big">Paste the text of your CV</button>
+    </div>
+  </section>
+  <section id="view-interview" class="view">
+    <h2>Interview</h2>
+    <p>Answer the questions that fit you. Leave the others empty. Each answer becomes a proposal that you review.</p>
+    <form id="interview-form"></form>
+  </section>
+  <section id="view-paste" class="view">
+    <h2>Paste CV text</h2>
+    <p>Paste the text of your CV. PersonaKit splits it into drafts with fixed rules. Edit or remove each draft, then propose them.</p>
+    <textarea id="paste-text" rows="12" aria-label="CV text"></textarea>
+    <p><button type="button" id="paste-split">Make drafts</button></p>
+    <div id="paste-drafts"></div>
+  </section>
+  <section id="view-records" class="view">
+    <h2>Records</h2>
+    <form id="record-form" class="card"></form>
+    <div id="record-list"></div>
+  </section>
+  <section id="view-review" class="view">
+    <h2>Review</h2>
+    <p>Accept or reject each proposal. Only accepted records go into the brief or the CV.</p>
+    <div id="review-list"></div>
+  </section>
+  <section id="view-result" class="view">
+    <h2>Result</h2>
+    <p id="result-hint" class="hint"></p>
+    <h3>AI brief</h3>
+    <p>Copy this brief into your AI assistant.</p>
+    <pre id="result-brief" class="output"></pre>
+    <h3>CV draft</h3>
+    <p>Edit the CV text, then select Check. Every line needs a marker such as [pk:ID]. Print works only after a check with no errors.</p>
+    <textarea id="result-cv" rows="16" aria-label="CV text"></textarea>
+    <p><button type="button" id="cv-check">Check</button> <button type="button" id="cv-print" disabled>Print the CV</button></p>
+    <ul id="cv-findings"></ul>
+  </section>
+  <section id="view-data" class="view">
+    <h2>Your data</h2>
+    <p>Your records are on this computer, in this folder:</p>
+    <pre id="data-store" class="output"></pre>
+    <p>The app keeps no record data in browser storage. The browser keeps only the session key for this tab. It forgets the key when you close the tab.</p>
+    <h3>Backup</h3>
+    <ul>
+      <li>Select Export to save all your records in one file. The file holds private records too. Keep it private.</li>
+      <li>Or make the store folder a private git repository and push it to a private remote that you control.</li>
+      <li>To restore an export on a new computer, run <code>personakit import archive FILE</code>. Restore in the app comes later.</li>
+    </ul>
+    <p><button type="button" id="export-start">Export</button></p>
+    <div id="export-warning" class="card warning" hidden>
+      <p id="export-warning-text"></p>
+      <p><button type="button" id="export-continue">Continue</button> <button type="button" id="export-cancel">Cancel</button></p>
+    </div>
+    <h3>Safety</h3>
+    <p>The app runs only on this computer. A secret key in the URL and checks of the Host and Origin headers stop other web pages from reading your records. The token and the host checks are a safeguard, not a security boundary. Programs that run as your user can read the store files.</p>
+  </section>
+</main>
+<section id="print-view" hidden>
+  <pre id="print-text"></pre>
+</section>
+</body>
+</html>

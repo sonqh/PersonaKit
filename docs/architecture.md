@@ -89,7 +89,7 @@ The checks can catch structural mismatches. They cannot guarantee that every par
 
 The store is a folder outside any repository, `~/.personakit/` by default. It holds one file for each record and one file for each event. The owner can make it a private git repository for backup and sync. See [the store decision](../decisions/store-outside-repo.md).
 
-A later web app reads the same store through the core. If the web app keeps a copy in browser storage, it must not present that copy as a permanent vault.
+The web app (`personakit serve`) reads the same store through the core. It keeps no record data in browser storage. Session storage holds only the session key of one tab. See the change `m2-web-workflow`.
 
 Keep model access optional. When the app uses an external model, show which records it will share and ask for consent.
 
@@ -101,7 +101,7 @@ Role packs supply interview questions, examples, terminology, and CV section sug
 
 - Domain core: types, validation, access checks, selection, citation checks.
 - Application layer: onboarding, record review, import, output preparation.
-- Web interface: forms, record editing, export preview, backup.
+- Web interface (M2): a local server in `src/server/` and static pages in `src/web/`. It binds 127.0.0.1, needs a token on every API call, and checks the Host and Origin headers. These checks are a safeguard, not a security boundary.
 - CLI (M1): a thin wrapper around the core. Agents and the owner use it.
 - Adapters later: JSON Resume, optional LLMs, MCP.
 
@@ -110,10 +110,11 @@ Keep personal record IDs separate from spec-ctx requirement IDs. The first ident
 ## Decisions
 
 - The first importer accepts pasted CV text. Local PDF and DOCX parsing comes later.
+- The archive is one canonical JSON file, `personakit.archive/v0`, with `store.json`, the records, and the events. Restore works only into an empty store. A newer format fails with a message to update PersonaKit.
 
 ## Open decisions
 
-- The archive format and migration policy.
+- The migration policy for older archive formats.
 - How to resolve a record that two machines changed. M1 detects this case in `doctor`.
 - How to measure better AI responses in a blind comparison.
 - Whether career-led onboarding attracts users who only want AI personalization.

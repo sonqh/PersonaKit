@@ -1,0 +1,21 @@
+{
+  "at": "2026-11-07T01:39:55.052Z",
+  "bundle_chars": 8230,
+  "files": {
+    "src/core/text-import.ts": "9d8191ec6cfe85dcec8759760d23a70b9e9997b609e43966fde69ed9127d6448",
+    "tests/text-import.test.ts": "21ef002d0412c1d533193172c2f13f4cc048994ad32b70e394f0fff7ade3b1ba"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-002"
+  ],
+  "started_at": "2026-11-07T01:39:02.067Z",
+  "task": "m2-web-workflow/1.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/text-import.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "1a4b6d3757e1c3b9aa7fd6dc246cb04ac517fe4b97512142d76a9d16434442b6"
+  }
+}

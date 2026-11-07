@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-07T01:54:18.375Z",
+  "files": {
+    "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
+    "src/core/store.ts": "6730ca521cf307eac01fc80be8085b7916f094054c50c90a63da0a4f4053718b",
+    "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
+    "src/web/app.js": "63e100a227f252125e642a65baad8a60f5ea49f862cf2722408b2d24e8323271",
+    "tests/import-cli.test.ts": "53a517442cf15c837912e2a7aa86a00592e962e2b61332fe4975f241ca112510",
+    "tests/propose-batch.test.ts": "78249191be69d0e2c9756e843328bf7186c1140b212dc73356abcb1303f11434",
+    "tests/server-api.test.ts": "5c6fb03beb4b2b7e04ed90494d3b6fe73ab434519e47f0b11e1aedaba6e2b56d",
+    "tests/web-flow.e2e.test.ts": "2c8a73cbb58d9639effa8fe788bd43b4cb74473ba2b87926bf8566eee3324aff"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-007",
+    "REQ-ONB-004",
+    "REQ-ONB-003"
+  ],
+  "task": "m2-web-workflow/1.1",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/propose-batch.test.ts tests/cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "aca86a0661995fe7ae925ca1be8d0c7080bca38fbff45e3ab3e23e67d27d07b5"
+  }
+}

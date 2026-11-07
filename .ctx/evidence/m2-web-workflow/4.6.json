@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-07T01:50:42.483Z",
+  "bundle_chars": 7250,
+  "files": {
+    "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
+    "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
+    "src/web/app.js": "63e100a227f252125e642a65baad8a60f5ea49f862cf2722408b2d24e8323271",
+    "src/web/logic.js": "b1ae1098d885d21e8589d19a299de88f2bfe5eda5f087624dfeb996bd48484a5",
+    "tests/archive-cli.test.ts": "3279ddbd6fed23339581f99a89c15e531ea98e27f056c2890fa8fb985d648cb3",
+    "tests/server-api.test.ts": "5c6fb03beb4b2b7e04ed90494d3b6fe73ab434519e47f0b11e1aedaba6e2b56d",
+    "tests/web-logic.test.ts": "08a293d54bb0bfd34148a5b7849486a8f44c762b9df7961bdf1460c6afc82544",
+    "tests/web-static.test.ts": "1034f73ddd0d9603dcab2af0b56dbde02539b8353b67e2fe981a827bbb6af018"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-WEB-008",
+    "REQ-ARC-003"
+  ],
+  "started_at": "2026-11-07T01:50:38.576Z",
+  "task": "m2-web-workflow/4.6",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/web-static.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "52a8323c0542e9ecfbde6430c4efb22e7e244797e2ce05556b7b616d5369e9b2"
+  }
+}

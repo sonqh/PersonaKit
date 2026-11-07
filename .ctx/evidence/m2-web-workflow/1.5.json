@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:41:49.204Z",
+  "bundle_chars": 7254,
+  "files": {
+    "src/core/archive.ts": "65f1b443f355baf8f0249df61d2c55cd730d4759185ed5c33e87d77fa5f1ac41",
+    "src/core/store.ts": "6730ca521cf307eac01fc80be8085b7916f094054c50c90a63da0a4f4053718b",
+    "tests/archive.test.ts": "ea7e4acf8800e8eb39e23e842fb7b06e1a04bfc4660f7ecc26ac1a930b930295"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ARC-004"
+  ],
+  "started_at": "2026-11-07T01:41:46.526Z",
+  "task": "m2-web-workflow/1.5",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/archive.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "a08d78888bef04790471fb9c6b721b6b58ca4dd282a74200b07d2a06eafeb4d0"
+  }
+}

@@ -1,0 +1,11 @@
+[
+  { "id": "identity-name", "kind": "identity", "text": "What name do you want to use at work?", "hint": "For example, your full name or the name people know you by." },
+  { "id": "identity-summary", "kind": "identity", "text": "How do you describe your work in one sentence?", "hint": "For example: I help families find the right school." },
+  { "id": "experience-1", "kind": "experience", "text": "Describe one job, volunteer role, course, or project. What did you do?", "hint": "Name the place and the time if you want. One activity per answer." },
+  { "id": "experience-2", "kind": "experience", "text": "Describe another activity that you are proud of.", "hint": "Paid or unpaid work, study, care work, or a personal project all count." },
+  { "id": "experience-3", "kind": "experience", "text": "Did you take a break, study, or change direction? Describe it.", "hint": "Leave it empty if it does not apply." },
+  { "id": "capability-1", "kind": "capability", "text": "What can you do well? Name one skill.", "hint": "For example: calm phone support, bookkeeping, or Spanish." },
+  { "id": "capability-2", "kind": "capability", "text": "Name another skill or a language that you use.", "hint": "One skill per answer." },
+  { "id": "preference-1", "kind": "preference", "text": "How do you want an AI assistant to help you?", "hint": "For example: short answers, plain words, or examples first." },
+  { "id": "intent-1", "kind": "intent", "text": "What do you want to do next?", "hint": "For example: find a part-time role, or learn a new skill." }
+]

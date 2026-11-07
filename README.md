@@ -2,7 +2,7 @@
 
 PersonaKit helps people keep a personal profile they own. The same profile can produce an AI brief and a draft CV. People can review the facts and choose what each output may include.
 
-The project is in early development. A CLI works from a clone. There is no released package or web app yet.
+The project is in early development. A CLI and a local web app work from a clone. There is no released package yet.
 
 ## First experience
 
@@ -10,7 +10,7 @@ The project is in early development. A CLI works from a clone. There is no relea
 2. Review the extracted facts, skills, preferences, and goals.
 3. Export an AI context pack and a CV draft from the accepted records.
 
-The goal is that a person can use PersonaKit without knowing how to code. The first interface is a CLI for the owner and AI agents. A local-first web app comes in M2.
+The goal is that a person can use PersonaKit without knowing how to code. The CLI serves the owner and AI agents. The local web app serves people who do not use a terminal.
 
 ## Design rules
 
@@ -28,6 +28,37 @@ The goal is that a person can use PersonaKit without knowing how to code. The fi
 - [Delivery plan](docs/roadmap.md)
 - [Specification workflow with spec-ctx](docs/spec-workflow.md)
 - [Bug reports and learning loop](docs/bug-reporting.md)
+
+## Use the web app
+
+You need Node.js 22.18 or newer. Install it once:
+
+1. Install Node.js 22.
+2. Clone this repository and run `npm link` in it. This puts the `personakit` command on your path.
+
+After this one-time install, you need no terminal:
+
+- On macOS, double-click `scripts/personakit-web.command`.
+- On Windows, double-click `scripts/personakit-web.bat`.
+
+The launcher runs `personakit serve --open`. Your browser opens the app. Keep the launcher window open while you use the app. Close it to stop PersonaKit.
+
+You can also run `personakit serve` yourself and open the URL that it prints. The app runs on this computer only, at an address that starts with `http://127.0.0.1`. It reads and writes the same store as the CLI, `~/.personakit/` by default.
+
+In the app you can:
+
+1. Answer a short interview, or paste the text of your CV. Each answer or draft becomes a proposal.
+2. Review each proposal. Accept it as private, ai, or public, or reject it.
+3. Open Result to see the AI brief and the CV draft. Check the CV, then print it.
+4. Open Your data to see where the store is and to export a backup.
+
+The app keeps no record data in browser storage. The browser keeps only the session key for one tab. Each start of `personakit serve` makes a new secret key, and the server answers no API call without it. The server also checks the Host and Origin headers, so other web pages cannot read your records. The token and the host checks are a safeguard, not a security boundary. Programs that run as your user can read the store files.
+
+## Back up and move your records
+
+- `personakit export --out FILE` writes every record and event to one file. The Export button in the app does the same. The file holds private records too. Keep it private.
+- `personakit import archive FILE` restores an export into an empty store. Restore in the app comes in M3.
+- `personakit import text FILE` turns the text of a CV into proposals, like the paste page of the app.
 
 ## Use it with Claude Code and Codex
 
@@ -51,7 +82,7 @@ To back up your store or use it on two machines, make `~/.personakit/` a private
 
 ## Current status
 
-M1 is in progress: the record schema, the store, the CLI, and the agent skill. The CV projection comes next. See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
+M1 delivered the record schema, the store, the CLI, the agent skill, and the CV projection. M2 adds the local web app, paste import, and the portable archive. See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
 
 ## Related tools
 

@@ -1,0 +1,22 @@
+{
+  "at": "2026-11-07T01:49:15.473Z",
+  "bundle_chars": 8051,
+  "files": {
+    "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
+    "src/web/app.js": "63e100a227f252125e642a65baad8a60f5ea49f862cf2722408b2d24e8323271",
+    "tests/server-api.test.ts": "5c6fb03beb4b2b7e04ed90494d3b6fe73ab434519e47f0b11e1aedaba6e2b56d"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-ONB-005"
+  ],
+  "started_at": "2026-11-07T01:49:10.605Z",
+  "task": "m2-web-workflow/3.7",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/server-api.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "eefe5f927e8c32b88429cbfaf7568051bfb5ea2d663e9401cee68f1b6538380b"
+  }
+}
