@@ -65,7 +65,7 @@ spec-ctx keeps a local run log in `.ctx/local/runs.jsonl`. The log holds the com
 
 To file a defect:
 
-1. Run `npx -y spec-ctx@0.5.0 report > specctx-report.md`.
+1. Run `npx -y spec-ctx@0.6.0 report > specctx-report.md`.
 2. Read the report. Add what you ran, what you expected, and what happened.
 3. Run `gh issue create -R sonqh/spec-ctx --body-file specctx-report.md`.
 4. Delete `specctx-report.md`. Do not commit it.
