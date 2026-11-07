@@ -358,7 +358,8 @@ $("export-continue").addEventListener("click", async () => {
     document.body.append(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    // Some browsers start the download after the click handler returns. Revoke the URL later.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     say("Saved the export. Keep the file private.");
   } catch (err) { fail(err); } finally { exportConfirmed = false; }
 });

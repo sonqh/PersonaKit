@@ -1,12 +1,12 @@
 // Covers: REQ-ARC-001, REQ-ARC-002, REQ-ARC-004
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { hostname } from "node:os";
 import { join } from "node:path";
 import { exportArchive, parseArchive, restoreArchive, validateEvent, ARCHIVE_FORMAT_VERSION } from "../src/core/archive.ts";
 import { PersonaKitError } from "../src/core/errors.ts";
-import { doctor, openStore, ownerAction, propose, readEvents, update, type Store } from "../src/core/store.ts";
+import { doctor, openStore, ownerAction, propose, proposeBatch, readEvents, setVisibility, update, type Store } from "../src/core/store.ts";
 import { tempDir, tempStore } from "./helpers.ts";
 
 const label = { actor: "cli" as const };
@@ -162,4 +162,74 @@ test("SCN-ARC-004-4 another archive cannot finish a partial restore", () => {
   assert.throws(() => restoreArchive(target.root, second, { cwd: target.cwd }), /not empty/);
   assert.deepEqual(readdirSync(join(target.root, "events")).sort(), before);
   assert.equal(countFiles(target.root, "records"), 0);
+});
+
+// ---------- diff review, 2026-11-07 ----------
+
+test("SCN-ARC-002-5 restore refuses a broken event chain", () => {
+  // Over-reach: the events reach a revision above the record revision.
+  const over = JSON.parse(exportArchive(filledStore().store));
+  const rec = over.records.find((r: { revision: number }) => r.revision === 2);
+  rec.revision = 1;
+  const t1 = emptyTarget();
+  assert.throws(() => restoreArchive(t1.root, JSON.stringify(over), { cwd: t1.cwd }), (e: unknown) => e instanceof PersonaKitError && e.exitCode === 6 && /reach revision 2/.test(e.message));
+  assert.equal(existsSync(t1.root), false);
+  // Gap: 0->1, then 2->3 with no 1->2.
+  const gap = JSON.parse(exportArchive(filledStore().store));
+  const target = gap.records.find((r: { revision: number }) => r.revision === 2);
+  const second = gap.events.find((e: { record_id: string; from_revision: number }) => e.record_id === target.id && e.from_revision === 1);
+  second.from_revision = 2;
+  second.to_revision = 3;
+  target.revision = 3;
+  const t2 = emptyTarget();
+  assert.throws(() => restoreArchive(t2.root, JSON.stringify(gap), { cwd: t2.cwd }), (e: unknown) => e instanceof PersonaKitError && e.exitCode === 6 && /gap or a fork/.test(e.message));
+  assert.equal(existsSync(t2.root), false);
+});
+
+function liveRestoreLock(root: string): void {
+  writeFileSync(join(root, "locks", "restore.lock"), JSON.stringify({ pid: process.pid, hostname: hostname(), started_at: new Date().toISOString(), command: "restore" }));
+}
+
+test("SCN-ARC-004-5 every writer fails during a restore", () => {
+  const { store, root } = tempStore();
+  const p = propose(store, { kind: "capability", statement: "Juggles.", sources: [{ kind: "manual" }], user_stated: true }, label).record;
+  const a = propose(store, { kind: "capability", statement: "Sings.", sources: [{ kind: "manual" }], user_stated: true }, label).record;
+  ownerAction(store, "accept", a.id, {}, label);
+  liveRestoreLock(root);
+  const snapshot = (): string => [...readdirSync(join(root, "records")), ...readdirSync(join(root, "events"))].sort().map((f) => existsSync(join(root, "records", f)) ? readFileSync(join(root, "records", f), "utf8") : f).join("|");
+  const before = snapshot();
+  const conflict = (e: unknown): boolean => e instanceof PersonaKitError && e.exitCode === 3 && /restore/.test(e.message);
+  assert.throws(() => proposeBatch(store, [{ kind: "capability", statement: "Dances.", sources: [{ kind: "manual" }], user_stated: true }], label), conflict);
+  assert.throws(() => update(store, p.id, 1, { statement: "Juggles well." }, label), conflict);
+  assert.throws(() => ownerAction(store, "accept", p.id, {}, label), conflict);
+  assert.throws(() => setVisibility(store, a.id, "ai", {}, label), conflict);
+  assert.equal(snapshot(), before);
+});
+
+test("SCN-ARC-004-6 a file that appears during the restore fails the restore", () => {
+  const archive = exportArchive(filledStore().store);
+  const target = emptyTarget();
+  const foreign = "01ARZ3NDEKTSV4RRFFQ69G5FAV";
+  assert.throws(
+    () => restoreArchive(target.root, archive, { cwd: target.cwd, afterEvents: () => writeFileSync(join(target.root, "records", `${foreign}.json`), "{}") }),
+    (e: unknown) => e instanceof PersonaKitError && e.exitCode === 6 && /1 other file/.test(e.message) && !e.message.includes(foreign),
+  );
+});
+
+test("SCN-ARC-004-7 a refused restore writes no store.json", () => {
+  const first = JSON.parse(exportArchive(filledStore().store));
+  const archive = exportArchive(filledStore().store);
+  const target = emptyTarget();
+  mkdirSync(join(target.root, "events"), { recursive: true });
+  writeFileSync(join(target.root, "events", `${first.events[0].id}.json`), "{}");
+  assert.throws(() => restoreArchive(target.root, archive, { cwd: target.cwd }), /not empty/);
+  assert.equal(existsSync(join(target.root, "store.json")), false);
+});
+
+test("export refuses a store whose events cannot restore", () => {
+  const { store, root } = filledStore();
+  const ev = readEvents(store).events.find((e) => e.from_revision === 0)!;
+  // An orphan event from an interrupted write: it starts from the current revision of its record.
+  writeFileSync(join(root, "events", "01ARZ3NDEKTSV4RRFFQ69G5FAV.json"), JSON.stringify({ ...ev, id: "01ARZ3NDEKTSV4RRFFQ69G5FAV", from_revision: 5, to_revision: 6 }));
+  assert.throws(() => exportArchive(store), (e: unknown) => e instanceof PersonaKitError && e.exitCode === 6 && /doctor/.test(e.message));
 });

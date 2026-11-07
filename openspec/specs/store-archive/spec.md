@@ -1,10 +1,9 @@
-# Spec Delta
+# store-archive Specification
 
 ## Purpose
-
 Let the owner move the whole store to another machine or keep a backup. One archive file holds the records, the events, and the store format.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: REQ-ARC-001 Archive export
 `personakit export --out FILE` SHALL write one canonical JSON file with the schema `personakit.archive/v0`. It SHALL hold `store.json`, every record, and every event, sorted by ID, with no time or path. It SHALL check every record and event first, and refuse a store with an unreadable file. It SHALL refuse an existing output file. The same store SHALL give the same bytes. The app SHALL offer the same export.
@@ -44,6 +43,10 @@ Refs: REQ-ARC-001, REQ-STO-001
 - **WHEN** one record in the archive has an unknown kind
 - **THEN** the command exits with code 6, names the record, and the store holds no record and no event
 
+#### Scenario: SCN-ARC-002-5 Restore refuses a broken event chain
+- **WHEN** the events of a record reach revision 5, and the record has revision 2. Or the events have a gap from revision 1 to revision 3
+- **THEN** the command exits with code 6 and writes nothing
+
 ### Requirement: REQ-ARC-003 Export warning
 An archive holds private records. The CLI SHALL print a warning to stderr after each export. The warning SHALL say that the file holds private records and that the owner must keep it private. The app SHALL show the same warning before the download starts. The server SHALL send the export only with the token, as an attachment, with `Cache-Control: no-store`.
 
@@ -77,3 +80,15 @@ Refs: REQ-ARC-002, REQ-STO-003
 #### Scenario: SCN-ARC-004-4 Another archive cannot finish a partial restore
 - **WHEN** a store holds events from one archive, and the owner restores a different archive
 - **THEN** the command exits with code 6, and the store does not change
+
+#### Scenario: SCN-ARC-004-5 Every writer fails during a restore
+- **WHEN** the restore lock exists, and `proposeBatch`, `update`, `ownerAction`, `setVisibility`, or `POST /api/propose` runs
+- **THEN** each one fails with the conflict code, or the server answers 409, and the store does not change
+
+#### Scenario: SCN-ARC-004-6 A file that appears during the restore fails the restore
+- **WHEN** a record file that is not in the archive appears during the restore
+- **THEN** the restore exits with code 6 and gives the number of such files, but not their names or text
+
+#### Scenario: SCN-ARC-004-7 A refused restore writes no store.json
+- **WHEN** the target folder has no store.json and holds an event file that is not in the archive
+- **THEN** the restore exits with code 6, and the folder still has no store.json

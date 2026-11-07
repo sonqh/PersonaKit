@@ -42,7 +42,13 @@ const HTTP_STATUS: Record<string, number> = {
 export type Opener = (url: string) => void;
 
 /** Open a URL with the platform opener. An argument list and no shell. */
+export const OPEN_URL = /^http:\/\/127\.0\.0\.1:\d+\/#code=[A-Za-z0-9_-]+$/;
+
 export function platformOpener(url: string): void {
+  // The URL comes from this server only. Check its form anyway: on Windows, "cmd /c start" parses
+  // the command line again, so a URL with characters such as & or ^ could run another command.
+  if (!OPEN_URL.test(url)) throw new PersonaKitError("unexpected", "The URL to open has an unexpected form.");
+  // "start" takes its first quoted argument as the window title. The empty string fills that place.
   const [cmd, args] = process.platform === "darwin" ? ["open", [url]]
     : process.platform === "win32" ? ["cmd", ["/c", "start", "", url]]
     : ["xdg-open", [url]];
@@ -85,23 +91,34 @@ function readBody(req: IncomingMessage, limit: number): Promise<string> {
   return new Promise((resolveBody, reject) => {
     let size = 0;
     let tooLarge = false;
+    let settled = false;
     const chunks: Buffer[] = [];
+    const fail = (err: Error): void => { if (!settled) { settled = true; reject(err); } };
     req.on("data", (c: Buffer) => {
       size += c.length;
       // Above the limit: keep reading and drop the data, so the client gets the 413 answer.
       if (size > limit) {
         tooLarge = true;
         chunks.length = 0;
-        if (size > 8 * limit) req.destroy();
+        if (size > 8 * limit) {
+          // Settle first, then drop the connection.
+          fail(Object.assign(new Error("too large"), { tooLarge: true }));
+          req.destroy();
+        }
         return;
       }
       chunks.push(c);
     });
     req.on("end", () => {
+      if (settled) return;
+      settled = true;
       if (tooLarge) reject(Object.assign(new Error("too large"), { tooLarge: true }));
       else resolveBody(Buffer.concat(chunks).toString("utf8"));
     });
-    req.on("error", reject);
+    // A client that goes away must not leave the promise open.
+    req.on("aborted", () => fail(new Error("the client aborted the request")));
+    req.on("close", () => fail(new Error("the connection closed before the body ended")));
+    req.on("error", (err) => fail(err));
   });
 }
 

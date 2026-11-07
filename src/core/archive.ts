@@ -1,11 +1,12 @@
 // Portable archive: export the whole store to one canonical JSON file and restore it into an empty store.
 // REQ-ARC-001 REQ-ARC-002 REQ-ARC-004
 
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { checkStoreLocation } from "./location.ts";
 import { stringifyCanonical } from "./canonical.ts";
 import { PersonaKitError } from "./errors.ts";
-import { listFiles, replaceFileAtomic, withLocks, writeNewFileAtomic } from "./fsutil.ts";
+import { listFiles, withLocks, writeNewFileAtomic } from "./fsutil.ts";
 import { ACTORS, validateRecord, type PersonaRecord } from "./schema.ts";
 import {
   EVENT_SCHEMA, STORE_FORMAT_VERSION, STORE_SCHEMA, initStore, openStore, readAll, readEvents,
@@ -78,7 +79,16 @@ export function exportArchive(store: Store): string {
     records: [...records].sort(byId),
     events: [...events].sort(byId),
   };
-  return stringifyCanonical(archive);
+  const text = stringifyCanonical(archive);
+  try {
+    parseArchive(text);
+  } catch (err) {
+    if (err instanceof PersonaKitError) {
+      throw new PersonaKitError("invalid", `Nothing was exported. The store cannot give a valid archive: ${err.message.replace(/^Nothing was restored\. /, "")} Run "personakit doctor".`, err.details);
+    }
+    throw err;
+  }
+  return text;
 }
 
 /** Parse and check an archive. Every check runs before the first write. */
@@ -118,7 +128,7 @@ export function parseArchive(text: string): ArchiveV0 {
     for (const issue of validateRecord(r)) problems.push(`record ${id}: ${issue.path || "record"} ${issue.message}`);
   });
   const eventIds = new Set<string>();
-  const reach = new Map<string, number>();
+  const chains = new Map<string, PersonaEvent[]>();
   events.forEach((e, i) => {
     const id = isObject(e) ? e.id : undefined;
     if (!isUlid(id)) return void problems.push(`events[${i}] has an ID that is not a ULID`);
@@ -129,13 +139,20 @@ export function parseArchive(text: string): ArchiveV0 {
     if (issues.length) return;
     const ev = e as unknown as PersonaEvent;
     if (!recordIds.has(ev.record_id)) problems.push(`event ${id}: record ${ev.record_id} is not in the archive`);
-    reach.set(ev.record_id, Math.max(reach.get(ev.record_id) ?? 0, ev.to_revision));
+    chains.set(ev.record_id, [...(chains.get(ev.record_id) ?? []), ev]);
   });
+  // Each record needs one contiguous chain of events from revision 0 to its own revision.
   for (const r of records as PersonaRecord[]) {
     if (!isUlid(r?.id) || !Number.isInteger(r.revision)) continue;
-    const top = reach.get(r.id);
-    if (top === undefined) problems.push(`record ${r.id} has no events`);
-    else if (top < r.revision) problems.push(`record ${r.id} has revision ${r.revision}, but its events reach revision ${top}`);
+    const chain = [...(chains.get(r.id) ?? [])].sort((a, b) => a.from_revision - b.from_revision);
+    if (chain.length === 0) { problems.push(`record ${r.id} has no events`); continue; }
+    const broken = chain.findIndex((e, i) => e.from_revision !== i);
+    if (broken !== -1) {
+      problems.push(`record ${r.id} has a gap or a fork in its events at revision ${chain[broken]!.from_revision}`);
+      continue;
+    }
+    const top = chain[chain.length - 1]!.to_revision;
+    if (top !== r.revision) problems.push(`record ${r.id} has revision ${r.revision}, but its events reach revision ${top}`);
   }
   if (problems.length) {
     throw new PersonaKitError("invalid", `Nothing was restored. ${problems.join("; ")}.`, { problems });
@@ -162,29 +179,38 @@ export interface RestoreResult {
  */
 export function restoreArchive(path: string, text: string, opts: RestoreOptions = {}): RestoreResult {
   const archive = parseArchive(text);
-  const existed = existsSync(join(path, "store.json"));
-  const init = initStore(path, opts);
-  const meta = join(init.root, "store.json");
-  // Keep the store.json of the target. A new store gets the store.json of the archive.
-  if (!existed) replaceFileAtomic(meta, stringifyCanonical(archive.store));
-  const store = openStore(init.root, opts);
-  return withLocks(join(store.root, "locks"), [RESTORE_LOCK_ID], "restore", () => {
+  let root = resolve(path);
+  if (!opts.skipLocationCheck) {
+    const check = checkStoreLocation(path, opts.cwd);
+    if (check.refusal) throw new PersonaKitError("unsafeStore", check.refusal, { store: check.store });
+    root = check.store;
+  }
+  const meta = join(root, "store.json");
+  // An existing store must have a format that this PersonaKit reads. openStore reads only.
+  if (existsSync(meta)) openStore(root, opts);
+  // The folders only. store.json is written inside the lock, after the emptiness scan.
+  for (const dir of [root, join(root, "records"), join(root, "events"), join(root, "locks")]) mkdirSync(dir, { recursive: true, mode: 0o700 });
+  return withLocks(join(root, "locks"), [RESTORE_LOCK_ID], "restore", () => {
     const want = {
       events: new Map(archive.events.map((e) => [e.id, stringifyCanonical(e)])),
       records: new Map(archive.records.map((r) => [r.id, stringifyCanonical(r)])),
     };
     let resumed = false;
     for (const kind of ["events", "records"] as const) {
-      const dir = join(store.root, kind);
+      const dir = join(root, kind);
       for (const file of listFiles(dir, ID_FILE)) {
         const id = file.slice(0, -5);
         const expected = want[kind].get(id);
         if (expected === undefined || readFileSync(join(dir, file), "utf8") !== expected) {
-          throw new PersonaKitError("invalid", `The store at ${store.root} is not empty. ${kind}/${file} is not part of this archive. Restore needs an empty store.`, { store: store.root, file: `${kind}/${file}` });
+          throw new PersonaKitError("invalid", `The store at ${root} is not empty. ${kind}/${file} is not part of this archive. Restore needs an empty store.`, { store: root, file: `${kind}/${file}` });
         }
         resumed = true;
       }
     }
+    // Keep the store.json of the target. A new store gets the store.json of the archive.
+    if (!existsSync(meta)) writeNewFileAtomic(meta, stringifyCanonical(archive.store));
+    initStore(root, { ...opts, skipLocationCheck: true });
+    const store = openStore(root, { ...opts, skipLocationCheck: true });
     const written = { records: 0, events: 0 };
     for (const kind of ["events", "records"] as const) {
       const dir = join(store.root, kind);
@@ -195,6 +221,14 @@ export function restoreArchive(path: string, text: string, opts: RestoreOptions 
         written[kind] += 1;
       }
       if (kind === "events") opts.afterEvents?.();
+    }
+    // A writer that passed its restore check before the lock existed can still add a file. Find it.
+    let foreign = 0;
+    for (const kind of ["events", "records"] as const) {
+      for (const file of listFiles(join(store.root, kind), ID_FILE)) if (!want[kind].has(file.slice(0, -5))) foreign += 1;
+    }
+    if (foreign > 0) {
+      throw new PersonaKitError("invalid", `The restore wrote the archive, but ${foreign} other file${foreign === 1 ? "" : "s"} appeared in the store during the restore. Run "personakit doctor" and review the store.`, { foreign });
     }
     return { root: store.root, records: archive.records.length, events: archive.events.length, written, resumed };
   });

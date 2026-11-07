@@ -1,15 +1,14 @@
 {
-  "at": "2026-11-07T01:51:55.703Z",
-  "bundle_chars": 7407,
+  "at": "2026-11-07T02:06:03.980Z",
   "files": {
     "src/cli/main.ts": "6d1ac4402ab58060d1b1de2b62fc3974c8bd0d31f002aa3447793b0521a9565b",
     "src/server/routes.ts": "7287245cffbc59c1da7f3340edbbe130a124519202b74befd4d39eb06f1c849a",
-    "src/server/server.ts": "7da3cc8d480fb5c42a3f468997d9c3b1b0a067ee4bfc96ae31246911afc1d601",
-    "src/web/app.js": "63e100a227f252125e642a65baad8a60f5ea49f862cf2722408b2d24e8323271",
+    "src/server/server.ts": "0afca5f435e49a6e3d60239bdbd1c34d59ea3943299d0325664bfa82c3f981a0",
+    "src/web/app.js": "146ca26ac83d19092f9fb6eab7d489158ec26467ba94aba7172950f6369d5e56",
     "src/web/logic.js": "b1ae1098d885d21e8589d19a299de88f2bfe5eda5f087624dfeb996bd48484a5",
     "tests/archive-cli.test.ts": "3279ddbd6fed23339581f99a89c15e531ea98e27f056c2890fa8fb985d648cb3",
-    "tests/server-api.test.ts": "5c6fb03beb4b2b7e04ed90494d3b6fe73ab434519e47f0b11e1aedaba6e2b56d",
-    "tests/server.test.ts": "38292b53085e01e7e59d0854417e537e332710e73b05ecc898f557d3da0559cd",
+    "tests/server-api.test.ts": "e46d004c1b088fe65a9ec5af35ba86c66b4c614bd4bee97196c9943c3cb019bb",
+    "tests/server.test.ts": "f9cd3e88b0c3e2c30c4990f65b4c719c830af41adf6bc48489973a0cacba8f62",
     "tests/web-logic.test.ts": "08a293d54bb0bfd34148a5b7849486a8f44c762b9df7961bdf1460c6afc82544",
     "tests/web-static.test.ts": "1034f73ddd0d9603dcab2af0b56dbde02539b8353b67e2fe981a827bbb6af018"
   },
@@ -19,13 +18,12 @@
     "REQ-WEB-009",
     "REQ-ARC-003"
   ],
-  "started_at": "2026-11-07T01:51:37.728Z",
   "task": "m2-web-workflow/5.2",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/web-static.test.ts && npx -y spec-ctx@0.5.0 lint ste README.md docs/architecture.md docs/roadmap.md",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "0e08d1e78faf595b8d0b19da73add7414640a43dba922fb3384dfd59f7bd59d6"
+    "stdout_sha256": "76969ad0d5772aec9c634c2f057164e1b4fbba70ab3bfa3a7d8aef464c1c974e"
   }
 }

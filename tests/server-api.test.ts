@@ -1,8 +1,9 @@
-// Covers: REQ-WEB-005, REQ-WEB-006, REQ-WEB-007, REQ-WEB-008, REQ-WEB-010, REQ-ONB-001, REQ-ONB-003, REQ-ONB-005, REQ-ARC-001, REQ-ARC-003
+// Covers: REQ-ARC-004, REQ-WEB-005, REQ-WEB-006, REQ-WEB-007, REQ-WEB-008, REQ-WEB-010, REQ-ONB-001, REQ-ONB-003, REQ-ONB-005, REQ-ARC-001, REQ-ARC-003
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { hostname } from "node:os";
 import { openStore, readAll, readEvents, update } from "../src/core/store.ts";
 import { buildInterviewBatch, printEnabled } from "../src/web/logic.js";
 import { REPO, cli } from "./helpers.ts";
@@ -250,5 +251,15 @@ test("an unreadable record makes the result route fail with 422", async () => {
   await withServer(async (s) => {
     writeFileSync(join(s.root, "records", "01ARZ3NDEKTSV4RRFFQ69G5FAV.json"), "nope");
     assert.equal((await call(s, { path: "/api/result" })).status, 422);
+  });
+});
+
+test("SCN-ARC-004-5 POST /api/propose answers 409 during a restore", async () => {
+  await withServer(async (s) => {
+    writeFileSync(join(s.root, "locks", "restore.lock"), JSON.stringify({ pid: process.pid, hostname: hostname(), started_at: new Date().toISOString(), command: "restore" }));
+    const r = await call(s, { path: "/api/propose", body: { items: [{ kind: "capability", statement: "Sings." }] } });
+    assert.equal(r.status, 409);
+    assert.equal(r.json().error.code, "conflict");
+    assert.equal(readdirSync(join(s.root, "records")).length, 0);
   });
 });

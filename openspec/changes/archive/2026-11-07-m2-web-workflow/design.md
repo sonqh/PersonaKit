@@ -82,3 +82,15 @@ The owner is the only user of a running server. Other web pages in the same brow
 - A restore that stops halfway leaves a partial store. Mitigation: events go first and records last, and the same archive finishes the restore.
 - `user_stated` true on pasted text says that the owner stated the fact. It does not say that anyone checked it. The brief and the CV keep their current wording about attested facts.
 - The app is plain JavaScript without a type check. Mitigation: the decisions sit in `logic.js` with unit tests, and server tests cover each route.
+
+## Diff review, 2026-11-07
+
+The architect reviewed the diff. These fixes are in this change:
+
+- Restore needs one contiguous event chain for each record. The chain starts at revision 0, and its last `to_revision` equals the record revision. Over-reach, gaps, and forks fail with code 6. Export runs the same checks on its own output, so it never writes an archive that cannot restore. Refs: REQ-ARC-002
+- `update`, `ownerAction`, and `setVisibility` check the restore lock again under the record lock. After the write phase, restore scans `records/` and `events/` again. A file that is not in the archive fails the restore with code 6, and the message gives the count only. Refs: REQ-ARC-004
+- Restore runs the emptiness scan before it writes `store.json`, and writes `store.json` inside the restore lock. A refused restore leaves no `store.json`. Refs: REQ-ARC-004
+- Tests cover each writer during a restore: `proposeBatch`, `update`, `ownerAction`, `setVisibility`, and `POST /api/propose`. Refs: REQ-ARC-004
+- `readBody` settles its promise on `aborted`, `close`, and `error`. It rejects before it drops an oversized connection. Refs: REQ-WEB-003
+- The app revokes the export object URL one second after the click, so the download can start first. Refs: REQ-ARC-003
+- The platform opener refuses every URL that does not match `^http://127\.0\.0\.1:\d+/#code=[A-Za-z0-9_-]+$`. A comment explains why `cmd /c start` on Windows needs this check. Refs: REQ-WEB-009

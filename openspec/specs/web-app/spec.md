@@ -1,10 +1,9 @@
-# Spec Delta
+# web-app Specification
 
 ## Purpose
-
 Give the owner a local web app for the full PersonaKit flow. The app runs on the owner's machine and calls the core for every read and write.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: REQ-WEB-001 Local web server
 `personakit serve` SHALL start an HTTP server with `node:http` on 127.0.0.1 only. It SHALL serve static HTML, CSS, and JavaScript from `src/web/` with no build step and no runtime dependency. It SHALL create the store when it is missing, with the same location rules as `init`. It SHALL print one URL that holds a random token. `--port` SHALL select the port. The default port is a free port that the system picks.
@@ -158,6 +157,10 @@ Refs: REQ-WEB-002
 #### Scenario: SCN-WEB-009-3 The opener gets the code and not the token
 - **WHEN** `serve --open` runs with a test opener
 - **THEN** the opener gets one URL argument with the code, and no argument holds the token
+
+#### Scenario: SCN-WEB-009-5 The opener refuses a URL of another form
+- **WHEN** the platform opener gets a URL that does not match `http://127.0.0.1:<port>/#code=<code>`
+- **THEN** it fails and starts no process
 
 #### Scenario: SCN-WEB-009-4 The launchers start the server
 - **WHEN** the tests read the two launcher scripts

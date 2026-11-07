@@ -8,7 +8,7 @@ import { spawn } from "node:child_process";
 import { dirname } from "node:path";
 import { BIN, REPO, tempStore } from "./helpers.ts";
 import { call, spawnServe, withServer } from "./web-helpers.ts";
-import { CODE_TTL_MS, SECURITY_HEADERS } from "../src/server/server.ts";
+import { CODE_TTL_MS, OPEN_URL, SECURITY_HEADERS, platformOpener } from "../src/server/server.ts";
 
 // ---------- REQ-WEB-001 ----------
 
@@ -248,4 +248,23 @@ test("SCN-WEB-009-4 the launchers start the server", () => {
     const text = readFileSync(join(REPO, "scripts", f), "utf8");
     assert.match(text, /personakit serve --open/, f);
   }
+});
+
+test("SCN-WEB-009-5 the opener refuses a URL of another form", () => {
+  for (const bad of ["http://127.0.0.1:1/#code=a&calc", "https://example.com/#code=abc", "http://127.0.0.1:1/#token=abc", "http://127.0.0.1:1/#code=a^b"]) {
+    assert.throws(() => platformOpener(bad), /unexpected form/, bad);
+  }
+  assert.match("http://127.0.0.1:4242/#code=abc_DEF-123", OPEN_URL);
+});
+
+test("a client that aborts a body does not stop the server", async () => {
+  await withServer(async (s) => {
+    await new Promise<void>((resolveDone) => {
+      const sock = connect(s.port, "127.0.0.1", () => {
+        sock.write(`POST /api/split HTTP/1.1\r\nHost: 127.0.0.1:${s.port}\r\nOrigin: http://127.0.0.1:${s.port}\r\nX-PersonaKit-Token: ${s.token}\r\nContent-Type: application/json\r\nContent-Length: 1000\r\n\r\n{"text":`);
+        setTimeout(() => { sock.destroy(); resolveDone(); }, 50);
+      });
+    });
+    assert.equal((await call(s, { path: "/api/state" })).status, 200);
+  });
 });

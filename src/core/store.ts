@@ -401,6 +401,7 @@ export interface UpdateResult {
 export function update(store: Store, id: string, baseRevision: number, patch: UpdatePatch, label: ActorLabel): UpdateResult {
   assertNoRestore(store);
   return withLocks(dirs(store.root).locks, [id], "update", () => {
+    assertNoRestore(store); // again under the lock: a restore can start between the first check and the lock
     const path = recordPath(store, id);
     const current = getRecord(store, id);
     if (current.state === "rejected" || current.state === "retired") {
@@ -495,6 +496,7 @@ export function ownerAction(store: Store, action: OwnerAction, id: string, opts:
   const first = getRecord(store, id);
   const lockIds = [id, ...(action === "accept" ? first.supersedes ?? [] : [])];
   return withLocks(dirs(store.root).locks, lockIds, action, () => {
+    assertNoRestore(store); // again under the lock
     const current = getRecord(store, id);
     const rule = TRANSITIONS[action];
     if (!rule.from.includes(current.state)) {
@@ -536,6 +538,7 @@ export function ownerAction(store: Store, action: OwnerAction, id: string, opts:
 export function setVisibility(store: Store, id: string, visibility: Visibility, opts: { expectedRevision?: number }, label: ActorLabel): PersonaRecord {
   assertNoRestore(store);
   return withLocks(dirs(store.root).locks, [id], "visibility", () => {
+    assertNoRestore(store); // again under the lock
     const current = getRecord(store, id);
     if (current.state !== "proposed" && current.state !== "accepted") {
       throw new PersonaKitError("invalid", `Cannot change the visibility of record ${id}: its state is ${current.state}.`, { record_id: id });
