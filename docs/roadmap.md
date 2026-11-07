@@ -53,10 +53,10 @@ The OpenSpec change `m2-web-workflow` builds this milestone with `personakit ser
 
 - Add an MCP server that wraps the same core. The change `m3-mcp-and-json-resume` adds it.
 - Add JSON Resume export and import. The same change adds them.
-- Add CV file import (local PDF and DOCX parsing). This needs a runtime dependency or a large parser, so the owner must approve it first.
-- Add role packs supported by user research.
-- Add optional LLM extraction and writing. This sends personal data to a model provider, so the owner must decide first.
-- Add archive restore in the web app.
+- Add DOCX import with a parser in the repository. The change `m3-docx-import` adds it. PDF import waits. See [ADR-004](../decisions/m3-scope.md).
+- Add role packs after the M0 user research.
+- Add optional LLM extraction and writing after the owner uses PersonaKit for a few weeks. It sends personal data to a model provider.
+- Add archive restore in the web app when a person who does not use a terminal needs it.
 
 Exit: Each integration has compatibility tests and does not change the canonical model.
 
