@@ -1,9 +1,9 @@
 // personakit CLI. A thin wrapper around src/core. Agents pass --json and read JSON from stdout.
-// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001 REQ-AGT-003 REQ-CV-006
+// REQ-CLI-001 REQ-CLI-002 REQ-CLI-003 REQ-VIS-001 REQ-AGT-003 REQ-CV-006 REQ-ONB-009
 
 import { parseArgs, type ParseArgsConfig } from "node:util";
 import { createInterface } from "node:readline/promises";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, existsSync, fstatSync, mkdirSync, openSync, readFileSync, readSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,8 @@ import { agentView, type BriefLevel } from "../core/brief.ts";
 import { stripCv, type CvCheckResult } from "../core/cv.ts";
 import { exportArchive, restoreArchive } from "../core/archive.ts";
 import { splitText } from "../core/text-import.ts";
+import { DOCX_LIMITS, readDocxText } from "../core/docx.ts";
+import { createHash } from "node:crypto";
 import { writeNewFileAtomic } from "../core/fsutil.ts";
 import { startServer } from "../server/server.ts";
 import {
@@ -92,6 +94,7 @@ Agent commands (never print private records):
   list [--state S] [--kind K]                        List records
   show ID                                            Show one record
   import text FILE [--user-stated]                   Propose records from pasted CV text in a file
+  import docx FILE [--user-stated]                   Propose private records from a Word CV (.docx)
 
 Owner commands (ask for confirmation):
   init                                               Create the store
@@ -474,30 +477,71 @@ function readInputFile(path: string | undefined, what: string, limit: number): s
   return readFileSync(path, "utf8");
 }
 
+/** Split text into drafts and propose them all or nothing. IDs and counts only in the output. */
+function proposeDrafts(v: Values, io: Io, text: string, source: Source, visibility?: Visibility): Result {
+  const drafts = splitText(text);
+  if (drafts.length === 0) throw new PersonaKitError("invalid", "The file gives no drafts. Nothing was proposed.");
+  const problems = drafts.flatMap((d, i) => d.problems.map((p) => `draft ${i + 1}: ${p}`));
+  if (problems.length) throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join(" ")}`, { problems });
+  const inputs: ProposeInput[] = drafts.map((d) => {
+    const input: ProposeInput = { kind: d.kind, statement: d.statement, sources: [source], user_stated: v["user-stated"] === true };
+    if (visibility) input.visibility = visibility;
+    return input;
+  });
+  let batch: ReturnType<typeof proposeBatch>;
+  try {
+    batch = proposeBatch(storeFor(v, io), inputs, actorLabel(v, io.env));
+  } catch (err) {
+    if (err instanceof PersonaKitError && Array.isArray(err.details.problems)) {
+      const named = (err.details.problems as string[]).map((p) => p.replace(/^item (\d+):/, "draft $1:"));
+      throw new PersonaKitError(err.code, `Nothing was proposed. ${named.join("; ")}.`, { problems: named });
+    }
+    throw err;
+  }
+  // IDs and counts only: no statement text in any mode.
+  const proposed = batch.map(({ record }) => ({ id: record.id, kind: record.kind, revision: record.revision, visibility: record.visibility }));
+  const text2 = `Proposed ${proposed.length} records:\n${proposed.map((r) => `  ${r.id} (${r.kind})`).join("\n")}\nThe owner reviews proposals with "personakit review" or in the web app.`;
+  return { data: { proposed, count: proposed.length, source: source.label }, text: text2 };
+}
+
+/** Read a binary file through one descriptor, with the size checked before the read. */
+function readInputBytes(path: string | undefined, what: string, limit: number): Buffer {
+  if (!path) throw usage(`Give the ${what} file.`);
+  let fd: number;
+  try {
+    fd = openSync(path, "r");
+  } catch {
+    throw new PersonaKitError("notFound", `The ${what} file ${path} does not exist.`, { file: path });
+  }
+  try {
+    const size = fstatSync(fd).size;
+    if (size > limit) throw new PersonaKitError("invalid", `The ${what} file ${path} is larger than ${limit / 1024 / 1024} MiB.`, { file: path });
+    const buf = Buffer.alloc(size);
+    let off = 0;
+    while (off < size) {
+      const n = readSync(fd, buf, off, size - off, off);
+      if (n === 0) break;
+      off += n;
+    }
+    return buf.subarray(0, off);
+  } finally {
+    closeSync(fd);
+  }
+}
+
 async function cmdImport(v: Values, io: Io, args: string[]): Promise<Result> {
   const [sub, file] = args;
   if (sub === "json-resume") return cmdImportJsonResume(v, io, args);
   if (sub === "text") {
     const text = readInputFile(file, "text", 1024 * 1024);
-    const drafts = splitText(text);
-    if (drafts.length === 0) throw new PersonaKitError("invalid", "The file gives no drafts. Nothing was proposed.");
-    const problems = drafts.flatMap((d, i) => d.problems.map((p) => `draft ${i + 1}: ${p}`));
-    if (problems.length) throw new PersonaKitError("invalid", `Nothing was proposed. ${problems.join(" ")}`, { problems });
-    const inputs: ProposeInput[] = drafts.map((d) => ({ kind: d.kind, statement: d.statement, sources: [{ kind: "cv", label: "pasted text" }], user_stated: v["user-stated"] === true }));
-    let batch: ReturnType<typeof proposeBatch>;
-    try {
-      batch = proposeBatch(storeFor(v, io), inputs, actorLabel(v, io.env));
-    } catch (err) {
-      if (err instanceof PersonaKitError && Array.isArray(err.details.problems)) {
-        const named = (err.details.problems as string[]).map((p) => p.replace(/^item (\d+):/, "draft $1:"));
-        throw new PersonaKitError(err.code, `Nothing was proposed. ${named.join("; ")}.`, { problems: named });
-      }
-      throw err;
-    }
-    // IDs and counts only: no statement text in any mode.
-    const proposed = batch.map(({ record }) => ({ id: record.id, kind: record.kind, revision: record.revision, visibility: record.visibility }));
-    const text2 = `Proposed ${proposed.length} records:\n${proposed.map((r) => `  ${r.id} (${r.kind})`).join("\n")}\nThe owner reviews proposals with "personakit review" or in the web app.`;
-    return { data: { proposed, count: proposed.length }, text: text2 };
+    return proposeDrafts(v, io, text, { kind: "cv", label: "pasted text" });
+  }
+  if (sub === "docx") {
+    // REQ-ONB-009: private proposals with one label for the file, so the owner can find the batch.
+    const bytes = readInputBytes(file, "DOCX", DOCX_LIMITS.fileBytes);
+    const text = readDocxText(bytes);
+    const label = `docx:${createHash("sha256").update(bytes).digest("hex").slice(0, 12)}`;
+    return proposeDrafts(v, io, text, { kind: "import", label }, "private");
   }
   if (sub === "archive") {
     const text = readInputFile(file, "archive", ARCHIVE_FILE_LIMIT);
@@ -505,7 +549,7 @@ async function cmdImport(v: Values, io: Io, args: string[]): Promise<Result> {
     const msg = `${r.resumed ? "Finished the restore" : "Restored the archive"} into ${r.root}: ${r.records} records and ${r.events} events.`;
     return { data: r, text: msg };
   }
-  throw usage('Use "personakit import text FILE", "personakit import archive FILE", or "personakit import json-resume FILE".');
+  throw usage('Use "personakit import text FILE", "personakit import docx FILE", "personakit import archive FILE", or "personakit import json-resume FILE".');
 }
 
 async function cmdExport(v: Values, io: Io, args: string[]): Promise<Result> {

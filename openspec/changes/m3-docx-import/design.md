@@ -45,6 +45,11 @@ A DOCX file is a ZIP archive. The text of the body is in `word/document.xml`, in
 - Proposals are set to private explicitly. The source is `{kind: "import", label: "docx:<first 12 hex characters of the sha256 of the file>"}`, so the owner can find and reject one file's batch. Refs: REQ-ONB-009
 - Errors use fixed messages. They never quote file content. Refs: REQ-ONB-009
 
+### Comparison with a library
+
+- The owner chose a hand-written reader, with a check against a library during development (2026-11-07). `mammoth` is a development dependency only. A test builds DOCX files and compares the reader's text with `mammoth.extractRawText` after white space is normalized. `scripts/compare-docx.ts FILE` runs the same comparison on a file on the owner's own computer. Real CV files never enter the repository. Refs: REQ-ONB-008
+- A test fails if any file under `src/` imports `mammoth`. Refs: REQ-ONB-008
+
 ## Plan review, 2026-11-07
 
 The architect found three blockers, now in the decisions above. Paragraphs must end with a blank line for the splitter. Element names need exact matching that knows the context and self-closing tags. And `mc:AlternateContent` duplicates text-box text. The owner approved the DOCX direction in ADR-004.
