@@ -86,7 +86,8 @@ export function cvItem(r: PersonaRecord, asOf?: string): CvItem {
   }
   if (f.issued_on) item.issued_on = f.issued_on;
   if (f.expires_on) item.expires_on = f.expires_on;
-  if (asOf && f.expires_on && f.expires_on < asOf) item.expired = true;
+  // A partial expiry date (YYYY or YYYY-MM) lasts to the end of its year or month.
+  if (asOf && f.expires_on && asOf.slice(0, f.expires_on.length) > f.expires_on) item.expired = true;
   const details: string[] = [];
   if (item.role) details.push(item.role);
   if (item.organization) details.push(item.organization);
@@ -142,7 +143,20 @@ export interface CvCheckResult {
   cited_ids: string[];
 }
 
-const MARKER_END = /\s*\[pk:([^\]\n]*)\]\s*$/u;
+/**
+ * Find a citation marker at the end of a line in linear time: no regex backtracking.
+ * Returns the text before the marker and the marker content, or undefined when the line
+ * does not end with "]" after an opening "[pk:".
+ */
+export function splitMarker(line: string): { body: string; inner: string } | undefined {
+  const t = line.trimEnd();
+  if (!t.endsWith("]")) return undefined;
+  const i = t.lastIndexOf("[pk:");
+  if (i < 0) return undefined;
+  const inner = t.slice(i + 4, -1);
+  if (inner.includes("]")) return undefined;
+  return { body: t.slice(0, i).trimEnd(), inner };
+}
 const RULE = /^\s*([-*_])(?:\s*\1){2,}\s*$/u;
 const FENCE = /^\s*(```|~~~)/u;
 const HEADING = new RegExp(`^#{1,6}\\s+(?:${[CV_TITLE, ...SECTION_TITLES].map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\s*$`, "u");
@@ -175,23 +189,23 @@ export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
       return;
     }
     if (raw.trim() === "" || RULE.test(raw) || HEADING.test(raw)) return;
-    const m = MARKER_END.exec(raw);
+    const m = splitMarker(raw);
     if (!m) {
       findings.push(raw.includes("[pk:")
         ? { line: n, level: "error", code: "misplaced-marker", message: "Put the citation marker at the end of the line." }
         : { line: n, level: "error", code: "missing-citation", message: "This line has no citation marker. Add [pk:<record ID>], or remove the line." });
       return;
     }
-    if (raw.slice(0, m.index).includes("[pk:")) {
+    if (m.body.includes("[pk:")) {
       findings.push({ line: n, level: "error", code: "misplaced-marker", message: "A line can have one citation marker, at the end." });
       return;
     }
-    const inner = m[1]!.trim();
+    const inner = m.inner;
     if (inner === "self") {
       ownerLines.push(n);
       return;
     }
-    const ids = [...new Set(inner.split(",").map((s) => s.trim()))];
+    const ids = [...new Set(inner.split(","))];
     const bad = ids.filter((id) => !ULID_PATTERN.test(id));
     if (ids.length === 0 || bad.length) {
       findings.push({ line: n, level: "error", code: "malformed-marker", message: "A marker holds record IDs of 26 characters, separated by commas, or the word self." });
@@ -211,7 +225,10 @@ export function checkCv(text: string, records: PersonaRecord[]): CvCheckResult {
 export function stripCv(text: string, records: PersonaRecord[]): { text?: string; check: CvCheckResult } {
   const check = checkCv(text, records);
   if (!check.ok) return { check };
-  const lines = normalizeCvInput(text).split("\n").map((l) => l.replace(MARKER_END, ""));
+  const lines = normalizeCvInput(text).split("\n").map((l) => {
+    const m = splitMarker(l);
+    return m ? m.body : l;
+  });
   let out = lines.join("\n");
   if (!out.endsWith("\n")) out += "\n";
   return { text: out, check };

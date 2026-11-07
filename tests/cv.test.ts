@@ -25,9 +25,11 @@ test("SCN-CV-001-1 every record line cites its record under the section for its 
     rec("experience", "Finished a data course.", { type: "course", organization: "Eastmere College", period: { start: "2023-01", end: "2023-06" } }),
     rec("capability", "First aid certificate.", { issued_on: "2024-01-10", expires_on: "2027-01-10" }),
     rec("capability", "Writes clear reports."),
+    rec("experience", "Designed a shop sign.", { type: "freelance", organization: "Tidewater Bakery", period: { start: "2021-03", end: "2021-04" } }),
+    rec("experience", "Cared for a family member.", { type: "career_break", period: { start: "2022-09", end: "2023-08" } }),
   ];
   const md = markdown(rs);
-  for (const [title, r] of [["Summary", rs[0]], ["Experience", rs[1]], ["Education", rs[2]], ["Credentials", rs[3]], ["Capabilities", rs[4]]] as const) {
+  for (const [title, r] of [["Summary", rs[0]], ["Experience", rs[1]], ["Education", rs[2]], ["Credentials", rs[3]], ["Capabilities", rs[4]], ["Freelance engagements", rs[5]], ["Career breaks", rs[6]]] as const) {
     const section = md.split(`## ${title}\n`)[1]!.split("\n## ")[0]!;
     assert.match(section, new RegExp(`^- .+ \\[pk:${r!.id}\\]$`, "m"), title);
   }
@@ -64,6 +66,10 @@ test("SCN-CV-001-5 credentials show their dates and expire with --as-of", () => 
   const c = rec("capability", "Customer support certificate.", { issued_on: "2023-11-15", expires_on: "2026-11-15" });
   assert.match(markdown([c]), /issued 2023-11-15, valid until 2026-11-15/);
   assert.match(markdown([c], "2026-12-01"), /issued 2023-11-15, expired 2026-11-15/);
+  // A partial expiry date lasts to the end of its month.
+  const month = rec("capability", "Forklift licence.", { expires_on: "2026-11" });
+  assert.match(markdown([month], "2026-11-15"), /valid until 2026-11/);
+  assert.match(markdown([month], "2026-12-01"), /expired 2026-11/);
 });
 
 test("SCN-CV-002-1 a line without a marker fails, also a quote or a heading with dates", () => {
@@ -77,6 +83,18 @@ test("SCN-CV-002-2 a misplaced or malformed marker fails", () => {
   const r = rec("experience", "Ran a shop.");
   const res = checkCv([`- Ran [pk:${r.id}] a shop.`, `- Ran a shop. [pk:${r.id}] [pk:${r.id}]`, "- Ran a shop. [pk:not-an-id]", "- Ran a shop. [pk:]"].join("\n"), [r]);
   assert.deepEqual(res.findings.map((f) => f.code), ["misplaced-marker", "misplaced-marker", "malformed-marker", "malformed-marker"]);
+  // The grammar has no spaces inside a marker.
+  const spaced = checkCv(`- Ran a shop. [pk: ${r.id} ]\nAlex [pk: self ]\n`, [r]);
+  assert.deepEqual(spaced.findings.map((f) => f.code), ["malformed-marker", "malformed-marker"]);
+});
+
+test("the check is linear on a 1 MiB line", () => {
+  for (const line of ["a" + " ".repeat(1024 * 1024 - 2) + "b", "[pk:".repeat(256 * 1024)]) {
+    const t = Date.now();
+    checkCv(line, []);
+    stripCv(line, []);
+    assert.ok(Date.now() - t < 1000, `took ${Date.now() - t} ms`);
+  }
 });
 
 test("SCN-CV-002-3 an ID that cannot be cited fails with one code and no reason", () => {

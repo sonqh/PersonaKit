@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-07T01:04:18.330Z",
+  "bundle_chars": 7373,
+  "files": {
+    "src/cli/main.ts": "b54667e3ebd04b88ee4cbda1a318256fd9a0b6692859cc0939e0f75e52ee48c5",
+    "src/core/cv.ts": "32c4d2e580057d54ebb3a0fd7db9601130a55630d680939bd2f27a9116988bdc",
+    "tests/cv-cli.test.ts": "e06395f6b6b609298148bcc8ae705e9eb12307dc9d3865fcffb369f3e9f439ea",
+    "tests/cv.test.ts": "3fb7a515437cf5c050d8ae0512b98eeb4070ddcf7bf8a000d5318a887d12b0e5"
+  },
+  "kind": "command",
+  "reason": "archive-stop fixes: linear marker parser, strip --json, partial expiry, review rule in AGENTS.md",
+  "reqs": [
+    "REQ-VIS-002"
+  ],
+  "started_at": "2026-11-07T01:04:10.107Z",
+  "task": "m1-cv-projection/2.2",
+  "tool_version": "0.5.0",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cv-cli.test.ts tests/cv.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "8742d952e1c79f7dd8908f0c2ae78c799ddfeea2a15bf97460109332aae55ee8"
+  }
+}

@@ -1,22 +1,20 @@
 {
-  "at": "2026-11-07T01:03:45.791Z",
-  "bundle_chars": 7148,
+  "at": "2026-11-07T01:14:34.344Z",
   "files": {
-    "src/cli/main.ts": "b54667e3ebd04b88ee4cbda1a318256fd9a0b6692859cc0939e0f75e52ee48c5",
-    "src/core/cv.ts": "32c4d2e580057d54ebb3a0fd7db9601130a55630d680939bd2f27a9116988bdc",
-    "tests/cv.test.ts": "3fb7a515437cf5c050d8ae0512b98eeb4070ddcf7bf8a000d5318a887d12b0e5"
+    "src/cli/main.ts": "ac1d901f17851354fac19503b272fc3b9213b8b8162fd662253ae4945ce1db8b",
+    "src/core/cv.ts": "063902a5d1248f5e94493e20d925b8c73500c4576edf92ecfc7e268c7582b779",
+    "tests/cv.test.ts": "af040a4187410e6f236248e70cdc67942cae468e2ac2810605a9520f5c2f0693"
   },
   "kind": "command",
   "reqs": [
     "REQ-CV-002"
   ],
-  "started_at": "2026-11-07T01:03:40.697Z",
   "task": "m1-cv-projection/1.2",
   "tool_version": "0.5.0",
   "verify": {
     "command": "npm run typecheck && node --test tests/cv.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "d9695e1f82491a445d9ae73343b907db12240516d962619ba2605bc3ccc27000"
+    "stdout_sha256": "92c94c779a4a58914eaa626a2b95c8457a17bd78c110ffb393187b0400391ef7"
   }
 }

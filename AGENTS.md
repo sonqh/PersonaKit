@@ -31,6 +31,18 @@ Use the `personakit` skill. Agents propose records. Only the user accepts them.
 - Keep each skill in `.agents/skills/` and its copy in `.claude/skills/` identical. A test fails when they differ.
 - Use one branch from `main` for each change, and open its pull request against `main`. Do not stack pull requests. Start the next change after the previous pull request is merged.
 
+## Reviews
+
+The owner approves each plan and each archive. The lead engineer writes the code. Reviews depend on the risk of the change:
+
+| Change | Review |
+| --- | --- |
+| Core code, security, private data, or concurrency | The architect reviews the plan and the diff. The product manager reviews the plan when the change affects users. |
+| Small feature, CLI, or documentation of behavior | The architect reviews the diff before the archive. |
+| License, configuration, or text-only edits | No team review. |
+
+Give independent and well-specified work, such as fixtures, to an engineer agent.
+
 ## Writing
 
 - Write human-facing Markdown with [ste-humanize](https://github.com/sonqh/ste-humanize-skill) in Human mode.
