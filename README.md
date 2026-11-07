@@ -60,3 +60,7 @@ M1 is in progress: the record schema, the store, the CLI, and the agent skill. T
 ## Contributions
 
 Use a GitHub issue to describe a bug or propose a change. Remove private personal data from examples and logs before you post them.
+
+## License
+
+PersonaKit uses the [MIT License](LICENSE).
