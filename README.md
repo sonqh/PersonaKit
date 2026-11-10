@@ -24,12 +24,15 @@ The goal is that a person can use PersonaKit without knowing how to code. The CL
 
 ## Design documents
 
+- [Set up PersonaKit on your computer](docs/getting-started.md)
 - [Product and architecture](docs/architecture.md)
 - [Delivery plan](docs/roadmap.md)
 - [Specification workflow with spec-ctx](docs/spec-workflow.md)
 - [Bug reports and learning loop](docs/bug-reporting.md)
 
 ## Use the web app
+
+For a first setup, follow [Set up PersonaKit on your computer](docs/getting-started.md).
 
 You need Node.js 22.18 or newer. Install it once:
 
@@ -119,8 +122,8 @@ The server uses the store in `PERSONAKIT_HOME`, or `~/.personakit/`. To use anot
 
 - M1: the record schema, the store, the CLI, the agent skill, the cited CV draft, and the CV fact checks.
 - M2: the local web app, paste import, and the portable archive.
-- M3: the MCP server and JSON Resume export and import.
-- Not started: PDF and DOCX import, optional LLM extraction, role packs, and web restore. Each one needs an owner decision. The M0 user research is still open.
+- M3: the MCP server, JSON Resume export and import, and DOCX import.
+- Not started: PDF import, optional LLM extraction, role packs, and web restore. [ADR-004](decisions/m3-scope.md) defers them. The M0 user research is still open.
 
 See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).
 
