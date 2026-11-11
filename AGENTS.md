@@ -43,6 +43,36 @@ The owner approves each plan and each archive. The lead engineer writes the code
 
 Give independent and well-specified work, such as fixtures, to an engineer agent.
 
+## Language
+
+The owner can write to you in Vietnamese. The repository text stays in English.
+
+- Write code, code comments, test names, commit messages, PR titles, and PR bodies in plain English.
+- Write a Vietnamese term in English. For example, write "job description", not "mô tả công việc".
+- The web app, the CLI, and the MCP server use English for their user-facing text. A Vietnamese locale can be added later. Its strings then stay in Vietnamese.
+- Text that a user puts into a persona is data. Keep it in the language of the user. Do not translate it. Fixtures stay synthetic and in English.
+
+### Commit messages
+
+- Start the first line with a type: `feat:`, `fix:`, `chore:`, `test:`, `docs:`, or `refactor:`. You can add a scope, for example `feat(m4):`.
+- Write the first line as one line of plain English. Say what changes and why.
+- Example: `feat(m4): tailor the CV draft to a job text`.
+- A body is optional. End it with the attribution lines that the agent environment gives.
+
+### PR titles
+
+- Do not start a PR title with a type.
+- Write a short plain-English title that says what the PR changes. Put the change name or the requirement IDs at the end.
+- Example: `Tailor the CV draft to a job text (m4-job-target, REQ-CV-008 to REQ-CV-012)`.
+
+### Ledger text
+
+Ledger text is English. The ledger is `openspec/` (specs and changes), `decisions/`, `docs/`, the GitHub issues, and the spec-ctx state in `.ctx/`. This includes the text of `specctx handoff ask` and `specctx handoff resolve`.
+
+- When a ledger entry records what the owner said in chat, write it in English in your own words.
+- Do not paste a Vietnamese prompt of the owner into the ledger.
+- When an issue quotes a bug reporter in another language, keep the quote as it is and add an English gloss. Remove personal data from the quote first.
+
 ## Writing
 
 - Write human-facing Markdown with [ste-humanize](https://github.com/sonqh/ste-humanize-skill) in Human mode.
