@@ -193,7 +193,7 @@
     "status": "resolved",
     "stage": "plan",
     "verdict": "approved",
-    "answer": "1: có; 2: không; 3: đặt ở change metrics; 4: có",
+    "answer": "Approved by the owner. 1: yes, drop unmatched experience. 2: no, do not store the job text. 3: set the M4 thresholds in the metrics change. 4: yes, a CLI and agent loop is enough until the web change.",
     "resolved_at": "2026-11-11T14:27:05.436Z"
   },
   {
@@ -201,7 +201,10 @@
     "asked_at": "2026-11-11T14:40:14.488Z",
     "task": "m4-job-target",
     "text": "archive m4-job-target?",
-    "status": "open",
-    "stage": "archive"
+    "status": "resolved",
+    "stage": "archive",
+    "verdict": "approved",
+    "answer": "Approved by the owner: archive m4-job-target.",
+    "resolved_at": "2026-11-11T15:49:19.271Z"
   }
 ]
