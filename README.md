@@ -83,6 +83,14 @@ What the CV check does and does not do:
 - It does not check a line marked `[pk:self]`. That line is your own statement.
 - It traces each line to its sources. It does not prove that a line is true. Read the final text yourself.
 
+To tailor a CV to one job, save the job description as `jd.txt`:
+
+1. Run `personakit cv match --job jd.txt`. It lists each requirement of the job, the records that share words with it, and the gaps that no record supports.
+2. Run `personakit cv draft --job jd.txt --out cv.md`. The draft keeps the records that share words with the job. It also keeps Summary, Education, Credentials, and Career breaks. stderr lists the IDs of the records it left out.
+3. Rewrite and check the draft as in step 7.
+
+A link is a hint, not proof that you meet a requirement. A gap does not mean that you lack the skill. The match compares words. It misses synonyms, and stop words and plural forms are English only. If the draft leaves a hole in your time line, add the record back. PersonaKit does not store the job text. The text goes into the match report and into a file that you write with `--out`. An agent that runs the commands also sees it.
+
 Agents can only propose. You decide what is accepted. This step protects against agent mistakes. It does not stop a program that has full access to your files.
 
 claude.ai on the web cannot run commands. Move the brief and proposals by hand, or use Claude Desktop with the MCP server below. [Use PersonaKit with claude.ai](docs/claude-ai.md) has the steps and a prompt to paste.
@@ -93,7 +101,7 @@ To back up your store or use it on two machines, make `~/.personakit/` a private
 
 ## Connect an app through MCP
 
-Claude Desktop, Claude Code, and Codex can start PersonaKit as a local MCP server. The app then reads the brief and proposes records directly, with no copy and paste. The server has the same rules as the CLI. It offers the tools `brief`, `propose`, `list`, `show`, `cv_draft`, and `cv_check`. It has no tool to accept, reject, retire, or change visibility. You still run `personakit review` in your own terminal.
+Claude Desktop, Claude Code, and Codex can start PersonaKit as a local MCP server. The app then reads the brief and proposes records directly, with no copy and paste. The server has the same rules as the CLI. It offers the tools `brief`, `propose`, `list`, `show`, `cv_draft`, and `cv_check`. `cv_draft` takes an optional `job` text and then adds the match report. It has no tool to accept, reject, retire, or change visibility. You still run `personakit review` in your own terminal.
 
 Desktop apps can start without your shell `PATH`. So give the full path to `node` and to `bin/personakit.mjs` in your clone. Run `which node` to find the path to `node`.
 
@@ -130,6 +138,7 @@ The server uses the store in `PERSONAKIT_HOME`, or `~/.personakit/`. To use anot
 - M1: the record schema, the store, the CLI, the agent skill, the cited CV draft, and the CV fact checks.
 - M2: the local web app, paste import, and the portable archive.
 - M3: the MCP server, JSON Resume export and import, and DOCX import.
+- M4, in progress: the job-targeted CV loop. The CLI and MCP can match a job text and build a tailored draft. The web flow comes next.
 - Not started: PDF import, optional LLM extraction, role packs, and web restore. [ADR-004](decisions/m3-scope.md) defers them. The M0 user research is still open.
 
 See the [M1 design](docs/m1-design.md) and the [delivery plan](docs/roadmap.md).

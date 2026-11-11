@@ -1,0 +1,20 @@
+{
+  "at": "2026-11-11T14:28:31.454Z",
+  "bundle_chars": 7281,
+  "files": {
+    "tests/check-privacy.test.ts": "e6199d5869af6d2040413dc4b491504e40fe8c5236ed0dc5be7cc930b9880b77"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CV-012"
+  ],
+  "started_at": "2026-11-11T14:28:30.346Z",
+  "task": "m4-job-target/1.2",
+  "tool_version": "0.4.1",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/check-privacy.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "ee1c25d786941e91c5016a92c61846035682562f357f63393030376febd59939"
+  }
+}

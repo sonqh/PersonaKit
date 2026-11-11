@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-11T14:28:16.247Z",
+  "bundle_chars": 7798,
+  "files": {
+    "src/core/cv-job.ts": "75dc60c8eb362939672275d0108fdb1a2563c06a0e0fdb63a9cbfe1c5ebc51bf",
+    "tests/cv-job.test.ts": "b8d7a66677ca0aa3aae3a22824e2d80606caadbf70d12cb592957b14cfb0f3e1"
+  },
+  "kind": "command",
+  "reason": "stale evidence: src/core/cv-job.ts",
+  "reqs": [
+    "REQ-CV-008",
+    "REQ-CV-009"
+  ],
+  "started_at": "2026-11-11T14:27:10.064Z",
+  "task": "m4-job-target/1.1",
+  "tool_version": "0.4.1",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cv-job.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "438d3c5fcba89fe9b45f7aad392940820954b8bb2725fd4db952a503e53794ab"
+  }
+}

@@ -14,6 +14,7 @@ import { agentView, type BriefLevel } from "../core/brief.ts";
 import { stripCv, type CvCheckResult } from "../core/cv.ts";
 import { exportArchive, restoreArchive } from "../core/archive.ts";
 import { splitText } from "../core/text-import.ts";
+import { JOB_MAX_BYTES, renderMatchText } from "../core/cv-job.ts";
 import { DOCX_LIMITS, readDocxText } from "../core/docx.ts";
 import { createHash } from "node:crypto";
 import { writeNewFileAtomic } from "../core/fsutil.ts";
@@ -24,7 +25,7 @@ import {
 } from "../core/store.ts";
 import { McpServer, installCrashLogging, serveStdio } from "../mcp/server.ts";
 import { replaceFileAtomic } from "../core/fsutil.ts";
-import { briefText, cvCheck, cvDraft, exportJsonResume, importJsonResume, cvRecords as cvRecordsOp, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
+import { briefText, cvCheck, cvDraft, cvDraftForJob, cvMatch, exportJsonResume, importJsonResume, cvRecords as cvRecordsOp, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
 import {
   ACTORS, RECORD_KINDS, RECORD_STATES, SOURCE_KINDS, VISIBILITIES,
   type Actor, type Facets, type PersonaRecord, type RecordKind, type Source, type Visibility,
@@ -69,6 +70,7 @@ const OPTIONS = {
   fix: { type: "boolean" },
   target: { type: "string" },
   "as-of": { type: "string" },
+  job: { type: "string" },
   strict: { type: "boolean" },
   port: { type: "string" },
   open: { type: "boolean" },
@@ -83,6 +85,8 @@ Usage: personakit <command> [options]
 Agent commands (never print private records):
   brief [--level short|full] [--json] [--out FILE]   Compile the AI brief
   cv draft [--as-of DATE] [--json] [--out FILE]      Build a cited CV draft from public records
+           [--job FILE|-]                            Keep the records that share words with a job text
+  cv match --job FILE|- [--json]                     Show which records share words with a job text
   cv check FILE [--strict]                           Check CV lines; --strict fails on warnings
   cv strip FILE [--out FILE]                         Print the final CV text without markers
   export json-resume [--out FILE]                    Build JSON Resume 1.0.0 from public records
@@ -411,6 +415,16 @@ function readCvFile(path: string | undefined): string {
   return readFileSync(path, "utf8");
 }
 
+// REQ-CV-011: the job text is untrusted data. Errors never repeat it.
+function readJob(v: Values, io: Io): string {
+  const path = v.job;
+  if (path === undefined || path === "") throw usage("Give the job text: --job FILE, or --job - to read stdin.");
+  if (path === "-") return io.readStdin();
+  if (!existsSync(path)) throw usage(`The job file ${path} does not exist.`);
+  if (statSync(path).size > JOB_MAX_BYTES) throw usage(`The job file is larger than ${JOB_MAX_BYTES} bytes. Give a shorter job text.`);
+  return readFileSync(path, "utf8");
+}
+
 function cvRecords(v: Values, io: Io): PersonaRecord[] {
   return cvRecordsOp(storeFor(v, io));
 }
@@ -427,6 +441,20 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
   const [sub, file] = args;
   if (sub === "draft") {
     if (v["as-of"] !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(v["as-of"])) throw usage("--as-of must be a date as YYYY-MM-DD.");
+    if (v.job !== undefined) {
+      // REQ-CV-010: the tailored draft. Hints go to stderr as counts and IDs, so they never enter the draft.
+      const r = cvDraftForJob(storeFor(v, io), readJob(v, io), v["as-of"]);
+      const gaps = r.match.gaps.length;
+      if (r.match.matched === 0) io.stderr(`No record outside Summary, Education, Credentials, and Career breaks shares words with the job text. This is the full draft.\n`);
+      if (r.left_out.length) io.stderr(`Left out ${r.left_out.length} record${r.left_out.length === 1 ? "" : "s"} that share no words with the job text: ${r.left_out.join(", ")}.\n`);
+      io.stderr(`${gaps} requirement${gaps === 1 ? "" : "s"} with no record. To see the links and gaps, run "personakit cv match --job ${v.job}".\n`);
+      const out = v.json ? stringifyCanonical({ draft: r.draft, match: r.match }) : r.markdown;
+      if (v.out) {
+        writeFileSync(v.out, out);
+        return { data: { written: resolve(v.out), records: r.count, left_out: r.left_out, gaps }, text: `Wrote the tailored CV draft with ${r.count} records to ${resolve(v.out)}.` };
+      }
+      return { data: undefined, text: out, raw: true } as Result & { raw: boolean };
+    }
     const { draft, markdown, count, ai_only: aiOnly } = cvDraft(storeFor(v, io), v["as-of"]);
     if (count < 3 && aiOnly > 0) {
       // Counts only, never text. The hint goes to stderr, so it never enters the draft.
@@ -446,6 +474,10 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
     const failed = !result.ok || (v.strict === true && result.warnings > 0);
     return { data: result, text: describeCheck(result), exitCode: failed ? ExitCode.invalid : ExitCode.ok };
   }
+  if (sub === "match") {
+    const m = cvMatch(storeFor(v, io), readJob(v, io));
+    return { data: m, text: renderMatchText(m).trimEnd() };
+  }
   if (sub === "strip") {
     const text = readCvFile(file);
     const { text: final, check } = stripCv(text, cvRecords(v, io));
@@ -461,7 +493,7 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
     if (v.json) return { data: { text: final, owner_lines: check.owner_lines }, text: final };
     return { data: undefined, text: final, raw: true } as Result & { raw: boolean };
   }
-  throw usage('Use "personakit cv draft", "personakit cv check FILE", or "personakit cv strip FILE".');
+  throw usage('Use "personakit cv draft", "personakit cv match --job FILE", "personakit cv check FILE", or "personakit cv strip FILE".');
 }
 
 // ---------- import, export ----------

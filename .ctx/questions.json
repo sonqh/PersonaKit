@@ -190,7 +190,10 @@
     "asked_at": "2026-11-11T14:26:23.254Z",
     "task": "m4-job-target",
     "text": "plan ready for m4-job-target. Approve to start the tasks?",
-    "status": "open",
-    "stage": "plan"
+    "status": "resolved",
+    "stage": "plan",
+    "verdict": "approved",
+    "answer": "1: có; 2: không; 3: đặt ở change metrics; 4: có",
+    "resolved_at": "2026-11-11T14:27:05.436Z"
   }
 ]

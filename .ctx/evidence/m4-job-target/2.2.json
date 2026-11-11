@@ -1,0 +1,30 @@
+{
+  "at": "2026-11-11T14:33:22.719Z",
+  "bundle_chars": 7979,
+  "files": {
+    "src/app/operations.ts": "edd10f2cd96aab29f4dc91ceffb0fb3ef96c2e20bf0f8b5bd6319e7764669f02",
+    "src/cli/main.ts": "62a3ba1345a874cd5f1a9138ee1f49f3e663eeb6f0c944ab5840357d9e7ec1dd",
+    "src/core/cv-job.ts": "01cb059fe95c008840a6a6fa8f65f65eb0a514891ea0e0ddbfe2e60b523dfcaa",
+    "src/mcp/server.ts": "786b6729f585d404f263f4df9562a85e5555d40139ca76e51d4d599b110e4ac6",
+    "tests/check-privacy.test.ts": "e6199d5869af6d2040413dc4b491504e40fe8c5236ed0dc5be7cc930b9880b77",
+    "tests/cv-job-cli.test.ts": "1cf87f137183bab110e35c26a6d7c3e727c190a51d5bc9b1059fe2fda9583851",
+    "tests/cv-job.test.ts": "d612f91b4466a39a16921f485504c5f3bda5b7b427c8332d81fe1e6c9fc89ed9",
+    "tests/mcp-docs.test.ts": "bd6b96b6b6f8cc886b5e3d9a58916b78da68d837f39f2ab45d1d600c8a05562e",
+    "tests/mcp-privacy.test.ts": "123eb60da2228e9a8ff1acf153ec1f81fc2ab59fd4e7cba05470212b75f0561e",
+    "tests/mcp-tools.test.ts": "39a3f6a030d93e5279d7a2a960b15ee120aa0fd391265b141a5973bd5bb5b4c0"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CV-011",
+    "REQ-CV-012"
+  ],
+  "started_at": "2026-11-11T14:32:46.098Z",
+  "task": "m4-job-target/2.2",
+  "tool_version": "0.4.1",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/mcp-tools.test.ts tests/mcp-docs.test.ts tests/mcp-privacy.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "1742fdf09f5b97f8e9483cfcaed8f702c9c1ae4f033b815a3dbd14ea30d34545"
+  }
+}

@@ -46,3 +46,15 @@ test("SCN-STO-002-4 a store is inside the repository", () => {
   assert.equal(r.status, 1);
   assert.match(r.stderr, /store is inside the repository/);
 });
+
+// Covers: REQ-CV-012
+test("SCN-CV-012-2 a fixture text file needs the synthetic heading", () => {
+  const copy = repoCopy();
+  writeFileSync(join(copy, "fixtures", "designer", "job.md"), "Senior designer wanted.\n- Figma\n");
+  const bad = runCheck(copy);
+  assert.equal(bad.status, 1);
+  assert.match(bad.stderr, /fixtures\/designer\/job\.md: the first line is not "# Synthetic/);
+  writeFileSync(join(copy, "fixtures", "designer", "job.md"), "# Synthetic job text (PersonaKit fixture)\n- Figma\n");
+  const good = runCheck(copy);
+  assert.equal(good.status, 0, good.stderr);
+});

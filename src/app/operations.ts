@@ -8,6 +8,7 @@ import { buildJsonResume, planJsonResumeImport, problemAt } from "../core/json-r
 import { PersonaKitError } from "../core/errors.ts";
 import { agentView, compileBriefJson, compileBriefMarkdown, type BriefJson, type BriefLevel } from "../core/brief.ts";
 import { buildCvDraft, checkCv, renderCvMarkdown, type CvCheckResult, type CvDraft } from "../core/cv.ts";
+import { buildTailoredDraft, matchJob, parseJob, type CvMatch } from "../core/cv-job.ts";
 import { proposeBatch, checkProposal, getRecord, propose, readAll, type ActorLabel, type ProposeInput, type Store } from "../core/store.ts";
 import type { PersonaRecord, RecordKind, RecordState } from "../core/schema.ts";
 
@@ -95,6 +96,30 @@ export function cvDraft(store: Store, asOf?: string): CvDraftResult {
   const count = draft.sections.reduce((n, s) => n + s.items.length, 0);
   const aiOnly = records.filter((r) => r.state === "accepted" && r.visibility === "ai" && r.kind !== "intent" && r.kind !== "preference").length;
   return { draft, markdown: renderCvMarkdown(draft), count, ai_only: aiOnly };
+}
+
+// REQ-CV-010 REQ-CV-011: the job text is a call input. Nothing here stores or logs it.
+
+/** The match report for a job text. The parser checks the size first, before the store is read. */
+export function cvMatch(store: Store, jobText: string): CvMatch {
+  const job = parseJob(jobText);
+  return matchJob(job, cvRecords(store));
+}
+
+export interface CvJobDraftResult extends CvDraftResult {
+  match: CvMatch;
+  /** Eligible records that the tailored draft leaves out. IDs only. */
+  left_out: string[];
+}
+
+export function cvDraftForJob(store: Store, jobText: string, asOf?: string): CvJobDraftResult {
+  const job = parseJob(jobText);
+  const records = cvRecords(store);
+  const match = matchJob(job, records);
+  const { draft, left_out } = buildTailoredDraft(records, match, asOf);
+  const count = draft.sections.reduce((n, s) => n + s.items.length, 0);
+  const aiOnly = records.filter((r) => r.state === "accepted" && r.visibility === "ai" && r.kind !== "intent" && r.kind !== "preference").length;
+  return { draft, markdown: renderCvMarkdown(draft), count, ai_only: aiOnly, match, left_out };
 }
 
 export function cvCheck(store: Store, text: string): CvCheckResult {

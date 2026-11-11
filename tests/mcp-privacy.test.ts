@@ -1,4 +1,4 @@
-// Covers: REQ-MCP-008, REQ-VIS-001
+// Covers: REQ-MCP-008, REQ-VIS-001, REQ-CV-012, REQ-CV-008
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, writeFileSync } from "node:fs";
@@ -47,6 +47,22 @@ test("SCN-MCP-008-1 a canary appears in no MCP output", async () => {
   assert.equal(s.byId(6).result.structuredContent.redacted, true);
   // Bad arguments wrote nothing.
   assert.equal(readdirSync(join(root, "records")).length, 4);
+});
+
+test("SCN-CV-012-2 SCN-CV-008-3 a job text never brings out a private record, and never reaches stderr", async () => {
+  const { root, store } = tempStore();
+  const { record: secret } = propose(store, { kind: "capability", statement: `${CANARY} hospital pharmacy stock control.`, sources: [{ kind: "chat" }], user_stated: true }, owner);
+  ownerAction(store, "accept", secret.id, { visibility: "private" }, owner);
+  const { record: ai } = propose(store, { kind: "experience", statement: "Managed the hospital pharmacy stock.", sources: [{ kind: "chat" }], user_stated: true }, owner);
+  ownerAction(store, "accept", ai.id, { visibility: "ai" }, owner);
+  const marker = "JOB-MARKER-5531";
+  const s = await session(root, [call(1, "cv_draft", { job: `- Hospital pharmacy stock control ${marker}\n` }), call(2, "cv_draft", { job: `# ${marker}\n` })]);
+  assert.equal(s.byId(1).result.isError, false);
+  assert.deepEqual(s.byId(1).result.structuredContent.match.gaps, [1]);
+  for (const text of [CANARY, secret.id, ai.id]) assert.ok(!s.stdout.includes(text), text);
+  assert.equal(s.byId(2).result.isError, true);
+  assert.ok(!s.stderr.includes(marker));
+  assert.ok(!JSON.stringify(s.byId(2)).includes(marker));
 });
 
 test("SCN-MCP-008-2 a tool failure is a tool result", async () => {

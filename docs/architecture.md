@@ -6,7 +6,7 @@ Status: Proposed. M1 implements the record store and the CLI. See [the M1 design
 
 The first flow accepts pasted CV text or a short interview. The user reviews the records that result. The result screen offers an AI brief and a tailored CV draft.
 
-A user can edit records later. A CV draft can use a job description later to pick records. M1 builds the draft without one.
+A user can edit records later. A CV draft can use a job description to pick records. The change `m4-job-target` adds this to the CLI and MCP. The core splits the job text into requirements and links each one to the public records that share words with it. It does not store the job text. A link is a hint for the user and the agent. It does not show that the user meets the requirement.
 
 ## Core records
 
