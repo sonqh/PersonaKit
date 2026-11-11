@@ -10,3 +10,6 @@ adopt-report.md
 # Node
 node_modules/
 *.tmp-*
+
+# PersonaKit backups hold private records. See docs/getting-started.md.
+personakit-backup*.json
