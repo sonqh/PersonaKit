@@ -1,11 +1,11 @@
-// Covers: REQ-MCP-001, REQ-MCP-004
+// Covers: REQ-MCP-001, REQ-MCP-004, REQ-CV-011
 // The MCP configuration in the documents must parse and start the server with the mcp command.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { REPO } from "./helpers.ts";
-import { TOOLS } from "../src/mcp/server.ts";
+import { JOB_NOTICE, TOOLS } from "../src/mcp/server.ts";
 
 function blocks(file: string, lang: string): string[] {
   const text = readFileSync(join(REPO, file), "utf8");
@@ -32,4 +32,11 @@ test("the README and the claude.ai guide hold a valid MCP configuration", () => 
 test("the README names every MCP tool", () => {
   const readme = readFileSync(join(REPO, "README.md"), "utf8");
   for (const t of TOOLS) assert.ok(readme.includes(`\`${t.name}\``), t.name);
+});
+
+test("SCN-CV-011-3 the cv_draft tool says that the job text is data", () => {
+  const tool = TOOLS.find((t) => t.name === "cv_draft")!;
+  assert.ok(tool.description.includes(JOB_NOTICE));
+  assert.ok(tool.description.includes("not proof"));
+  assert.ok("job" in (tool.inputSchema as { properties: Record<string, unknown> }).properties);
 });

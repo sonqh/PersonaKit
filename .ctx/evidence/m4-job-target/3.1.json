@@ -1,0 +1,24 @@
+{
+  "at": "2026-11-11T14:39:56.475Z",
+  "files": {
+    "src/app/operations.ts": "edd10f2cd96aab29f4dc91ceffb0fb3ef96c2e20bf0f8b5bd6319e7764669f02",
+    "src/cli/main.ts": "f83c9f843d66027887df026d4784bd76902d46f1367dad73469719b1fcf9923d",
+    "src/mcp/server.ts": "efa7ba459c09983ef95cf3cffef0e962b0fe902be1318dc49349efd1d4ec4985",
+    "tests/agents.test.ts": "6eeb0b00193d6b8a092ae025df5b44065cfcd0bc68b3b0c18a9ec7b36daf74ea",
+    "tests/cv-job-cli.test.ts": "68fe65c8b1ead422f3a44652c25f19760d0af072c1c102650dbddf58e630f73b",
+    "tests/mcp-docs.test.ts": "bd6b96b6b6f8cc886b5e3d9a58916b78da68d837f39f2ab45d1d600c8a05562e",
+    "tests/mcp-tools.test.ts": "5602c72288f93e04777ab3bd74551128f69aa039dbe6198967366190d9836e30"
+  },
+  "kind": "command",
+  "reqs": [
+    "REQ-CV-011"
+  ],
+  "task": "m4-job-target/3.1",
+  "tool_version": "0.4.1",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/agents.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "f46c91f7d1f40d5968e3b61b587061fa697506dc4c9b75bcf7d6f853c35886fe"
+  }
+}

@@ -60,6 +60,23 @@ The OpenSpec change `m2-web-workflow` builds this milestone with `personakit ser
 
 Exit: Each integration has compatibility tests and does not change the canonical model.
 
+## M4. Job-targeted CV loop
+
+The Codex review of 2026-11-11 found that the CV draft took no job description. It did not pick records for a job, and it did not show missing information. M4 closes the loop: a real CV, then review, then a specific job description, then a CV that the person uses to apply.
+
+The changes, one pull request each, in this order:
+
+1. `m4-job-target`: a job text as input, a word-overlap match report with gaps, and a tailored draft in the CLI and MCP. The personakit skill tells agents how to ask about gaps.
+2. The web flow for a job description, with follow-up questions from the gaps.
+3. Acknowledgement of fact warnings and `[pk:self]` lines before print and strip.
+4. Local counts-only metrics and a diagnostic export for the M0 test.
+
+People who do not use a terminal can run the loop only after change 2. Until then, the owner runs it with the CLI or an agent.
+
+Change 4 sets the measures and their thresholds before any measurement starts. The measures are edit time for each application, wrong claims in each CV, and the number of real applications.
+
+Exit: The owner and the M0 participants use tailored CVs for real applications, and the change 4 measures meet their thresholds.
+
 ## Exclusions from the first web release
 
 Accounts, cloud sync, OCR, hosted AI proxy, multi-user coaching, automatic acceptance of agent proposals, vector database, and automatic publication of personal data.

@@ -1,13 +1,29 @@
 # Handoff
-change: none
+change: m4-job-target
 current: none
-base: 2026-11-07T03:47:44.199Z
-as_of: none
+base: 2026-11-11T14:34:34.310Z
+as_of: 2026-11-11T14:39:57.345Z
 done:
+- m4-job-target/1.1
+- m4-job-target/1.3
+- m4-job-target/1.4
+- m4-job-target/1.5
+- m4-job-target/2.1
+- m4-job-target/2.2
+- m4-job-target/3.1
+- m4-job-target/3.2
 reopened:
+- m4-job-target/1.1 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:32.302Z)
+- m4-job-target/1.3 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:35.614Z)
+- m4-job-target/1.4 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:38.569Z)
+- m4-job-target/1.5 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:41.798Z)
+- m4-job-target/2.1 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:45.123Z)
+- m4-job-target/2.2 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:50.984Z)
+- m4-job-target/3.1 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:55.606Z)
+- m4-job-target/3.2 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:56.545Z)
 open_questions:
+- Q19 archive m4-job-target? (task m4-job-target, 2026-11-11)
 resolved:
-- Q8 plan ready for m1-cv-projection. Approve to start the tasks? (task m1-cv-projection, 2026-11-07) answer: The owner approved the m1-cv-projection plan in chat on 2026-11-07 07:54: "Ok đồng ý duyệt"
 - Q9 archive m1-cv-projection? (task m1-cv-projection, 2026-11-07) answer: The owner approved the archive of m1-cv-projection in chat on 2026-11-07 08:13: "Ok đồng ý, hãy làm theo hướng tốt nhất. Tôi duyệt"
 - Q10 plan ready for m1-cv-fact-check. Approve to start the tasks? (task m1-cv-fact-check, 2026-11-07) answer: Delegated by the owner on 2026-11-07 08:18 while away: "hãy tiếp tục hoàn thành tất cả các M giúp tôi ... Bạn hãy tự chọn cách code (team or bạn tự code) miễn là hiệu quả". The owner reviews and merges the pull request.
 - Q11 plan ready for m2-web-workflow. Approve to start the tasks? (task m2-web-workflow, 2026-11-07) answer: Delegated by the owner on 2026-11-07 08:18 while away. Approved with the plan-review amendments the lead sent on 2026-11-07: sessionStorage token, serve --open with a one-time code and launcher scripts, CLI-only restore with a store lock, textContent-only UI with a static test, Host/Origin hardening, first-run states, src/web/logic.js for testable UI logic, proposeBatch prefix semantics, and restore validation details.
@@ -17,6 +33,7 @@ resolved:
 - Q15 archive m3-mcp-and-json-resume? (task m3-mcp-and-json-resume, 2026-11-07) answer: Delegated by the owner on 2026-11-07 08:18 while away: "hãy tiếp tục hoàn thành tất cả các M giúp tôi". The architect rated the diff ready, and the findings are fixed. The owner reviews and merges the pull request.
 - Q16 plan ready for m3-docx-import. Approve to start the tasks? (task m3-docx-import, 2026-11-07) answer: The owner approved the m3-docx-import plan in chat on 2026-11-07 10:37 with the recommended option: "Ok đồng ý khuyến nghị của bạn" (hand-written reader, plus a comparison that uses mammoth as a devDependency only).
 - Q17 archive m3-docx-import? (task m3-docx-import, 2026-11-07) answer: The owner approved the archive of m3-docx-import in chat on 2026-11-07 15:43: "duyệt"
-- and 7 more in .ctx/questions.json
+- Q18 plan ready for m4-job-target. Approve to start the tasks? (task m4-job-target, 2026-11-11) answer: 1: có; 2: không; 3: đặt ở change metrics; 4: có
+- and 8 more in .ctx/questions.json
 next: no open task
-evidence: 0 task(s), 0 command, 0 manual
+evidence: 9 task(s), 9 command, 0 manual

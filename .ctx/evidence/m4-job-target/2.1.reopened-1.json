@@ -1,0 +1,28 @@
+{
+  "at": "2026-11-11T14:32:41.174Z",
+  "bundle_chars": 8102,
+  "files": {
+    "src/app/operations.ts": "edd10f2cd96aab29f4dc91ceffb0fb3ef96c2e20bf0f8b5bd6319e7764669f02",
+    "src/cli/main.ts": "62a3ba1345a874cd5f1a9138ee1f49f3e663eeb6f0c944ab5840357d9e7ec1dd",
+    "src/core/cv-job.ts": "01cb059fe95c008840a6a6fa8f65f65eb0a514891ea0e0ddbfe2e60b523dfcaa",
+    "src/mcp/server.ts": "786b6729f585d404f263f4df9562a85e5555d40139ca76e51d4d599b110e4ac6",
+    "tests/cv-job-cli.test.ts": "1cf87f137183bab110e35c26a6d7c3e727c190a51d5bc9b1059fe2fda9583851",
+    "tests/cv-job.test.ts": "d612f91b4466a39a16921f485504c5f3bda5b7b427c8332d81fe1e6c9fc89ed9"
+  },
+  "kind": "command",
+  "reason": "stale evidence: src/cli/main.ts",
+  "reqs": [
+    "REQ-CV-011",
+    "REQ-CV-010",
+    "REQ-CV-008"
+  ],
+  "started_at": "2026-11-11T14:32:03.553Z",
+  "task": "m4-job-target/2.1",
+  "tool_version": "0.4.1",
+  "verify": {
+    "command": "npm run typecheck && node --test tests/cv-job-cli.test.ts tests/cv-cli.test.ts",
+    "exit": 0,
+    "stderr_tail": "",
+    "stdout_sha256": "5e70bae2312ebe283e12f6bf6bab83b9827d3f41f6eab99e3dfa9407d3076f3a"
+  }
+}

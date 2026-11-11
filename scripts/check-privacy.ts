@@ -1,6 +1,7 @@
 // Privacy gate. Exit 1 when:
 // REQ-STO-002
-// - a fixture folder has no SYNTHETIC.md, or a fixture line lacks the synthetic marker;
+// - a fixture folder has no SYNTHETIC.md, a fixture line lacks the synthetic marker,
+//   or another fixture file does not start with a "# Synthetic" heading;
 // - the configured store path (PERSONAKIT_HOME) is inside this repository;
 // - a PersonaKit store (store.json with the store schema) exists inside this repository.
 // Run: node scripts/check-privacy.ts
@@ -14,6 +15,7 @@ const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const errors: string[] = [];
 
 const fixtures = join(repo, "fixtures");
+const SYNTHETIC_TEXT_HEADING = "# Synthetic";
 if (existsSync(fixtures)) {
   for (const entry of readdirSync(fixtures, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
@@ -26,6 +28,11 @@ if (existsSync(fixtures)) {
         try { marker = JSON.parse(line)?.extensions?.["personakit.fixture"]?.synthetic; } catch { /* reported below */ }
         if (marker !== true) errors.push(`fixtures/${entry.name}/${file}:${i + 1}: the line has no synthetic marker.`);
       });
+    }
+    // REQ-CV-012: a text fixture, such as a job text, starts with the synthetic heading.
+    for (const file of readdirSync(dir).filter((f) => !f.endsWith(".jsonl") && f !== "SYNTHETIC.md")) {
+      const first = readFileSync(join(dir, file), "utf8").replace(/^\uFEFF/u, "").split(/\r?\n/u, 1)[0];
+      if (!first?.startsWith(SYNTHETIC_TEXT_HEADING)) errors.push(`fixtures/${entry.name}/${file}: the first line is not "${SYNTHETIC_TEXT_HEADING} ...".`);
     }
   }
 }

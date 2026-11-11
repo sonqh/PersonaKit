@@ -50,11 +50,16 @@ export function claimText(body: string): string {
   return body.replace(/^\s*(?:[-*+]|\d+[.)])\s+/u, "").replace(ULID_ANY, " ");
 }
 
+/** The words of a record without dates: statement, role, organization, level, scope, and tags. */
+export function recordWords(r: PersonaRecord): string[] {
+  const f = r.facets ?? {};
+  return [r.statement, f.role, f.organization, f.level, ...(f.scope ?? []), ...(f.tags ?? [])].filter((x): x is string => Boolean(x));
+}
+
 /** The text of a record that a CV line may use: statement and printed facets. */
 export function recordText(r: PersonaRecord): string {
   const f = r.facets ?? {};
-  return [r.statement, f.role, f.organization, f.level, ...(f.scope ?? []), ...(f.tags ?? []),
-    f.period?.start, f.period?.end, f.issued_on, f.expires_on].filter(Boolean).join(" \n ");
+  return [...recordWords(r), f.period?.start, f.period?.end, f.issued_on, f.expires_on].filter(Boolean).join(" \n ");
 }
 
 function numberTokens(text: string): string[] {

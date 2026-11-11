@@ -1,4 +1,4 @@
-// Covers: REQ-MCP-005, REQ-MCP-006, REQ-MCP-007
+// Covers: REQ-MCP-005, REQ-MCP-006, REQ-MCP-007, REQ-CV-011
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
@@ -56,6 +56,24 @@ test("SCN-MCP-005-3 the CV draft equals the CLI draft", async () => {
   assert.match(s.byId(2).result.content[0].text, /expired 2026-01-10/);
   const bad = await session(root, call(3, "cv_draft", { as_of: "June" }));
   assert.equal(bad.byId(3).result.isError, true);
+});
+
+test("SCN-CV-011-3 SCN-CV-011-4 the MCP tool takes a job text", async () => {
+  const { root } = seeded();
+  const job = "- Greenhouse schedule for a nursery\n- Forklift licence\n";
+  const file = join(tempDir(), "jd.txt");
+  writeFileSync(file, job);
+  const big = "é".repeat(32_768) + "x";
+  const s = await session(root, [call(1, "cv_draft", { job }), call(2, "cv_draft", {}), call(3, "cv_draft", { job: big }), call(4, "cv_draft", { job: "" })]);
+  const withJob = s.byId(1).result;
+  assert.equal(withJob.isError, false);
+  assert.deepEqual(withJob.structuredContent, cli(root, ["cv", "draft", "--job", file, "--json"]).json());
+  assert.ok(withJob.content[0].text.startsWith(cli(root, ["cv", "draft", "--job", file]).stdout));
+  assert.match(withJob.content[0].text, /no record shares enough words/);
+  assert.deepEqual(withJob.structuredContent.match.gaps, [2]);
+  assert.deepEqual(s.byId(2).result.structuredContent, cli(root, ["cv", "draft", "--json"]).json());
+  assert.equal(s.byId(3).result.isError, true);
+  assert.equal(s.byId(4).result.isError, true);
 });
 
 test("SCN-MCP-006-1 the actor comes from the client name", async () => {
