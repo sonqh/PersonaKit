@@ -85,6 +85,15 @@ The AI brief includes relevant preferences and goals. The CV uses professional f
 
 The checks can catch structural mismatches. They cannot guarantee that every paraphrase preserves meaning.
 
+Current limits of the CV check:
+
+- Only a citation error stops `cv strip` and printing. A fact warning does not.
+- The fact rules use English words and patterns.
+- A line marked `[pk:self]` is a user statement. The check skips it.
+- The organization and role check compares names with the public records. It cannot detect every invented name.
+
+Describe the CV as traced to its sources, with warnings for mismatches. Do not describe it as free of invented claims.
+
 ## Local storage
 
 The store is a folder outside any repository, `~/.personakit/` by default. It holds one file for each record and one file for each event. The owner can make it a private git repository for backup and sync. See [the store decision](../decisions/store-outside-repo.md).

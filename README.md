@@ -76,6 +76,13 @@ You need Node.js 22.18 or newer.
 6. Run `personakit brief`. Give the brief to any assistant.
 7. For a CV, run `personakit cv draft --out cv.md`. Ask an agent to rewrite it and keep the `[pk:...]` markers. Run `personakit cv check cv.md`, read the text, then run `personakit cv strip cv.md`. Only records with visibility `public` enter a CV.
 
+What the CV check does and does not do:
+
+- It refuses a line that has no marker, or that cites a record that is not accepted and `public`.
+- It warns about dates, numbers, names, titles, and ownership words that do not match the cited records. These rules work best on English text. A warning does not stop `cv strip` or printing. Read each warning before you use the CV.
+- It does not check a line marked `[pk:self]`. That line is your own statement.
+- It traces each line to its sources. It does not prove that a line is true. Read the final text yourself.
+
 Agents can only propose. You decide what is accepted. This step protects against agent mistakes. It does not stop a program that has full access to your files.
 
 claude.ai on the web cannot run commands. Move the brief and proposals by hand, or use Claude Desktop with the MCP server below. [Use PersonaKit with claude.ai](docs/claude-ai.md) has the steps and a prompt to paste.
