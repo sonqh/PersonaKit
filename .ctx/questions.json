@@ -184,5 +184,13 @@
     "verdict": "approved",
     "answer": "The owner approved the archive of m3-docx-import in chat on 2026-11-07 15:43: \"duyệt\"",
     "resolved_at": "2026-11-07T08:44:22.874Z"
+  },
+  {
+    "n": 18,
+    "asked_at": "2026-11-11T14:26:23.254Z",
+    "task": "m4-job-target",
+    "text": "plan ready for m4-job-target. Approve to start the tasks?",
+    "status": "open",
+    "stage": "plan"
   }
 ]

@@ -1,11 +1,12 @@
 # Handoff
-change: none
+change: m4-job-target
 current: none
 base: 2026-11-07T03:47:44.199Z
 as_of: none
 done:
 reopened:
 open_questions:
+- Q18 plan ready for m4-job-target. Approve to start the tasks? (task m4-job-target, 2026-11-11)
 resolved:
 - Q8 plan ready for m1-cv-projection. Approve to start the tasks? (task m1-cv-projection, 2026-11-07) answer: The owner approved the m1-cv-projection plan in chat on 2026-11-07 07:54: "Ok đồng ý duyệt"
 - Q9 archive m1-cv-projection? (task m1-cv-projection, 2026-11-07) answer: The owner approved the archive of m1-cv-projection in chat on 2026-11-07 08:13: "Ok đồng ý, hãy làm theo hướng tốt nhất. Tôi duyệt"
@@ -18,5 +19,5 @@ resolved:
 - Q16 plan ready for m3-docx-import. Approve to start the tasks? (task m3-docx-import, 2026-11-07) answer: The owner approved the m3-docx-import plan in chat on 2026-11-07 10:37 with the recommended option: "Ok đồng ý khuyến nghị của bạn" (hand-written reader, plus a comparison that uses mammoth as a devDependency only).
 - Q17 archive m3-docx-import? (task m3-docx-import, 2026-11-07) answer: The owner approved the archive of m3-docx-import in chat on 2026-11-07 15:43: "duyệt"
 - and 7 more in .ctx/questions.json
-next: no open task
+next: m4-job-target/1.1  Add the job text parser, the size limit, and the term rules in `src/core/cv-job.ts`
 evidence: 0 task(s), 0 command, 0 manual
