@@ -1,9 +1,9 @@
 {
-  "at": "2026-11-11T14:33:31.915Z",
+  "at": "2026-11-11T14:39:35.536Z",
   "files": {
-    "src/core/cv-job.ts": "01cb059fe95c008840a6a6fa8f65f65eb0a514891ea0e0ddbfe2e60b523dfcaa",
-    "tests/cv-job-cli.test.ts": "1cf87f137183bab110e35c26a6d7c3e727c190a51d5bc9b1059fe2fda9583851",
-    "tests/cv-job.test.ts": "d612f91b4466a39a16921f485504c5f3bda5b7b427c8332d81fe1e6c9fc89ed9",
+    "src/core/cv-job.ts": "6b65613a5c99b092b4526842f163ad33282494d91e583790c5626a777a0df9c4",
+    "tests/cv-job-cli.test.ts": "68fe65c8b1ead422f3a44652c25f19760d0af072c1c102650dbddf58e630f73b",
+    "tests/cv-job.test.ts": "efc0b0e735d58c650b47de811b5e28e11a5c611e800b94e63b038f1853a89296",
     "tests/mcp-privacy.test.ts": "123eb60da2228e9a8ff1acf153ec1f81fc2ab59fd4e7cba05470212b75f0561e"
   },
   "kind": "command",
@@ -17,6 +17,6 @@
     "command": "npm run typecheck && node --test tests/cv-job.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "bb9413773597322492fdb07df6f5941afccb95eaee0d8baf99732a45b61c5793"
+    "stdout_sha256": "cbe028d0c6a878a3da814a0ff01c845d2cc10d919a4f73b8ce0568fd553b52e0"
   }
 }

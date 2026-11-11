@@ -68,7 +68,8 @@ test("SCN-CV-011-3 SCN-CV-011-4 the MCP tool takes a job text", async () => {
   const withJob = s.byId(1).result;
   assert.equal(withJob.isError, false);
   assert.deepEqual(withJob.structuredContent, cli(root, ["cv", "draft", "--job", file, "--json"]).json());
-  assert.equal(withJob.content[0].text, cli(root, ["cv", "draft", "--job", file]).stdout);
+  assert.ok(withJob.content[0].text.startsWith(cli(root, ["cv", "draft", "--job", file]).stdout));
+  assert.match(withJob.content[0].text, /no record shares enough words/);
   assert.deepEqual(withJob.structuredContent.match.gaps, [2]);
   assert.deepEqual(s.byId(2).result.structuredContent, cli(root, ["cv", "draft", "--json"]).json());
   assert.equal(s.byId(3).result.isError, true);

@@ -14,7 +14,7 @@ import { agentView, type BriefLevel } from "../core/brief.ts";
 import { stripCv, type CvCheckResult } from "../core/cv.ts";
 import { exportArchive, restoreArchive } from "../core/archive.ts";
 import { splitText } from "../core/text-import.ts";
-import { JOB_MAX_BYTES, renderMatchText } from "../core/cv-job.ts";
+import { JOB_MAX_BYTES, parseJob, renderMatchText } from "../core/cv-job.ts";
 import { DOCX_LIMITS, readDocxText } from "../core/docx.ts";
 import { createHash } from "node:crypto";
 import { writeNewFileAtomic } from "../core/fsutil.ts";
@@ -419,10 +419,16 @@ function readCvFile(path: string | undefined): string {
 function readJob(v: Values, io: Io): string {
   const path = v.job;
   if (path === undefined || path === "") throw usage("Give the job text: --job FILE, or --job - to read stdin.");
-  if (path === "-") return io.readStdin();
-  if (!existsSync(path)) throw usage(`The job file ${path} does not exist.`);
+  if (path === "-") {
+    const text = io.readStdin();
+    parseJob(text); // Check the size and the content before the store opens.
+    return text;
+  }
+  if (!existsSync(path) || !statSync(path).isFile()) throw usage(`The job file ${path} does not exist or is not a file.`);
   if (statSync(path).size > JOB_MAX_BYTES) throw usage(`The job file is larger than ${JOB_MAX_BYTES} bytes. Give a shorter job text.`);
-  return readFileSync(path, "utf8");
+  const text = readFileSync(path, "utf8");
+  parseJob(text);
+  return text;
 }
 
 function cvRecords(v: Values, io: Io): PersonaRecord[] {
@@ -443,7 +449,9 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
     if (v["as-of"] !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(v["as-of"])) throw usage("--as-of must be a date as YYYY-MM-DD.");
     if (v.job !== undefined) {
       // REQ-CV-010: the tailored draft. Hints go to stderr as counts and IDs, so they never enter the draft.
-      const r = cvDraftForJob(storeFor(v, io), readJob(v, io), v["as-of"]);
+      // Read and check the job text before the store opens, so a bad job is a usage error.
+      const jobText = readJob(v, io);
+      const r = cvDraftForJob(storeFor(v, io), jobText, v["as-of"]);
       const gaps = r.match.gaps.length;
       if (r.match.matched === 0) io.stderr(`No record outside Summary, Education, Credentials, and Career breaks shares words with the job text. This is the full draft.\n`);
       if (r.left_out.length) io.stderr(`Left out ${r.left_out.length} record${r.left_out.length === 1 ? "" : "s"} that share no words with the job text: ${r.left_out.join(", ")}.\n`);
@@ -475,7 +483,9 @@ async function cmdCv(v: Values, io: Io, args: string[]): Promise<Result> {
     return { data: result, text: describeCheck(result), exitCode: failed ? ExitCode.invalid : ExitCode.ok };
   }
   if (sub === "match") {
-    const m = cvMatch(storeFor(v, io), readJob(v, io));
+    if (v.out !== undefined || v["as-of"] !== undefined) throw usage('"cv match" prints the report only. It takes no --out or --as-of.');
+    const jobText = readJob(v, io);
+    const m = cvMatch(storeFor(v, io), jobText);
     return { data: m, text: renderMatchText(m).trimEnd() };
   }
   if (sub === "strip") {

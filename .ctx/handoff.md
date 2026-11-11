@@ -1,11 +1,10 @@
 # Handoff
 change: m4-job-target
 current: none
-base: 2026-11-11T14:28:16.247Z
-as_of: 2026-11-11T14:34:34.310Z
+base: 2026-11-11T14:34:34.310Z
+as_of: 2026-11-11T14:39:57.345Z
 done:
 - m4-job-target/1.1
-- m4-job-target/1.2
 - m4-job-target/1.3
 - m4-job-target/1.4
 - m4-job-target/1.5
@@ -14,11 +13,16 @@ done:
 - m4-job-target/3.1
 - m4-job-target/3.2
 reopened:
-- m4-job-target/1.1 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:31:28.956Z)
-- m4-job-target/1.1 stale evidence: tests/cv-job.test.ts (at 2026-11-11T14:33:28.210Z)
-- m4-job-target/1.3 stale evidence: tests/cv-job.test.ts (at 2026-11-11T14:33:32.000Z)
-- m4-job-target/1.4 stale evidence: tests/cv-job.test.ts (at 2026-11-11T14:33:35.318Z)
+- m4-job-target/1.1 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:32.302Z)
+- m4-job-target/1.3 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:35.614Z)
+- m4-job-target/1.4 stale evidence: src/core/cv-job.ts (at 2026-11-11T14:39:38.569Z)
+- m4-job-target/1.5 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:41.798Z)
+- m4-job-target/2.1 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:45.123Z)
+- m4-job-target/2.2 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:50.984Z)
+- m4-job-target/3.1 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:55.606Z)
+- m4-job-target/3.2 stale evidence: src/cli/main.ts (at 2026-11-11T14:39:56.545Z)
 open_questions:
+- Q19 archive m4-job-target? (task m4-job-target, 2026-11-11)
 resolved:
 - Q9 archive m1-cv-projection? (task m1-cv-projection, 2026-11-07) answer: The owner approved the archive of m1-cv-projection in chat on 2026-11-07 08:13: "Ok đồng ý, hãy làm theo hướng tốt nhất. Tôi duyệt"
 - Q10 plan ready for m1-cv-fact-check. Approve to start the tasks? (task m1-cv-fact-check, 2026-11-07) answer: Delegated by the owner on 2026-11-07 08:18 while away: "hãy tiếp tục hoàn thành tất cả các M giúp tôi ... Bạn hãy tự chọn cách code (team or bạn tự code) miễn là hiệu quả". The owner reviews and merges the pull request.

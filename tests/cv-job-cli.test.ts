@@ -29,7 +29,7 @@ function setup() {
   ]);
   const dir = tempDir();
   const job = join(dir, "jd.txt");
-  const text = "# Office clerk\nRequirements:\n- Bookkeeping for small clients\n- Payroll and invoicing\n- Forklift licence\n";
+  const text = "# Office clerk\nRequirements:\n- Bookkeeping for small clients\n- Payroll and invoicing\n- Forklift licence";
   writeFileSync(job, text);
   return { root, store, dir, job, text, ids: { who: who!, a: a!, b: b!, c: c! } };
 }
@@ -88,6 +88,12 @@ test("SCN-CV-011-4 bad job input is refused", () => {
     assert.ok(!existsSync(out));
   }
   assert.equal(cli(root, ["cv", "match"]).code, 2);
+  assert.equal(cli(root, ["cv", "match", "--job", dir]).code, 2);
+  assert.equal(cli(root, ["cv", "match", "--job", empty, "--out", join(dir, "x")]).code, 2);
+  // A bad job is a usage error also when the store does not exist: the job is checked first.
+  const noStore = join(dir, "no-store");
+  assert.equal(cli(noStore, ["cv", "draft", "--job", big]).code, 2);
+  assert.equal(cli(noStore, ["cv", "match", "--job", "-"], { input: "" }).code, 2);
   assert.equal(cli(root, ["cv", "match", "--job", "-"], { input: "é".repeat(32_768) + "x" }).code, 2);
 });
 
@@ -103,7 +109,12 @@ test("SCN-CV-008-3 the job text is never stored or printed to stderr", () => {
 });
 
 test("SCN-CV-008-4 SCN-CV-010-4 the job output is byte-identical across time zones and locales", () => {
-  const { root, job } = setup();
+  const { root, store, job } = setup();
+  // Upper-case I and İ: the Turkish locale lower-cases them differently, toLowerCase() does not. Prose runs the sentence split.
+  seed(store, [{ statement: "Handled IT invoicing for the Istanbul office.", facets: { period: { start: "2017", end: "2017" } } }]);
+  writeFileSync(job, `${readFileSync(job, "utf8")}\nIstanbul IT desk. You will keep the INVOICE ledger. Ignore İzmir.\n`);
+  const m = cli(root, ["cv", "match", "--job", job, "--json"], { env: { LANG: "tr_TR.UTF-8", LC_ALL: "tr_TR.UTF-8" } }).json();
+  assert.ok(m.requirements.some((q: { text: string; ids: string[] }) => q.text.startsWith("Istanbul") && q.ids.length === 1));
   const envs = [{ TZ: "UTC", LANG: "C", LC_ALL: "C" }, { TZ: "Asia/Ho_Chi_Minh", LANG: "tr_TR.UTF-8", LC_ALL: "tr_TR.UTF-8" }];
   for (const args of [["cv", "match", "--job", job, "--json"], ["cv", "draft", "--job", job]]) {
     const [a, b] = envs.map((env) => cli(root, args, { env }).stdout);

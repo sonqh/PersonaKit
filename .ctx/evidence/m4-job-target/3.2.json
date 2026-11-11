@@ -1,29 +1,27 @@
 {
-  "at": "2026-11-11T14:34:34.310Z",
-  "bundle_chars": 8047,
+  "at": "2026-11-11T14:39:57.345Z",
   "files": {
     "src/app/operations.ts": "edd10f2cd96aab29f4dc91ceffb0fb3ef96c2e20bf0f8b5bd6319e7764669f02",
-    "src/cli/main.ts": "62a3ba1345a874cd5f1a9138ee1f49f3e663eeb6f0c944ab5840357d9e7ec1dd",
-    "src/core/cv-job.ts": "01cb059fe95c008840a6a6fa8f65f65eb0a514891ea0e0ddbfe2e60b523dfcaa",
-    "src/mcp/server.ts": "786b6729f585d404f263f4df9562a85e5555d40139ca76e51d4d599b110e4ac6",
+    "src/cli/main.ts": "f83c9f843d66027887df026d4784bd76902d46f1367dad73469719b1fcf9923d",
+    "src/core/cv-job.ts": "6b65613a5c99b092b4526842f163ad33282494d91e583790c5626a777a0df9c4",
+    "src/mcp/server.ts": "efa7ba459c09983ef95cf3cffef0e962b0fe902be1318dc49349efd1d4ec4985",
     "tests/agents.test.ts": "6eeb0b00193d6b8a092ae025df5b44065cfcd0bc68b3b0c18a9ec7b36daf74ea",
-    "tests/cv-job-cli.test.ts": "1cf87f137183bab110e35c26a6d7c3e727c190a51d5bc9b1059fe2fda9583851",
-    "tests/cv-job.test.ts": "d612f91b4466a39a16921f485504c5f3bda5b7b427c8332d81fe1e6c9fc89ed9",
+    "tests/cv-job-cli.test.ts": "68fe65c8b1ead422f3a44652c25f19760d0af072c1c102650dbddf58e630f73b",
+    "tests/cv-job.test.ts": "efc0b0e735d58c650b47de811b5e28e11a5c611e800b94e63b038f1853a89296",
     "tests/mcp-docs.test.ts": "bd6b96b6b6f8cc886b5e3d9a58916b78da68d837f39f2ab45d1d600c8a05562e",
-    "tests/mcp-tools.test.ts": "39a3f6a030d93e5279d7a2a960b15ee120aa0fd391265b141a5973bd5bb5b4c0"
+    "tests/mcp-tools.test.ts": "5602c72288f93e04777ab3bd74551128f69aa039dbe6198967366190d9836e30"
   },
   "kind": "command",
   "reqs": [
     "REQ-CV-010",
     "REQ-CV-011"
   ],
-  "started_at": "2026-11-11T14:34:19.598Z",
   "task": "m4-job-target/3.2",
   "tool_version": "0.4.1",
   "verify": {
     "command": "npm run typecheck && node --test tests/mcp-docs.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "4033201e319c800c51b19cef38829f8936ba6d8e0d8aec17e7eefec848e18c88"
+    "stdout_sha256": "9ec190856e178bd6b480629a17e6779bfdccb4842e153d7b7c51860c1741b346"
   }
 }

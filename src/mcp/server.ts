@@ -12,6 +12,7 @@ import {
 } from "../core/schema.ts";
 import { ULID_PATTERN } from "../core/ulid.ts";
 import type { BriefLevel } from "../core/brief.ts";
+import { renderMatchText } from "../core/cv-job.ts";
 import { briefBoth, cvCheck, cvDraft, cvDraftForJob, listRecords, proposeRecords, showRecord, TEXT_INPUT_LIMIT } from "../app/operations.ts";
 
 export const MODERN_VERSIONS = ["2026-07-28"] as const;
@@ -336,7 +337,8 @@ export class McpServer {
           if (a.job !== undefined) {
             // REQ-CV-011: the parser checks the byte limit with a fixed message. The job text is never logged.
             const r = this.ops.cvDraftForJob(store, a.job as string, a.as_of as string | undefined);
-            return ok(r.markdown, { draft: r.draft, match: r.match });
+            // The text content also holds the report, for a client that reads only the text.
+            return ok(`${r.markdown}\n---\n\n${renderMatchText(r.match)}`, { draft: r.draft, match: r.match });
           }
           const r = this.ops.cvDraft(store, a.as_of as string | undefined);
           return ok(r.markdown, r.draft);

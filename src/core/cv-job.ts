@@ -41,21 +41,30 @@ const STOP_WORDS: ReadonlySet<string> = new Set([
   "ability", "able", "candidate", "candidates", "desired", "experience", "experienced", "familiarity", "good", "great",
   "ideal", "ideally", "including", "join", "knowledge", "looking", "minimum", "nice", "plus", "preferred", "proven",
   "required", "requirement", "requirements", "responsibilities", "role", "seeking", "skill", "skills", "solid", "strong",
-  "understanding", "work", "working", "year", "years", "yrs",
+  "understanding", "work", "working", "year", "years", "yrs", "abilities", "qualification", "qualifications",
+  // Fragments of English contractions: you'll, we're, don't, isn't, won't, you've, I'm, they'd.
+  "ll", "re", "ve", "don", "doesn", "isn", "aren", "won", "wasn", "weren", "didn", "haven", "hasn", "couldn",
+  "shouldn", "wouldn", "im",
 ]);
 
 const TOKEN_RE = /[\p{L}\p{N}][\p{L}\p{N}+#]*/gu;
 const HAS_LETTER = /\p{L}/u;
 const HEADING = /^#{1,6}\s/u;
-const LIST_PREFIX = /^(?:[-*+•‣◦▪]|\d{1,3}[.)]|\p{L}\))\s+/u;
-// C0 and C1 control characters, and DEL. Tabs and line feeds are already gone after oneLine.
-const CONTROL = /[\u0000-\u001f\u007f-\u009f]/gu;
+// Numbers up to two digits, so a year such as "2020." at the start of a line is not a list prefix.
+const LIST_PREFIX = /^(?:[-*+•‣◦▪]|\d{1,2}[.)]|\p{L}\))\s+/u;
+// C0 and C1 controls, DEL, bidi controls, and zero-width characters, as in the record schema.
+// They could hide or reorder text in a terminal ("Trojan Source").
+const CONTROL = /[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u2069\ufeff]/gu;
 
 /** Lower case, locale-independent. A plural s goes from a term of five letters or more. */
 function normalizeTerm(token: string): string | undefined {
   const t = token.toLowerCase();
   if (t.length < 2 || !HAS_LETTER.test(t) || STOP_WORDS.has(t)) return undefined;
-  if (t.length >= 5 && t.endsWith("s") && !t.endsWith("ss")) return t.slice(0, -1);
+  if (t.length >= 5 && t.endsWith("s") && !t.endsWith("ss")) {
+    // Check the stop list again: "experiences" becomes "experience", a stop word.
+    const singular = t.slice(0, -1);
+    return STOP_WORDS.has(singular) ? undefined : singular;
+  }
   return t;
 }
 

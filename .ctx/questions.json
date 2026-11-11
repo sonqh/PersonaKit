@@ -195,5 +195,13 @@
     "verdict": "approved",
     "answer": "1: có; 2: không; 3: đặt ở change metrics; 4: có",
     "resolved_at": "2026-11-11T14:27:05.436Z"
+  },
+  {
+    "n": 19,
+    "asked_at": "2026-11-11T14:40:14.488Z",
+    "task": "m4-job-target",
+    "text": "archive m4-job-target?",
+    "status": "open",
+    "stage": "archive"
   }
 ]

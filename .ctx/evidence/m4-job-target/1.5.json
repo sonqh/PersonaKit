@@ -1,23 +1,22 @@
 {
-  "at": "2026-11-11T14:32:03.470Z",
-  "bundle_chars": 7342,
+  "at": "2026-11-11T14:39:45.039Z",
   "files": {
     "src/app/operations.ts": "edd10f2cd96aab29f4dc91ceffb0fb3ef96c2e20bf0f8b5bd6319e7764669f02",
-    "src/cli/main.ts": "62a3ba1345a874cd5f1a9138ee1f49f3e663eeb6f0c944ab5840357d9e7ec1dd",
-    "src/core/cv-job.ts": "01cb059fe95c008840a6a6fa8f65f65eb0a514891ea0e0ddbfe2e60b523dfcaa",
-    "tests/cv-job.test.ts": "d612f91b4466a39a16921f485504c5f3bda5b7b427c8332d81fe1e6c9fc89ed9"
+    "src/cli/main.ts": "f83c9f843d66027887df026d4784bd76902d46f1367dad73469719b1fcf9923d",
+    "src/core/cv-job.ts": "6b65613a5c99b092b4526842f163ad33282494d91e583790c5626a777a0df9c4",
+    "tests/cv-job-cli.test.ts": "68fe65c8b1ead422f3a44652c25f19760d0af072c1c102650dbddf58e630f73b",
+    "tests/cv-job.test.ts": "efc0b0e735d58c650b47de811b5e28e11a5c611e800b94e63b038f1853a89296"
   },
   "kind": "command",
   "reqs": [
     "REQ-CV-010"
   ],
-  "started_at": "2026-11-11T14:31:51.369Z",
   "task": "m4-job-target/1.5",
   "tool_version": "0.4.1",
   "verify": {
     "command": "npm run typecheck && node --test tests/cv-job.test.ts tests/cv.test.ts",
     "exit": 0,
     "stderr_tail": "",
-    "stdout_sha256": "c8f6ac425628f9af7ca1e9e53732e243e2f450f321062457a89d041048e348ce"
+    "stdout_sha256": "b34a53c017cf82c4b83aa16e7d884445002f52ed4861a320f2c9a59679802c12"
   }
 }

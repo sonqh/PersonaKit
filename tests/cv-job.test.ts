@@ -86,6 +86,16 @@ test("SCN-CV-009 terms: NFKC, lower case, stop words, plural s", () => {
   assert.deepEqual(termsOf("Café cafe"), ["café", "cafe"]);
 });
 
+test("SCN-CV-009 filler words stay out after the plural rule, and contraction fragments are no terms", () => {
+  assert.deepEqual(termsOf("experiences abilities qualifications"), []);
+  assert.deepEqual(termsOf("You'll, we're, you've, and don't"), []);
+});
+
+test("SCN-CV-008 a year at the start of a line is not a list prefix", () => {
+  const { requirements } = parseJob("2020. Joined the firm as a clerk.\n12. Filing");
+  assert.deepEqual(requirements.map((r) => r.text), ["2020.", "Joined the firm as a clerk.", "Filing"].filter((t) => t !== "2020."));
+});
+
 test("SCN-CV-008 the e.g. split drops the fragment without terms", () => {
   const { requirements } = parseJob("Use office tools, e.g. Excel and Word daily.");
   assert.ok(requirements.every((r) => r.terms.length >= 2));
@@ -182,6 +192,13 @@ test("SCN-CV-012-3 untrusted job text cannot change the terminal", () => {
   assert.ok(!/[\u0000-\u001f\u007f-\u009f]/u.test(renderMatchText(m).replace(/\n/gu, "")));
 });
 
+test("SCN-CV-012-3 bidi and zero-width characters are removed", () => {
+  const hidden = ["\u202e", "\u202c", "\u200b", "\u200f", "\u2066", "\u2069", "\u2060", "\ufeff"];
+  const m = match(`- Excel ${hidden.join("x")} reports`, []);
+  const t = m.requirements[0]!.text;
+  for (const h of hidden) assert.ok(!t.includes(h), `U+${h.codePointAt(0)!.toString(16)}`);
+});
+
 test("SCN-CV-012-4 the wording makes no claim of fit", () => {
   const r = rec("Did the bookkeeping for 40 small clients");
   const out = renderMatchText(match("- Bookkeeping for small clients\n- Forklift licence", [r]));
@@ -257,7 +274,20 @@ for (const name of fixtureNames()) {
       return record.id;
     });
     const records = readAll(store).records;
+    // Make every record eligible: the canary and excluded records then link, so their absence below means something.
+    const open = records.map((r) => ({ ...r, state: "accepted" as const, visibility: "public" as const, kind: r.kind === "intent" || r.kind === "preference" ? "experience" as const : r.kind }));
+    const all = matchJob(job, open);
+    const canary = records.find((r) => r.statement.includes(`CANARY-PRIVATE-${name}`))!;
+    const canaryReqs = all.requirements.filter((q) => q.ids.includes(canary.id)).map((q) => q.n);
+    assert.ok(canaryReqs.length > 0, "the job text shares words with the canary record");
+    const excludedIds = new Set(records.filter((r) => !cvEligible(r)).map((r) => r.id));
+    assert.ok(all.requirements.some((q) => q.ids.some((id) => excludedIds.has(id) && id !== canary.id)), "the job text shares words with another excluded record");
     const m = matchJob(job, records);
+    // A requirement that only excluded records share words with is a gap.
+    for (const q of all.requirements) {
+      if (q.ids.length > 0 && q.ids.every((id) => excludedIds.has(id))) assert.ok(m.gaps.includes(q.n), `requirement ${q.n} is a gap`);
+    }
+    for (const n of canaryReqs) assert.ok(!m.requirements[n - 1]!.ids.includes(canary.id));
     assert.ok(m.requirements.some((r) => r.ids.length > 0), "at least one link");
     assert.ok(m.gaps.length > 0, "at least one gap");
     const { draft } = buildTailoredDraft(records, m);
